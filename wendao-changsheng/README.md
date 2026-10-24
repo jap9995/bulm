@@ -31,7 +31,8 @@ wendao-changsheng/
     ├── combat-texts.md           ← 斗法文字：随机拼接规则 + 约 45 场斗法的全部文字
     ├── event-draw.md             ← 事件抽取规则：每次行动出哪个事件、为什么是它
     ├── market.md                 ← 集市商品规则：货架、刷新、稀有货概率、买卖价格
-    └── npc-daily.md              ← 拜访 NPC 的日常互动：叙话、送礼与喜好、专属往来、好感上限
+    ├── npc-daily.md              ← 拜访 NPC 的日常互动：叙话、送礼与喜好、专属往来、好感上限
+    └── misc-rules.md             ← 零散小规则：属性上下限、心境恢复、伤势与中毒、背包满、结算顺序
 game-assets/                      ← 免费素材库（全部 CC0）
 ├── README.md                     ← 2D 素材说明
 ├── superpowers/                  ← 2D 像素素材：本游戏会用到其中一小部分
@@ -49,6 +50,7 @@ game-assets/                      ← 免费素材库（全部 CC0）
 5. **[event-draw.md](design/event-draw.md)**：做事件系统、写新事件时读；第五节是全部事件的地点、档位和标签对照表，第八节是待负责人确认的几处取舍。
 6. **[market.md](design/market.md)**：做集市、调物价时读。
 7. **[npc-daily.md](design/npc-daily.md)**：做「拜访人物」、写 NPC 闲话时读。
+8. **[misc-rules.md](design/misc-rules.md)**：写游戏逻辑时必读，第六节规定了一步里所有效果的结算顺序。
 
 ---
 
@@ -125,7 +127,7 @@ game-assets/                      ← 免费素材库（全部 CC0）
 1. ~~**事件抽取规则**~~：初稿已完成，见 [event-draw.md](design/event-draw.md)。第八节的 5 处取舍中，已确认 2 处，还有 3 处待负责人确认。
 2. ~~**集市商品规则**~~：初稿已完成，见 [market.md](design/market.md)。
 3. ~~**拜访 NPC 的日常互动**~~：初稿已完成，见 [npc-daily.md](design/npc-daily.md)。
-4. **零散小规则**：心境会不会自然恢复、背包满了怎么办、同一步里各种效果的结算顺序。
+4. ~~**零散小规则**~~：初稿已完成，见 [misc-rules.md](design/misc-rules.md)。
 5. **平衡验收指标**（建议补）：平均享年、各结局比例、新手第一局的存活时长等目标，供模拟测试时对照。
 
 ### 8.2 可以在做原型时再补
