@@ -9,7 +9,7 @@ export interface DuelOutcome { tier: DuelTier | 'escaped'; text: string; lines: 
 
 /** 可重复妖兽（W01）：按当前地点从带 locations 的斗法文字中抽一种 */
 export function pickBeast(c: Content, st: RunState): CombatText | undefined {
-  const pool = Object.values(c.combat).filter(t => t.locations?.includes(st.location) || (t.locations?.includes('secret') && st.location.startsWith('secret')));
+  const pool = Object.values(c.combat).filter(t => t.locations?.includes(st.location) || (t.locations?.includes('secret') && !!c.locations[st.location]?.secret));
   return weighted(st, 'event', pool.map(v => ({ value: v, w: 1 })));
 }
 
@@ -44,7 +44,7 @@ function probFor(c: Content, st: RunState, enemy: Enemy, a: Approach, bonus: num
     case 'fight': return duelP(me, foe, m.fightAdd + bonus + (tr.thickHide ? -0.1 : 0));
     case 'technique': return duelP(me, foe, (bestTechnique(c, st)?.duelAdd ?? 0) + bonus);
     case 'item': { const ch = bestCharm(c, st); return duelP(me, foe, (ch ? c.items[ch].duel ?? 0 : 0) + m.itemDuelAdd + bonus); }
-    case 'env': return clamp(0.4 + (st.mood - 60) / 200 + bonus + (tr.thickHide ? 0.1 : 0), 0.05, 0.95);   // 心境判定，基础 40%
+    case 'env': return clamp(0.4 + (st.mood - 60) / 200 + (m.envAdd ?? 0) + bonus + (tr.thickHide ? 0.1 : 0), 0.05, 0.95);   // 心境判定，基础 40%
     case 'talk': return clamp(0.5 + m.talkAdd + bonus, 0.05, 0.95);
     case 'flee': return tr.swift ? 1 : clamp(0.6 + m.fleeAdd + bonus, 0.05, 0.95);
   }
@@ -61,7 +61,7 @@ export function duel(c: Content, st: RunState, enemy: Enemy, a: Approach, bonus:
   // 借助道具：判定前消耗符箓
   let charmName = '';
   if(a === 'item'){ const ch = bestCharm(c, st); if(ch){ charmName = c.items[ch].name; addItem(c, st, ch, -1, lines); } }
-  st.stats.duels++;
+  if(a !== 'flee' && a !== 'talk') st.stats.duels++;
 
   const vars = textVars(c, st, combat, charmName);
   const tags = ctxTags(c, st, enemy, two, location);

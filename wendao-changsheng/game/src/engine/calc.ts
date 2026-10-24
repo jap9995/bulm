@@ -12,6 +12,7 @@ export function mods(c: Content, st: RunState): Required<Pick<Mods, 'cultAdd' | 
   const best: Record<string, Mods> = {};
   for(const id of st.techniques){ const t = c.techniques[id]; if(!t?.mods) continue; const prev = best[t.school]; if(!prev || (t.mods.cultAdd ?? 0) + (t.mods.powerAdd ?? 0) > (prev.cultAdd ?? 0) + (prev.powerAdd ?? 0)) best[t.school] = t.mods; }
   list.push(...Object.values(best));
+  if(st.flags.weaponSpirit && st.equip.weapon) list.push({ powerAdd: 0.1 });   // J12 炼为器灵
   for(const w of st.world){ if(w.id === 'omen') list.push({ cultAdd: 0.2 }); if(w.id === 'tide_high') list.push({ cultAdd: 0.5 }); }
 
   const out: any = { cultAdd: 0, lifespan: 0, powerAdd: 0, fightAdd: 0, fleeAdd: 0, talkAdd: 0, itemDuelAdd: 0, injuryReduce: 0, fortuneOption: 0, marketSlots: 0, rareSlot: 0, npcAff: 0, dangerMult: 1, buyMult: 1, sellMult: 1, timeMult: 1, learnMult: 1, heartDemonMult: 1 };

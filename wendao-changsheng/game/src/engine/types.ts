@@ -19,6 +19,7 @@ export interface Mods {
   fleeAdd?: number;          // 逃跑成功率 +
   talkAdd?: number;          // 交涉 / 巧舌判定 +
   itemDuelAdd?: number;      // 借助道具时额外 +
+  envAdd?: number;           // 利用环境判定 +
   injuryReduce?: number;     // 受伤概率 -（相加）
   heavyToLight?: boolean;    // 重伤降为轻伤
   dangerMult?: number;       // 危险类权重 ×
@@ -78,7 +79,7 @@ export interface Item {
 
 export interface Technique { id: string; name: string; school: string; grade: string; mods?: Mods; duelAdd?: number; moves: string[] }
 
-export interface Location { id: string; name: string; explore: boolean; categories?: Partial<Record<Category, number>>; reward?: number; unlock?: Cond[] }
+export interface Location { id: string; name: string; explore: boolean; secret?: boolean; categories?: Partial<Record<Category, number>>; reward?: number; unlock?: Cond[] }
 
 export type Cond =
   | { stat: StatKey; gte?: number; lte?: number }
@@ -90,7 +91,8 @@ export type Cond =
   | { npcAffGte: [string, number] } | { npcMet: string } | { notNpcMet: string }
   | { status: StatusKey } | { notStatus: StatusKey }
   | { world: string } | { lifeLeftLt: number } | { gender: 'm' | 'f' }
-  | { technique: string } | { anyOf: Cond[] };
+  | { technique: string } | { anyOf: Cond[] } | { exploresGte: number }
+  | { equipped: 'weapon' | 'armor' | 'accessory' };
 
 export type StatKey = 'foundation' | 'luck' | 'mood' | 'dao' | 'tox';
 export type StatusKey = 'light' | 'heavy' | 'poison' | 'heartDemon';

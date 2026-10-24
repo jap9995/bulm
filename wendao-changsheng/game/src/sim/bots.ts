@@ -131,6 +131,8 @@ function pickAction(c: Content, st: RunState, o: BotOptions): string {
   const sinceMarket = st.actions - Number(st.flags.botMarketAt ?? -99);
   if(st.location === 'market'){ st.flags.botMarketAt = st.actions; return has('move:wilds') ? 'move:wilds' : list[0].id; }
   if(has('move:market') && ((needPill && st.stones >= 200) || (sinceMarket > 12 && st.stones > 40 * stoneCoef(c, st)))) return 'move:market';
+  if(has('move:qingming') && st.status.heavy === 0 && st.location !== 'qingming') return 'move:qingming';
+  if(st.location === 'qingming' && st.status.heavy === 0) return has('explore') ? 'explore' : 'cultivate';
   if(st.location !== 'wilds' && st.location !== 'valley' && has('move:wilds')) return 'move:wilds';
 
   const peak = !has('cultivate') && !has('push');

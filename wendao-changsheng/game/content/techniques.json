@@ -8,5 +8,6 @@
  "longxiang":     { "name": "龙象功", "school": "body", "grade": "mystic", "mods": { "fightAdd": 0.2, "lifespan": 10 }, "moves": ["龙象之力"] },
  "fulu_rumen":    { "name": "符箓入门", "school": "talisman", "grade": "yellow", "moves": ["火符"] },
  "dundi_fufa":    { "name": "遁地符法", "school": "talisman", "grade": "mystic", "moves": ["土遁"] },
- "xuehe_jue":     { "name": "血河诀", "school": "demonic", "grade": "yellow", "mods": { "cultAdd": 0.2 }, "moves": ["血河倒卷"] }
+ "xuehe_jue":     { "name": "血河诀", "school": "demonic", "grade": "yellow", "mods": { "cultAdd": 0.2 }, "moves": ["血河倒卷"] },
+ "xingluo_qizhen": { "name": "星罗棋阵", "school": "array", "grade": "mystic", "duelAdd": 0.10, "mods": { "envAdd": 0.15 }, "moves": ["星罗落子"] }
 }

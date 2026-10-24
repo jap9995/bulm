@@ -72,13 +72,13 @@ export function actions(c: Content, st0: RunState): ActionInfo[] {
     const cat = st.preCategory[st.location];   // 只读：预抽在状态变化时完成（见 act、newRun）
     const m = mods(c, st);
     const tag = m.previewCategory && cat ? ` · ${CAT_NAME[cat]}` : m.dangerWarn && cat === 'danger' ? ' · ⚠' : '';
-    out.push({ id: 'explore', label: '外出探索' + tag, enabled: !(st.location.startsWith('secret') && st.status.heavy > 0) });
+    out.push({ id: 'explore', label: '外出探索' + tag, enabled: !(loc.secret && st.status.heavy > 0), reason: loc.secret && st.status.heavy > 0 ? '重伤时不能在秘境里探索' : undefined });
   }
   if(st.location === 'market') out.push({ id: 'ask', label: '打听消息', enabled: true });
   if(st.location === 'village') out.push({ id: 'village', label: '拜访村民', enabled: true });
   if(atRealmPeak(c, st) && st.realm < c.realms.length - 1){
     const next = c.realms[st.realm + 1];
-    const has = !next.material || count(st, next.material) >= next.materialCount;
+    const has = !next.material || materialCount(c, st, next.material) >= next.materialCount;
     const reason = st.breakCooldown ? '上次突破失败，需要先修炼一次' : undefined;
     out.push({ id: 'break:normal', label: `突破${next.name}（${pct(breakRate(c, st, 'normal'))}）`, enabled: has && !reason, reason: !has ? `缺少${c.items[next.material!]?.name}` : reason });
     if(has && count(st, 'pojing_dan') > 0) out.push({ id: 'break:stable', label: `稳妥突破（${pct(breakRate(c, st, 'stable'))}）`, enabled: !reason, reason });
@@ -88,7 +88,8 @@ export function actions(c: Content, st0: RunState): ActionInfo[] {
     if(id === st.location) continue;
     const l = c.locations[id];
     if(!checkAll(c, st, l.unlock)) continue;
-    out.push({ id: 'move:' + id, label: '前往' + l.name, enabled: true });
+    const blocked = l.secret && st.status.heavy > 0;
+    out.push({ id: 'move:' + id, label: '前往' + l.name, enabled: !blocked, reason: blocked ? '重伤时不能进入秘境' : undefined });
   }
   for(const id of Object.keys(st.bag)){ const it = c.items[id]; if(it?.kind === 'technique' && !st.techniques.includes(it.technique!)) out.push({ id: 'study:' + id, label: `研习《${it.name}》`, enabled: true, hint: `耗时约 ${studyYears(c, st, id)} 年` }); }
   if(lifeLeft(c, st) < 20 || st.realm >= 3) out.push({ id: 'retire', label: '坐化', enabled: true, hint: '体面地结束这一生' });
@@ -105,6 +106,7 @@ export function act(c: Content, st0: RunState, actionId: string): { state: RunSt
   if(!info || !info.enabled) throw new Error('当前不能执行：' + actionId);
   st.steps++;
   const [kind, arg] = actionId.split(':');
+  const loc = c.locations[st.location];
   let eventId: string | undefined;
   let source: Pending['source'] = 'normal';
 
@@ -160,7 +162,11 @@ export function act(c: Content, st0: RunState, actionId: string): { state: RunSt
   delete st.flags.justHealed;
   preCategory(c, st, st.location);   // 为下一次探索预抽类别（event-draw 4.1）
 
-  if(eventId){ present(c, st, eventId, source, out); return { state: st, view: view(st, out) }; }
+  if(eventId){
+    // 收益倍率：秘境收益（systems 9.2）× 资源枯竭（同一地点连续探索 3 次后 -20%，systems 9.1）
+    if(kind === 'explore') st.flags.__reward = (loc?.reward ?? 1) * (st.exploreStreak.n > 3 ? 0.8 : 1);
+    present(c, st, eventId, source, out); return { state: st, view: view(st, out) };
+  }
   tick(c, st, out);
   return { state: st, view: view(st, out) };
 }
@@ -216,6 +222,7 @@ export function choose(c: Content, st0: RunState, optIndex: number, o: ChooseOpt
 
   const next = st.flags.__chain as string | undefined;
   delete st.flags.__chain;
+  if(!next) delete st.flags.__reward;
   if(next === '@redraw' && !st.flags.dying){ const id = drawNormal(c, st, st.location); if(id){ present(c, st, id, 'normal', out); return { state: st, view: view(st, out) }; } }
   else if(next && !st.flags.dying){ present(c, st, next, 'chain', out); return { state: st, view: view(st, out) }; }
   tick(c, st, out);
@@ -261,11 +268,12 @@ function breakthrough(c: Content, st: RunState, mode: 'normal' | 'stable' | 'for
   const p = breakRate(c, st, mode);
   passTime(c, st, years(c, st, 1));
   st.actions++;
-  if(mode !== 'forced' && next.material) addItem(c, st, next.material, -next.materialCount, out);
+  if(mode !== 'forced' && next.material) payMaterial(c, st, next.material, next.materialCount, out);
   if(mode === 'stable') addItem(c, st, 'pojing_dan', -1, out);
   if(rand(st, 'check') < p){
     st.realm++; st.layer = 1; st.cult = 0; st.stats.breakthroughs++; delete st.flags.desperate;
     out.push(`突破成功，晋入${next.name}！`);
+    if(st.flags.longevityTablet && Number(st.flags.tabletBonus ?? 0) < 10){ st.flags.tabletBonus = Number(st.flags.tabletBonus ?? 0) + 2; st.lifeBonus += 2; out.push('远方的长生牌位前香火不断，寿元上限 +2。'); }   // D05
     st.log.push({ age: Math.floor(st.age), type: 'breakthrough', weight: 8, text: `${cnAge(st.age)}岁${next.name === '金丹' ? '结成金丹' : next.name === '元婴' ? '凝结元婴' : '突破' + next.name}` });
     return;
   }
@@ -281,6 +289,15 @@ function breakthrough(c: Content, st: RunState, mode: 'normal' | 'stable' | 'for
     return;
   }
   applyFailure(c, st, mode, out);
+}
+
+/** 突破材料数量：半枚（如半枚婴元果）按 0.5 计 */
+const HALF: Record<string, string> = { yingyuan_guo: 'yingyuan_ban' };
+function materialCount(c: Content, st: RunState, id: string): number { return count(st, id) + (HALF[id] ? count(st, HALF[id]) / 2 : 0); }
+function payMaterial(c: Content, st: RunState, id: string, n: number, out: string[]): void {
+  const whole = Math.min(n, count(st, id));
+  if(whole) addItem(c, st, id, -whole, out);
+  if(n > whole && HALF[id]) addItem(c, st, HALF[id], -(n - whole) * 2, out);
 }
 
 function failHint(f: { cult: number; foundation: number; heavy: number; death: number }): string {
@@ -344,7 +361,12 @@ function tick(c: Content, st: RunState, out: string[], skipDeath = false): void 
   if(lifeLeft(c, st) <= 0){ endRun(c, st, 'lifespan'); return; }
   if(lifeLeft(c, st) < 10 && !st.flags.w13 && c.events.W13){ st.flags.w13 = true; st.queue.push({ event: 'W13', due: st.actions, prio: 2 }); }
   // 第 11 步：世界状态计时
-  for(const w of [...st.world]) if(st.actions >= w.until){ st.world.splice(st.world.indexOf(w), 1); if(w.id === 'tide_high') st.world.push({ id: 'tide_low', until: st.actions + 5 }); }
+  for(const w of [...st.world]) if(st.actions >= w.until){
+    st.world.splice(st.world.indexOf(w), 1);
+    if(w.id === 'tide_high') st.world.push({ id: 'tide_low', until: st.actions + 5 });
+    const shut = Object.values(c.locations).find(l => l.id === st.location && l.unlock?.some(u => 'world' in u && u.world === w.id));
+    if(shut){ st.location = 'wilds'; out.push(`${shut.name}的入口渐渐合拢，你被送回了山野。`); }
+  }
   // 第 13 步：钳制
   st.foundation = clamp(st.foundation, 0, 100); st.luck = clamp(st.luck, 0, 50);
   st.mood = clamp(st.mood, st.talents.includes('C11') ? 30 : 0, st.status.heartDemon ? 80 : 100);

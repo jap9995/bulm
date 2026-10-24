@@ -2,9 +2,12 @@
 // 扣不够的处理按 misc-rules 第五节：主动代价不够时选项置灰；被动损失扣到 0，不欠债
 import type { Cond, Content, Effect, RunState, StatKey } from './types.ts';
 import { clamp, cultGain, lifeLeft, mods, stoneCoef, years } from './calc.ts';
-import { pick, weighted } from './rng.ts';
+import { pick, rand, weighted } from './rng.ts';
 
 export const BAG_SLOTS = 20;
+
+/** 当前事件的收益倍率：秘境收益 × 资源枯竭（在 present 时设定，结算后清除） */
+const rewardMult = (st: RunState) => Number(st.flags.__reward ?? 1);
 
 export function check(c: Content, st: RunState, cond: Cond): boolean {
   const k = Object.keys(cond)[0];
@@ -34,6 +37,8 @@ export function check(c: Content, st: RunState, cond: Cond): boolean {
     case 'gender': return st.gender === v;
     case 'technique': return st.techniques.includes(v);
     case 'anyOf': return (v as Cond[]).some(x => check(c, st, x));
+    case 'exploresGte': return st.stats.explores >= v;
+    case 'equipped': return !!st.equip[v as 'weapon'];
   }
   throw new Error('未知条件：' + k);
 }
@@ -83,6 +88,7 @@ export function addItem(c: Content, st: RunState, id: string, n: number, out: st
 }
 
 export function randomItemOf(c: Content, st: RunState, tag: string): string {
+  if(tag === 'herb' && st.realm >= 1 && rand(st, 'loot') < (c.locations[st.location]?.secret ? 0.4 : 0.2)) return 'ningjin_cao';
   const pool = Object.values(c.items).filter(i => i.tags?.includes(tag));
   if(!pool.length) throw new Error('没有带标签的物品：' + tag);
   return pick(st, 'loot', pool).id;
@@ -92,12 +98,12 @@ export function randomItemOf(c: Content, st: RunState, tag: string): string {
 export function apply(c: Content, st: RunState, effects: Effect[] | undefined, out: string[]): void {
   for(const e of effects ?? []){
     if('cult' in e){
-      const g = e.cult > 0 ? cultGain(c, st, e.cult) : e.cult;
+      const g = e.cult > 0 ? cultGain(c, st, e.cult) * rewardMult(st) : e.cult;
       st.cult = Math.max(0, st.cult + g);
       out.push(e.cult > 0 ? `修为 +${Math.round(g * 100)}%。` : `修为 ${Math.round(e.cult * 100)}%。`);
     }
     else if('stones' in e){
-      const n = Math.round(e.stones * stoneCoef(c, st));
+      const n = Math.round(e.stones * stoneCoef(c, st) * (e.stones > 0 ? rewardMult(st) : 1));
       st.stones = Math.max(0, st.stones + n);
       out.push(n >= 0 ? `灵石 +${n}。` : `灵石 ${n}。`);
     }
