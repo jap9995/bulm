@@ -1,0 +1,11 @@
+Space Kit (2.0)
+Created/distributed by Kenney (https://www.kenney.nl)
+
+License: Creative Commons Zero (CC0 1.0 Universal)
+https://creativecommons.org/publicdomain/zero/1.0/
+
+This content is free to use in personal, educational and commercial projects.
+Crediting Kenney or www.kenney.nl is appreciated but not mandatory.
+
+This npm package is an unofficial mirror and is not affiliated with or
+endorsed by Kenney. See assets/License.txt for the original license file.
