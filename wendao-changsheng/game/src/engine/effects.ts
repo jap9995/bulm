@@ -4,6 +4,7 @@ import type { Cond, Content, Effect, RunState, StatKey } from './types.ts';
 import { clamp, cultGain, lifeLeft, mods, stoneCoef, years } from './calc.ts';
 import { pick, rand, weighted } from './rng.ts';
 import { grantAbode, harvest } from './abode.ts';
+import { addAff, stages } from './npc.ts';
 
 export const BAG_SLOTS = 20;
 
@@ -138,8 +139,8 @@ export function apply(c: Content, st: RunState, effects: Effect[] | undefined, o
     }
     else if('years' in e) passTime(c, st, years(c, st, e.years));
     else if('lifespan' in e){ st.lifeBonus += e.lifespan; out.push(`寿元 ${e.lifespan >= 0 ? '+' : ''}${e.lifespan}。`); }
-    else if('npc' in e){ const n = (st.npcs[e.npc] ??= { aff: 0, met: true }); n.aff = clamp(n.aff + e.add, -100, 100); }
-    else if('meet' in e){ if(!st.npcs[e.meet]) st.npcs[e.meet] = { aff: mods(c, st).npcAff, met: true }; else st.npcs[e.meet].met = true; }
+    else if('npc' in e) addAff(c, st, e.npc, e.add);
+    else if('meet' in e){ if(!st.npcs[e.meet]) st.npcs[e.meet] = { aff: mods(c, st).npcAff, met: true }; else st.npcs[e.meet].met = true; stages(c, st, e.meet); }
     else if('faction' in e) st.factions[e.faction] = clamp((st.factions[e.faction] ?? 0) + e.add, -100, 100);
     else if('flag' in e) st.flags[e.flag] = e.value === '@realm' ? st.realm : e.value ?? true;
     else if('schedule' in e) st.queue.push({ event: e.schedule, due: st.actions + e.after, prio: 4 });
@@ -154,6 +155,7 @@ export function apply(c: Content, st: RunState, effects: Effect[] | undefined, o
       st.sect = { id: e.join, rank, total: 0, avail: 0, stipendAt: st.actions, backdoor: !!e.backdoor, s03: [], s05: [] };
       const name = c.sects.sects[e.join].name;
       out.push(`你成了${name}的${c.sects.ranks[rank].name}。`);
+      if(e.join === 'wenjian' && !st.npcs.xuanqing?.met) apply(c, st, [{ meet: 'xuanqing' }], out);   // 玄清真人主持入门考核（NPC 09 首遇）
       st.log.push({ age: Math.floor(st.age), type: 'sect', weight: 4, text: `拜入${name}` });
     }
     else if('contrib' in e){

@@ -8,6 +8,7 @@ import { priceOf, sellPriceOf } from '../engine/market.ts';
 import { atRealmPeak as atPeak, lifeLeft, stoneCoef } from '../engine/calc.ts';
 import { rand } from '../engine/rng.ts';
 import { exchange, library } from '../engine/sect.ts';
+import { giftList, taste } from '../engine/npc.ts';
 import { build, buildings, buyAbode, expand, expandCost } from '../engine/abode.ts';
 
 export type BotKind = 'random' | 'steady' | 'aggressive';
@@ -44,6 +45,8 @@ function value(c: Content, st: RunState, effects: Effect[] | undefined): number 
     else if('lend' in e) v -= e.lend * st.stones / sc * 0.15;
     else if('schedule' in e) v += 5;
     else if('contrib' in e) v += e.contrib * 0.4;
+    else if('npc' in e) v += e.add * 0.5;
+    else if('meet' in e) v += 10;
     else if('join' in e) v += 60;
     else if('promote' in e) v += 60;
     else if('expel' in e) v -= 200;
@@ -80,6 +83,19 @@ function optionValue(c: Content, st: RunState, opt: OptionDef, aggressive: boole
 function pickOption(c: Content, st: RunState, o: BotOptions): number {
   const p = st.pending!;
   const opts = p.options.filter(x => x.enabled);
+  if(p.event === '__visit'){
+    if(o.kind === 'random') return opts[Math.floor(botRand(st) * opts.length)].index;
+    const npc = String(st.flags.__visit);
+    if(giftList(c, st).some(id => ['favorite', 'like'].includes(taste(c, npc, id)) && c.items[id].kind !== 'breakthrough' && c.items[id].kind !== 'equip')) return 1;
+    const sp = opts.find(x => x.index === 2);
+    return sp && (st.status.heavy > 0 || st.status.light > 0 || st.status.poison || npc !== 'bai_zhi') ? 2 : 0;
+  }
+  if(p.event === '__gift'){
+    const npc = String(st.flags.__visit);
+    const list = giftList(c, st);
+    const i = list.findIndex(id => ['favorite', 'like'].includes(taste(c, npc, id)) && c.items[id].kind !== 'breakthrough' && c.items[id].kind !== 'equip');
+    return i >= 0 ? i : -2;
+  }
   if(p.event === '__ad_revive' || p.event === '__ad_relief') return o.kind === 'random' ? opts[Math.floor(botRand(st) * opts.length)].index : (o.watchAds ? 0 : 1);
   if(o.kind === 'random') return opts[Math.floor(botRand(st) * opts.length)].index;
   const ev = c.events[p.event];
@@ -159,6 +175,11 @@ function pickAction(c: Content, st: RunState, o: BotOptions): string {
   if(o.kind === 'steady' && has('break:forced') && lifeLeft(c, st) < 15) return 'break:forced';
   const study = list.find(a => a.id.startsWith('study:')); if(study) return study.id;
 
+  // 拜访：每 4 次行动最多一次，挑好感最低（但未满 60）的人
+  if(st.actions - Number(st.flags.botVisitAt ?? -99) >= 4){
+    const v = list.filter(a => a.id.startsWith('visit:')).map(a => a.id).sort((x, y) => (st.npcs[x.slice(6)]?.aff ?? 0) - (st.npcs[y.slice(6)]?.aff ?? 0))[0];
+    if(v && ((st.npcs[v.slice(6)]?.aff ?? 0) < 60 || st.ready.some(r => Object.values(c.npcs[v.slice(6)].stages).includes(r.event)))){ st.flags.botVisitAt = st.actions; return v; }
+  }
   // 宗门：稳健型去丹鼎门，激进型去问剑宗；入门后每 8 次行动回一趟
   const home = st.sect ? c.sects.sects[st.sect.id].location : o.kind === 'aggressive' ? 'sect_wenjian' : 'sect_danding';
   if(c.locations[st.location]?.sect){ st.flags.botSectAt = st.actions; return has('move:wilds') ? 'move:wilds' : list[0].id; }

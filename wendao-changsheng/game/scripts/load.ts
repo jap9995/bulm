@@ -12,7 +12,7 @@ const dir = (d: string) => fs.readdirSync(path.join(ROOT, d)).filter(f => f.ends
 export function loadContent(): Content {
   return buildContent({
     realms: read('realms.json'), origins: read('origins.json'), talents: read('talents.json'),
-    items: read('items.json'), techniques: read('techniques.json'), world: read('world.json'), sects: read('sects.json'), abode: read('abode.json'),
+    items: read('items.json'), techniques: read('techniques.json'), world: read('world.json'), sects: read('sects.json'), abode: read('abode.json'), npcs: read('npcs.json'),
     events: dir('events'), combat: dir('combat'),
   });
 }

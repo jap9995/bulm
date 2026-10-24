@@ -1,0 +1,80 @@
+{
+ "liu_hanyi": {
+  "name": "柳寒衣", "stance": "neutral",
+  "visit": ["wilds", "sect_wenjian"], "wander": 6,
+  "gifts": { "favorite": ["tag:sword&grade:mystic"], "like": ["book_qingfeng", "book_liuyun", "wulei_fu"], "dislike": ["kind:pill"] },
+  "special": { "type": "spar", "strength": "same", "win": 3, "lose": 1, "gap": 4 },
+  "stages": { "30": "N_liu30", "60": "N_liu60" },
+  "gossip": [
+   { "type": "hint", "text": "「山里那头大家伙又出来了。」他说完就闭上了眼，像是在听风。" },
+   { "type": "hint", "text": "「落霞谷那边，这几日剑气不太对。」" },
+   { "type": "heart", "text": "他擦了很久的剑，忽然说起第一次握剑的那年，他才七岁。" },
+   { "type": "item", "item": "wulei_fu", "text": "「有人拿这个跟我换剑招。我用不上，给你。」" }
+  ]
+ },
+ "bai_zhi": {
+  "name": "白芷", "stance": "righteous",
+  "visit": ["market", "sect_danding"],
+  "gifts": { "favorite": ["jiuye_lingzhi"], "like": ["ninglu_cao", "chixue_shen", "lingquan_shui", "kind:recipe"], "dislike": [] },
+  "special": { "type": "heal" },
+  "stages": { "30": "N_bai30", "60": "N_bai60" },
+  "gossip": [
+   { "type": "item", "item": "huichun_dan", "text": "「多炼了两颗，拿去。」她头也没抬。" },
+   { "type": "item", "item": "qingxin_dan", "text": "「你眼底发青，夜里睡不好吧。」她推过来一个小瓷瓶。" },
+   { "type": "hint", "text": "「今早来抓药的人说，山里的毒瘴又起了。」" },
+   { "type": "heart", "text": "她说起丹鼎门后山那片药圃，说那是她师父亲手种下的。说完便不再开口。" }
+  ]
+ },
+ "qian_duoduo": {
+  "name": "钱多多", "stance": "neutral",
+  "visit": ["market"],
+  "gifts": { "favorite": ["kind:equip&grade:mystic"], "like": ["priceGte:50"], "dislike": ["priceLt:10"] },
+  "special": { "type": "intel", "unlock": [{ "npcAffGte": ["qian_duoduo", 30] }], "cost": 20 },
+  "stages": { "30": "N_qian30", "60": "N_qian60" },
+  "gossip": [
+   { "type": "hint", "text": "「听说山里最近不太平，你出门可得多留个心眼。」" },
+   { "type": "hint", "text": "「落霞谷那边有人捡到好东西了，消息还没传开呢。」" },
+   { "type": "item", "item": "huichun_dan", "text": "「老主顾了，这颗算我送的。下回记得来照顾生意啊。」" },
+   { "type": "heart", "text": "他难得没说生意，讲起小时候跟着爹走商，在雪地里冻掉了两根脚趾。" }
+  ]
+ },
+ "zhao_chengxiao": {
+  "name": "赵承霄", "stance": "neutral",
+  "visit": ["market"], "visitUnlock": [{ "flag": "zhaoReconciled" }],
+  "gifts": { "favorite": ["pojing_dan"], "like": ["slot:weapon&grade:mystic"], "dislike": ["gradeIs:yellow"] },
+  "special": { "type": "spar", "strength": "higher_layer", "win": 5, "lose": 1, "gap": 4 },
+  "stages": {},
+  "gossip": [
+   { "type": "heart", "text": "「我爹从来不看我练剑。」他说完这句，自己先愣住了。" },
+   { "type": "hint", "text": "「山里有一伙劫修，专挑落单的下手。别死在他们手里，你的命是我的。」" },
+   { "type": "item", "item": "pojing_dan", "text": "他扔过来一个玉瓶：「家里给的，我用不着。别以为我是在帮你。」" },
+   { "type": "hint", "text": "「赵家的人在打听秘境的事。你要是去，小心点。」" }
+  ]
+ },
+ "lin_xiaowan": {
+  "name": "林小婉", "stance": "righteous",
+  "visit": ["sect_wenjian"], "visitUnlock": [{ "notFlag": "linRefused" }], "stageAt": ["any"],
+  "gifts": { "favorite": ["huichun_dan"], "like": ["tag:sword", "qingyun_daopao", "qingxin_dan"], "dislike": [] },
+  "special": { "type": "cocultivate" },
+  "stages": { "30": "N_lin30", "60": "N_lin60" },
+  "gossip": [
+   { "type": "heart", "text": "她讲起被血煞宗追杀的那一夜，讲到一半停住了，说幸好遇见了你。" },
+   { "type": "item", "item": "huichun_dan", "text": "「你上次给我的那颗，我一直记着。」她把一颗回春丹放进你手里。" },
+   { "type": "hint", "text": "「师兄们说，最近山里的妖兽格外凶。」" },
+   { "type": "heart", "text": "她说她现在每天练剑到半夜，想快点追上你。" }
+  ]
+ },
+ "xuanqing": {
+  "name": "玄清真人", "stance": "righteous",
+  "visit": ["sect_wenjian"], "visitUnlock": [{ "sectIs": "wenjian" }],
+  "gifts": { "favorite": ["book_liuyun"], "like": ["lingquan_shui", "qingxin_dan"], "dislike": [] },
+  "special": { "type": "teach" },
+  "stages": { "30": "N_xq30", "60": "N_xq60" },
+  "gossip": [
+   { "type": "heart", "text": "他训了你半个时辰，临走时却多问了一句：「伤好了没有？」" },
+   { "type": "hint", "text": "「后山那片林子，这几日不要去。」他没说为什么。" },
+   { "type": "item", "item": "qingxin_dan", "text": "「心浮气躁。」他丢给你一颗清心丹，转身就走。" },
+   { "type": "heart", "text": "他说起自己年轻时也被师父罚跪过三天三夜，说完咳了一声，让你继续练剑。" }
+  ]
+ }
+}

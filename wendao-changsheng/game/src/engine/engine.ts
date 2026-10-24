@@ -5,6 +5,7 @@ import { atRealmPeak, clamp, cultGain, layerName, lifeLeft, lifespan, mods, perL
 import { addItem, affordable, apply, checkAll, count, fill, passTime, setStatus } from './effects.ts';
 import { approachAvailable, duel, estimate, pickBeast } from './combat.ts';
 import { arrive } from './sect.ts';
+import { chat, giftList, giveGift, openGift, openVisit, presentNpcs, special, visitReady } from './npc.ts';
 import { abodeCultAdd, arriveAbode, quietRoom } from './abode.ts';
 import { drawNormal, popForced, popStory, preCategory, rollFortune, rollSpecial } from './draw.ts';
 import { chance, pick, rand, seedStreams } from './rng.ts';
@@ -12,7 +13,7 @@ import { refreshMarket, priceOf, sellPriceOf } from './market.ts';
 
 export interface NewRunOptions { seed: number; origin: string; talent: string; gender?: 'm' | 'f'; name?: string; firstRun?: boolean }
 
-const ACTION_TIME = { cultivate: 1, push: 1.5, temper: 1, explore: 0.5, move: 0.25, ask: 0.25, village: 0.25 };   // systems 1.3
+const ACTION_TIME = { cultivate: 1, push: 1.5, temper: 1, explore: 0.5, move: 0.25, ask: 0.25, village: 0.25, visit: 0.25 };   // systems 1.3
 
 // ───────────── 开局 ─────────────
 
@@ -76,6 +77,7 @@ export function actions(c: Content, st0: RunState): ActionInfo[] {
     const tag = m.previewCategory && cat ? ` · ${CAT_NAME[cat]}` : m.dangerWarn && cat === 'danger' ? ' · ⚠' : '';
     out.push({ id: 'explore', label: '外出探索' + tag, enabled: !(loc.secret && st.status.heavy > 0), reason: loc.secret && st.status.heavy > 0 ? '重伤时不能在秘境里探索' : undefined });
   }
+  for(const id of presentNpcs(c, st)) out.push({ id: 'visit:' + id, label: '拜访' + c.npcs[id].name, enabled: true });
   if(st.location === 'market') out.push({ id: 'ask', label: '打听消息', enabled: true });
   if(st.location === 'village') out.push({ id: 'village', label: '拜访村民', enabled: true });
   if(atRealmPeak(c, st) && st.realm < c.realms.length - 1){
@@ -155,6 +157,11 @@ export function act(c: Content, st0: RunState, actionId: string): { state: RunSt
   st.actions++;
   if(st.status.light > 0 && --st.status.light === 0) out.push('轻伤自愈了。');
 
+  // 拜访人物：有就绪的关系线事件就直接触发，否则进入日常互动（npc-daily 第三节）
+  if(kind === 'visit' && !eventId){
+    eventId = visitReady(st, c, arg); source = 'story';
+    if(!eventId){ openVisit(c, st, arg); return { state: st, view: view(st, out) }; }
+  }
   if(!eventId){ eventId = popForced(st); if(eventId) source = 'forced'; }
   const draws = kind === 'explore' || kind === 'ask' || (kind === 'village' && chance(st, 'event', 0.5)) || (kind === 'move' && arg === 'market' && chance(st, 'event', 0.35));
   if(!eventId && draws){
@@ -222,6 +229,14 @@ export function choose(c: Content, st0: RunState, optIndex: number, o: ChooseOpt
 
   if(p.event === '__ad_revive') return resolveRevive(c, st, optIndex === 0 && o.adWatched !== false, out);
   if(p.event === '__ad_relief') return resolveRelief(c, st, optIndex === 0 && o.adWatched !== false, out);
+  if(p.event === '__visit' || p.event === '__gift'){
+    if(p.event === '__visit' && optIndex === 1){ openGift(c, st); return { state: st, view: view(st, out) }; }
+    if(p.event === '__visit' && optIndex === 0) chat(c, st, out);
+    if(p.event === '__visit' && optIndex === 2) special(c, st, out);
+    if(p.event === '__gift' && optIndex >= 0) giveGift(c, st, giftList(c, st)[optIndex], out);
+    delete st.flags.__visit;
+    tick(c, st, out); return { state: st, view: view(st, out) };
+  }
 
   const ev = c.events[p.event];
   if(optIndex === -1){ apply(c, st, FORTUNE_TEXT[ev.category].effects as any, out); }
@@ -250,7 +265,8 @@ function resolveOption(c: Content, st: RunState, ev: EventDef, opt: OptionDef, o
     return;
   }
   const combat = st.flags.__combat ? c.combat[String(st.flags.__combat)] : undefined;
-  const d = duel(c, st, r.enemy, r.approach, r.bonus ?? 0, r.tiers, combat, st.location);
+  const woxin = ev.id === 'Z_ambush' && st.flags.woxin ? 0.15 : 0; if(woxin) delete st.flags.woxin;
+  const d = duel(c, st, r.enemy, r.approach, (r.bonus ?? 0) + woxin, r.tiers, combat, st.location);
   out.unshift(d.text);
   out.push(...d.lines);
   if(d.tier !== 'escaped') st.flags.lastDuelDeath = true;
@@ -264,7 +280,8 @@ export function breakRate(c: Content, st: RunState, mode: 'normal' | 'stable' | 
   p += st.foundation >= 50 ? (st.foundation - 50) * 0.005 : (st.foundation - 50) * 0.01;
   if(mode === 'stable') p += 0.2 + 0.15;            // 稳妥 +20%，服破境丹 +15%
   if(st.status.heartDemon) p -= 0.1;
-  if(st.flags.tempMaster === st.realm) p += 0.1;      // J03 临时师父：持续到下一个大境界
+  if(st.flags.tempMaster === st.realm) p += 0.1;
+  if(st.flags.xqDisciple) p += 0.1;                   // 玄清真人的入室弟子：突破前指点      // J03 临时师父：持续到下一个大境界
   if(st.flags.desperate) p += 0.15;                   // W13 搏命冲关
   if(mode === 'forced') p *= 0.5;
   return clamp(p, 0.05, 0.95);
@@ -368,6 +385,13 @@ function tick(c: Content, st: RunState, out: string[], skipDeath = false): void 
   if(lifeLeft(c, st) <= 0){ endRun(c, st, 'lifespan'); return; }
   if(lifeLeft(c, st) < 10 && !st.flags.w13 && c.events.W13){ st.flags.w13 = true; st.queue.push({ event: 'W13', due: st.actions, prio: 2 }); }
   // 第 11 步：世界状态计时
+  if(st.flags.partner && st.actions >= Number(st.flags.partnerNext ?? 0)){
+    if(st.flags.partnerNext !== undefined){
+      if(chance(st, 'loot', 0.2)){ delete st.flags.partner; out.push('钱多多派人捎来口信：商队在路上遭了劫，本钱全没了。'); }
+      else { const n = Math.round(150 * stoneCoef(c, st)); st.stones += n; out.push(`钱多多的商队回来了，分红灵石 +${n}。`); }
+    }
+    st.flags.partnerNext = st.actions + 6;
+  }
   if(st.flags.hunted && !st.queue.some(q => q.event === 'S_hunt')) st.queue.push({ event: 'S_hunt', due: st.actions + 8, prio: 5 });   // 叛宗：每 8 次行动追杀一次
   for(const w of [...st.world]) if(st.actions >= w.until){
     st.world.splice(st.world.indexOf(w), 1);

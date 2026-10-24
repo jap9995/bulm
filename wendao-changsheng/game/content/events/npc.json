@@ -1,0 +1,129 @@
+[
+ { "id": "F_liu", "name": "拦路问剑", "category": "encounter", "locations": ["wilds"], "tier": "uncommon", "tags": ["sword", "first_meet"],
+   "conditions": [{ "notNpcMet": "liu_hanyi" }, { "anyOf": [{ "realmGte": 1 }, { "layerGte": 7 }] }],
+   "text": "一个背着无鞘长剑的青衫剑客拦在路中间，上下打量了你一眼：「你身上有剑意。拔剑。」",
+   "options": [
+    { "text": "应战", "hint": "斗法（高你一层）：胜则他对你另眼相看；败了他也敬你有骨气",
+      "result": { "type": "duel", "enemy": { "strength": "higher_layer", "kind": "cultivator" }, "approach": "fight",
+        "tiers": {
+         "big": { "effects": [{ "meet": "liu_hanyi" }, { "npc": "liu_hanyi", "add": 30 }, { "log": "与剑客柳寒衣比剑，胜了他半招", "weight": 4 }], "text": "他收剑入背，第一次笑了：「我叫柳寒衣。下回再比。」" },
+         "win": { "effects": [{ "meet": "liu_hanyi" }, { "npc": "liu_hanyi", "add": 30 }, { "log": "与剑客柳寒衣比剑，胜了他半招", "weight": 4 }], "text": "他收剑入背，第一次笑了：「我叫柳寒衣。下回再比。」" },
+         "lose": { "effects": [{ "meet": "liu_hanyi" }, { "npc": "liu_hanyi", "add": 10 }], "text": "「还算有骨气。」他留下名字，走了。" },
+         "bad": { "effects": [{ "meet": "liu_hanyi" }, { "npc": "liu_hanyi", "add": 10 }] } } } },
+    { "text": "拒绝", "hint": "他会不高兴",
+      "result": { "type": "fixed", "effects": [{ "meet": "liu_hanyi" }, { "npc": "liu_hanyi", "add": -10 }], "text": "「可惜。」他侧身让开了路，「我叫柳寒衣。你会改主意的。」" } },
+    { "text": "说自己不会用剑", "hint": "他从此对你失去兴趣",
+      "result": { "type": "fixed", "effects": [{ "meet": "liu_hanyi" }, { "npc": "liu_hanyi", "add": -20 }], "text": "他盯着你看了一会儿，转身就走，再没回头。" } }
+   ] },
+
+ { "id": "F_bai", "name": "卖药少女", "category": "encounter", "locations": ["market"], "tier": "uncommon", "tags": ["first_meet"],
+   "conditions": [{ "notNpcMet": "bai_zhi" }],
+   "text": "街角有个白衣女子在摆摊卖丹，价格低得离谱，回春丹只要市价的一半。",
+   "options": [
+    { "text": "大量购买", "hint": "30× 灵石买下三颗丹药；她不太高兴", "cost": [{ "stones": -30 }],
+      "result": { "type": "fixed", "effects": [{ "randomItem": "pill_yellow", "n": 3 }, { "meet": "bai_zhi" }, { "npc": "bai_zhi", "add": -5 }], "text": "她冷冷看了你一眼，把丹药包好推过来，随即收了摊。旁人说，她叫白芷。" } },
+    { "text": "只买需要的", "hint": "10× 灵石买一颗回春丹", "cost": [{ "stones": -10 }],
+      "result": { "type": "fixed", "effects": [{ "item": "huichun_dan" }, { "meet": "bai_zhi" }, { "npc": "bai_zhi", "add": 10 }], "text": "她点点头，多看了你一眼。「白芷。丹鼎门的。」" } },
+    { "text": "指出一颗丹药的瑕疵", "hint": "需要丹道功法", "requires": [{ "anyOf": [{ "technique": "baicao" }, { "technique": "huichun_jue" }] }],
+      "result": { "type": "fixed", "effects": [{ "meet": "bai_zhi" }, { "npc": "bai_zhi", "add": 25 }], "text": "她拿起那颗丹看了很久，抬头问你：「你懂丹？」" } }
+   ] },
+
+ { "id": "F_qian", "name": "只此一件", "category": "encounter", "locations": ["market"], "tier": "common", "tags": ["first_meet"],
+   "conditions": [{ "notNpcMet": "qian_duoduo" }],
+   "text": "一个圆脸胖子笑眯眯地凑过来，从袖子里抽出半张发黄的皮纸：「藏宝图，只此一件，八十灵石。」",
+   "options": [
+    { "text": "买", "hint": "80× 灵石：一半可能是真的", "cost": [{ "stones": -80 }],
+      "result": { "type": "chance", "p": 0.5, "success": { "effects": [{ "meet": "qian_duoduo" }, { "npc": "qian_duoduo", "add": 5 }, { "randomItem": "equip_mystic" }, { "stones": 60 }], "text": "照着图挖下去，真挖出一只木匣。你回去找他道谢，他笑得眼睛都没了：「钱多多，童叟无欺。」" }, "fail": { "effects": [{ "meet": "qian_duoduo" }, { "npc": "qian_duoduo", "add": 5 }], "text": "图上标的地方是一片菜地。你回去找他，他一脸无辜：「我也是从别人手里收的嘛。在下钱多多，下回给你打折。」" } } },
+    { "text": "砍价到 30×", "hint": "全凭口才：成功就买下；失败他会觉得你小气",
+      "result": { "type": "chance", "p": 0.5, "luck": true, "success": { "effects": [{ "stones": -30 }, { "meet": "qian_duoduo" }, { "randomItem": "book_yellow" }], "text": "他哭丧着脸成交了。图是真的，图上那个山洞里压着一卷功法。" }, "fail": { "effects": [{ "meet": "qian_duoduo" }, { "npc": "qian_duoduo", "add": -5 }], "text": "「三十？」他把图揣回袖子里，「客官，做人不能这样。」" } } },
+    { "text": "识破他", "hint": "需要重瞳或阴阳眼", "requires": [{ "anyOf": [{ "talent": "R06" }, { "talent": "R08" }] }],
+      "result": { "type": "fixed", "effects": [{ "meet": "qian_duoduo" }, { "npc": "qian_duoduo", "add": 20 }], "text": "你看了一眼就说墨迹是新的。他愣了一下，哈哈大笑：「有眼光！在下钱多多，交个朋友。」" } }
+   ] },
+
+ { "id": "F_zhao", "name": "当众羞辱", "category": "encounter", "locations": ["market"], "tier": "uncommon", "tags": ["first_meet"],
+   "conditions": [{ "notNpcMet": "zhao_chengxiao" }, { "realmLte": 0 }],
+   "text": "一个锦衣青年带着随从穿过人群，一脚踢翻了你面前的摊子：「蝼蚁也配修仙？」旁人低声说，那是赵家的天骄赵承霄。",
+   "options": [
+    { "text": "反击", "hint": "斗法（高你一层）：胜则他记仇；败则轻伤，心境 -10",
+      "result": { "type": "duel", "enemy": { "strength": "higher_layer", "kind": "cultivator" }, "approach": "fight",
+        "tiers": {
+         "big": { "effects": [{ "meet": "zhao_chengxiao" }, { "npc": "zhao_chengxiao", "add": -30 }, { "flag": "zhaoRival" }, { "log": "在集市当众击败了赵家天骄赵承霄", "weight": 5 }], "text": "他爬起来，擦掉嘴角的血，死死盯着你：「我记住你了。」" },
+         "win": { "effects": [{ "meet": "zhao_chengxiao" }, { "npc": "zhao_chengxiao", "add": -30 }, { "flag": "zhaoRival" }, { "log": "在集市当众击败了赵家天骄赵承霄", "weight": 5 }], "text": "他爬起来，擦掉嘴角的血，死死盯着你：「我记住你了。」" },
+         "lose": { "effects": [{ "meet": "zhao_chengxiao" }, { "stat": "mood", "add": -10 }], "text": "他踩着你的手走了过去，连头都没回。" },
+         "bad": { "effects": [{ "meet": "zhao_chengxiao" }, { "stat": "mood", "add": -10 }] } } } },
+    { "text": "忍下", "hint": "心境 -10；下次和他交手时斗志更盛",
+      "result": { "type": "fixed", "effects": [{ "meet": "zhao_chengxiao" }, { "stat": "mood", "add": -10 }, { "flag": "woxin" }], "text": "你蹲下去，一样一样把东西捡了回来。" } },
+    { "text": "当众讥讽", "hint": "全凭口才：成功则他颜面扫地，集市众人对你另眼相看",
+      "result": { "type": "chance", "p": 0.5, "luck": true, "success": { "effects": [{ "meet": "zhao_chengxiao" }, { "npc": "zhao_chengxiao", "add": -50 }, { "faction": "sanxiu", "add": 5 }], "text": "你一句话说完，满街的人都笑了。他的脸涨得通红，拂袖而去。" }, "fail": { "effects": [{ "meet": "zhao_chengxiao" }, { "stat": "mood", "add": -5 }], "text": "你的话被他的随从哄笑声盖了过去。" } } }
+   ] },
+
+ { "id": "Z_ambush", "name": "秘境截杀", "category": "danger", "locations": ["qingming", "valley"], "tier": "uncommon",
+   "conditions": [{ "npcMet": "zhao_chengxiao" }, { "realmGte": 1 }, { "realmLte": 2 }, { "notFlag": "zhaoReconciled" }, { "notFlag": "zhaoGone" }],
+   "text": "秘境出口，赵承霄一个人等在那里。他已经比你高出一层了：「这一次，没人看着。」",
+   "options": [
+    { "text": "迎战", "hint": "斗法（高你一层）：胜了可以决定怎么处置他",
+      "result": { "type": "duel", "enemy": { "strength": "higher_layer", "kind": "cultivator" }, "approach": "fight",
+        "tiers": { "big": { "effects": [{ "chain": "Z_ambush2" }], "text": "他倒在地上，剑断成了两截。" }, "win": { "effects": [{ "chain": "Z_ambush2" }], "text": "他倒在地上，剑断成了两截。" } } } },
+    { "text": "逃", "hint": "逃跑", "result": { "type": "duel", "enemy": { "strength": "higher_layer", "kind": "cultivator" }, "approach": "flee" } }
+   ] },
+ { "id": "Z_ambush2", "name": "如何处置", "category": "danger", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "他撑着断剑想站起来，试了两次都没成功。",
+   "options": [
+    { "text": "放他走", "hint": "他欠你一条命", "result": { "type": "fixed", "effects": [{ "npc": "zhao_chengxiao", "add": 40 }, { "flag": "zhaoReconciled" }, { "log": "在秘境出口击败赵承霄，放了他一条生路", "weight": 5 }], "text": "你收起法器，从他身边走了过去。身后很久都没有声音，最后才传来一句：「……我欠你的。」" } },
+    { "text": "废他修为", "hint": "他彻底退场，道心 -10", "result": { "type": "fixed", "effects": [{ "flag": "zhaoGone" }, { "stat": "dao", "add": -10 }, { "log": "废了赵家天骄赵承霄的修为", "weight": 6 }], "text": "你一掌按在他的丹田上。他没有叫，只是看着你，眼里什么都没有了。" } }
+   ] },
+
+ { "id": "N_liu30", "name": "剑冢之约", "category": "encounter", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "柳寒衣说他找到了一座剑冢，问你去不去。",
+   "options": [
+    { "text": "同去", "hint": "耗时一年：得到一柄玄阶剑器", "time": 1, "result": { "type": "fixed", "effects": [{ "item": "qiushui" }, { "npc": "liu_hanyi", "add": 5 }], "text": "剑冢里埋着上千柄剑。他在里面走了三天，最后替你挑了一柄，剑身薄得像一汪秋水。" } },
+    { "text": "改日", "hint": "错过这次", "result": { "type": "fixed", "text": "他点点头，一个人去了。" } }
+   ] },
+ { "id": "N_liu60", "name": "剑心之惑", "category": "encounter", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "柳寒衣在瓶颈上卡了三年。他找到你，第一次开口求人。",
+   "options": [
+    { "text": "以剑相助", "hint": "陪他比剑十场，耗时两年：他突破后把自创的剑诀送给你", "time": 2, "result": { "type": "fixed", "effects": [{ "item": "book_liuyun" }, { "npc": "liu_hanyi", "add": 10 }, { "log": "陪柳寒衣比剑两年，助他破境", "weight": 5 }], "text": "第十场比完，他的剑意忽然一变。他把一卷手抄的剑诀塞给你，一句谢也没说。" } },
+    { "text": "劝他放下执念", "hint": "心境越高越有把握：成功他顿悟；失败他心生怨怼",
+      "result": { "type": "chance", "p": 0.5, "stat": "mood", "success": { "effects": [{ "npc": "liu_hanyi", "add": 30 }], "text": "他沉默了一夜。天亮时他把剑插在地上，说：「原来如此。」" }, "fail": { "effects": [{ "npc": "liu_hanyi", "add": -20 }], "text": "「你不懂剑。」他拂袖而去。" } } }
+   ] },
+
+ { "id": "N_bai30", "name": "采药同行", "category": "encounter", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "白芷要去山里采一株九叶灵芝，问你能不能同行。灵芝旁边，据说盘着一条大蛇。",
+   "options": [
+    { "text": "同去", "hint": "斗法（与你同阶）：胜则她送你两颗凝元丹",
+      "result": { "type": "duel", "enemy": { "strength": "same", "kind": "beast" }, "approach": "fight",
+        "tiers": { "win": { "effects": [{ "item": "ningyuan_dan", "n": 2 }, { "npc": "bai_zhi", "add": 5 }], "text": "大蛇退走了。她采下灵芝，回去后炼了一炉丹，分了你两颗。" } } } },
+    { "text": "推辞", "hint": "错过这次", "result": { "type": "fixed", "text": "她「嗯」了一声，一个人背着药篓走了。" } }
+   ] },
+ { "id": "N_bai60", "name": "收徒", "category": "encounter", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "白芷看着你，忽然说：「我不收徒。但你可以例外。」",
+   "options": [
+    { "text": "拜师", "hint": "问诊半价", "result": { "type": "fixed", "effects": [{ "flag": "baiMaster" }, { "log": "拜丹师白芷为师", "weight": 5 }], "text": "你恭恭敬敬磕了三个头。她扶你起来时，手有点抖。" } },
+    { "text": "婉拒", "hint": "她不会再提", "result": { "type": "fixed", "effects": [{ "npc": "bai_zhi", "add": -5 }], "text": "她点点头，再没提过这件事。" } }
+   ] },
+
+ { "id": "N_qian30", "name": "情报生意", "category": "encounter", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "钱多多把你拉到一边，压低了声音：「老主顾了，跟你说句实话，我这儿除了货，还卖消息。」",
+   "options": [{ "text": "记下了", "hint": "以后拜访他时可以买情报（20× 一条）", "result": { "type": "fixed", "text": "他眨了眨眼：「价钱好商量。」" } }] },
+ { "id": "N_qian60", "name": "合伙", "category": "encounter", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "钱多多要组一支商队，问你要不要入一股。",
+   "options": [
+    { "text": "入股", "hint": "300× 灵石：之后每 6 次行动分红 150×；每次有两成可能商队遭劫，血本无归", "cost": [{ "stones": -300 }],
+      "result": { "type": "fixed", "effects": [{ "flag": "partner" }, { "log": "与钱多多合伙经商", "weight": 3 }], "text": "他把你的名字写进了账本第一页。" } },
+    { "text": "不了", "hint": "无事", "result": { "type": "fixed", "text": "「可惜咯。」他也不勉强。" } }
+   ] },
+
+ { "id": "N_lin30", "name": "报恩", "category": "encounter", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "林小婉托人送来一只小木盒，里面是一颗筑基丹，还有一张字条：「宗门发的，我还用不上。」",
+   "options": [{ "text": "收下", "hint": "得到筑基丹", "result": { "type": "fixed", "effects": [{ "item": "zhuji_dan" }], "text": "字条的背面还画了一把小小的剑。" } }] },
+ { "id": "N_lin60", "name": "引荐", "category": "encounter", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "林小婉说，她把你的事跟玄清真人说了。",
+   "options": [{ "text": "谢过她", "hint": "问剑宗入门直接成为内门弟子", "result": { "type": "fixed", "effects": [{ "flag": "linRecommend" }], "text": "「你要是来问剑宗，我们就是同门了。」她笑起来。" } }] },
+
+ { "id": "N_xq30", "name": "入室弟子", "category": "encounter", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "玄清真人把你叫进静室，说从今天起你是他的入室弟子。",
+   "options": [{ "text": "叩谢师父", "hint": "此后每次突破成功率 +10%", "result": { "type": "fixed", "effects": [{ "flag": "xqDisciple" }, { "log": "成为玄清真人的入室弟子", "weight": 5 }], "text": "他受了你三拜，第三拜时伸手扶了一下。" } }] },
+ { "id": "N_xq60", "name": "推荐信", "category": "encounter", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "玄清真人递给你一封信：「拿着。正道各宗的藏经阁，凭这封信都能进一次。」",
+   "options": [{ "text": "收下", "hint": "得到推荐信：可以凭信拜入任何正道宗门，直接成为内门弟子", "result": { "type": "fixed", "effects": [{ "flag": "xqLetter" }], "text": "信封上只写了四个字：见信如面。" } }] }
+]

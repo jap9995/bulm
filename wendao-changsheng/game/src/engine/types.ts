@@ -186,6 +186,16 @@ export interface SectConfig {
   stipendGap: number;
 }
 
+export interface NpcDef {
+  id: string; name: string; stance: 'righteous' | 'demonic' | 'neutral';
+  visit: string[]; wander?: number; visitUnlock?: Cond[];
+  stageAt?: string[];   // 阶段事件在哪里等你；不写就是能拜访的地点
+  gifts: { favorite: string[]; like: string[]; dislike: string[] };
+  special?: { type: 'spar' | 'heal' | 'intel' | 'cocultivate' | 'teach'; unlock?: Cond[]; strength?: EnemyStrength; win?: number; lose?: number; gap?: number; cost?: number };
+  stages: Record<string, string>;
+  gossip: { type: 'hint' | 'item' | 'heart'; text: string; item?: string }[];
+}
+
 export interface AbodeConfig {
   price: number; baseSlots: number; expand: number[]; cultAdd: number; upgradeMult: number; maxLevel: number; growActions: number; harvest: number;
   buildings: Record<string, { name: string; cost: number; desc: string; needItem?: string; needSchool?: string; todo?: string }>;
@@ -211,6 +221,7 @@ export interface Content {
   market: MarketConfig;
   sects: SectConfig;
   abode: AbodeConfig;
+  npcs: Record<string, NpcDef>;
   names: { surnames: string[]; given: string[] };
 }
 

@@ -4,10 +4,10 @@
    "options": [
     { "text": "正常参加考核", "hint": "斗法（剑意，与你同阶）：胜则入门；败则要等两年才能再考", "requires": [{ "stat": "dao", "gte": -20 }],
       "result": { "type": "duel", "enemy": { "strength": "same" }, "approach": "fight",
-        "tiers": { "win": { "effects": [{ "join": "wenjian" }], "text": "执事弟子收起木剑，第一次正眼看你：「明日来领道袍。」" }, "lose": { "effects": [{ "examFail": "wenjian" }] }, "bad": { "effects": [{ "examFail": "wenjian" }] } } } },
+        "tiers": { "win": { "effects": [{ "join": "wenjian" }, { "npc": "xuanqing", "add": 20 }], "text": "执事弟子收起木剑，第一次正眼看你：「明日来领道袍。」" }, "lose": { "effects": [{ "examFail": "wenjian" }] }, "bad": { "effects": [{ "examFail": "wenjian" }] } } } },
     { "text": "走后门", "hint": "100× 灵石：直接入门，但升内门要多攒一半贡献", "requires": [{ "stat": "dao", "gte": -20 }], "cost": [{ "stones": -100 }],
       "result": { "type": "fixed", "effects": [{ "join": "wenjian", "backdoor": true }], "text": "灵石递过去，执事弟子的脸色立刻和缓了：「师弟这边请。」" } },
-    { "text": "拿出信物", "hint": "白芷好感 ≥ 60：直接成为内门弟子", "requires": [{ "npcAffGte": ["baizhi", 60] }],
+    { "text": "拿出信物", "hint": "林小婉的引荐或玄清真人的推荐信：直接成为内门弟子", "requires": [{ "anyOf": [{ "flag": "linRecommend" }, { "flag": "xqLetter" }] }],
       "result": { "type": "fixed", "effects": [{ "join": "wenjian", "rank": 1 }], "text": "执事弟子看过信物，亲自把你领上了内峰。" } },
     { "text": "改日再来", "hint": "离开", "result": { "type": "fixed" } }
    ] },
@@ -21,7 +21,7 @@
       "result": { "type": "fixed", "effects": [{ "join": "danding" }], "text": "你连药渣都辨得出来。考官当场在名册上写下了你的名字。" } },
     { "text": "走后门", "hint": "100× 灵石：直接入门，但升内门要多攒一半贡献", "requires": [{ "stat": "dao", "gte": -20 }], "cost": [{ "stones": -100 }],
       "result": { "type": "fixed", "effects": [{ "join": "danding", "backdoor": true }], "text": "灵石落进考官的袖子里，那三十六味药你一味都没认。" } },
-    { "text": "拿出信物", "hint": "白芷好感 ≥ 60：直接成为内门弟子", "requires": [{ "npcAffGte": ["baizhi", 60] }],
+    { "text": "拿出信物", "hint": "白芷好感 ≥ 60 或玄清真人的推荐信：直接成为内门弟子", "requires": [{ "anyOf": [{ "npcAffGte": ["bai_zhi", 60] }, { "flag": "xqLetter" }] }],
       "result": { "type": "fixed", "effects": [{ "join": "danding", "rank": 1 }], "text": "考官认出了白芷的字迹，笑道：「原来是白师侄举荐的人。」" } },
     { "text": "改日再来", "hint": "离开", "result": { "type": "fixed" } }
    ] },

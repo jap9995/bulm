@@ -56,6 +56,12 @@ for(const kind of bots){
   const inSect = runs.filter(s => s.sect), everSect = runs.filter(s => s.sect || s.flags.hunted);
   const ranks = c.sects.ranks.map((r, i) => `${r.name} ${pct(inSect.filter(s => s.sect!.rank === i).length, runs.length)}`).filter(s => !s.endsWith(' 0.0%'));
   console.log(`宗门　　　入过宗门 ${pct(everSect.length, runs.length)}，被除名 ${pct(runs.filter(s => s.flags.hunted).length, runs.length)}；结束时 ${ranks.join('　') || '-'}`);
+  const npcLine = Object.values(c.npcs).map(n => {
+    const met = runs.filter(s => s.npcs[n.id]?.met);
+    const stages = Object.values(n.stages).map(ev => pct(runs.filter(s => s.seen[ev]).length, runs.length)).join('/');
+    return `${n.name} ${pct(met.length, runs.length)}${stages ? `（阶段 ${stages}）` : ''}`;
+  });
+  console.log(`NPC　　　认识的比例：${npcLine.join('　')}`);
   for(const origin of origins){
     const rs = runs.filter(s => s.origin === origin);
     console.log(`　${c.origins.find(o => o.id === origin)!.name}：筑基以上 ${pct(rs.filter(s => s.realm >= 1).length, rs.length)}，身死 ${pct(rs.filter(s => s.ended?.ending === 'death').length, rs.length)}，享年中位数 ${median(rs.map(s => Math.floor(s.age)))}`);

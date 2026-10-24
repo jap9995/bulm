@@ -1,6 +1,6 @@
 // 组装内容配置并检查引用。引用了不存在的事件、物品、功法、斗法文字时直接报错，不静默跳过（balance-targets 第八节）
 // 这里不读文件：浏览器里由打包工具把 JSON 引进来，Node 里由 scripts/load.ts 读文件，两边都调用 buildContent
-import type { Content, Effect, EventDef, Item, Origin, Realm, SpecialDef, Talent, Technique, CombatText, Location, MarketConfig, Cond, SectConfig, AbodeConfig } from './types.ts';
+import type { Content, Effect, EventDef, Item, Origin, Realm, SpecialDef, Talent, Technique, CombatText, Location, MarketConfig, Cond, SectConfig, AbodeConfig, NpcDef } from './types.ts';
 
 export interface RawContent {
   realms: Realm[]; origins: Origin[]; talents: Talent[];
@@ -8,6 +8,7 @@ export interface RawContent {
   world: { locations: Record<string, Omit<Location, 'id'>>; market: MarketConfig; names: Content['names']; specials: SpecialDef[] };
   sects: SectConfig;
   abode: AbodeConfig;
+  npcs: Record<string, Omit<NpcDef, 'id'>>;
   events: EventDef[][];
   combat: Record<string, CombatText>[];
 }
@@ -19,7 +20,7 @@ export function buildContent(raw: RawContent): Content {
     items: withId<Item>(raw.items), techniques: withId<Technique>(raw.techniques),
     locations: withId<Location>(raw.world.locations),
     events: {}, combat: Object.assign({}, ...raw.combat),
-    specials: raw.world.specials, market: raw.world.market, sects: raw.sects, abode: raw.abode, names: raw.world.names,
+    specials: raw.world.specials, market: raw.world.market, sects: raw.sects, abode: raw.abode, npcs: withId<NpcDef>(raw.npcs), names: raw.world.names,
   };
   for(const list of raw.events) for(const ev of list){
     if(c.events[ev.id]) throw new Error(`事件 ID 重复：${ev.id}`);
@@ -86,5 +87,14 @@ export function validate(c: Content): string[] {
   for(const [id, list] of Object.entries(c.sects.library)){ if(id !== 'common' && !c.sects.sects[id]) err.push(`藏经阁：宗门 ${id} 不存在`); for(const e of list) item(e.item, `藏经阁 ${id}`); }
   for(const id of ['S02', 'S03', 'S05', 'S_hunt', 'A_raid', 'Z06', 'A_pest', 'J14', 'A_neighbor']) event(id, '宗门 / 洞府');
   for(const [id, b] of Object.entries(c.abode.buildings)) if(b.needItem) item(b.needItem, `洞府建筑 ${id}`);
+  for(const [id, n] of Object.entries(c.npcs)){
+    for(const l of n.visit) if(!c.locations[l]) err.push(`NPC ${id}：地点 ${l} 不存在`);
+    for(const ev of Object.values(n.stages)) event(ev, `NPC ${id}`);
+    for(const g of n.gossip) if(g.item) item(g.item, `NPC ${id} 闲话`);
+    for(const r of [...n.gifts.favorite, ...n.gifts.like, ...n.gifts.dislike]) if(!r.includes(':') && !c.items[r]) err.push(`NPC ${id} 喜好：物品 ${r} 不存在`);
+    conds(n.visitUnlock, `NPC ${id}`);
+  }
+  const npcRefs = (list: (Effect | Cond)[] | undefined, where: string) => { for(const x of list ?? []){ const v = (x as any).npc ?? (x as any).meet ?? (x as any).npcMet ?? (x as any).notNpcMet ?? (x as any).npcAffGte?.[0]; if(v && !c.npcs[v]) err.push(`${where}：NPC ${v} 不存在`); if('anyOf' in x) npcRefs(x.anyOf, where); } };
+  for(const ev of Object.values(c.events)){ npcRefs(ev.conditions, `事件 ${ev.id}`); for(const o of ev.options){ npcRefs(o.requires, `事件 ${ev.id}`); const r = o.result; if(r.type === 'fixed') npcRefs(r.effects, `事件 ${ev.id}`); if(r.type === 'chance'){ npcRefs(r.success.effects, `事件 ${ev.id}`); npcRefs(r.fail.effects, `事件 ${ev.id}`); } if(r.type === 'duel') for(const b of Object.values(r.tiers ?? {})) npcRefs(b?.effects, `事件 ${ev.id}`); } }
   return err;
 }
