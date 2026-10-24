@@ -32,7 +32,8 @@ wendao-changsheng/
     ├── event-draw.md             ← 事件抽取规则：每次行动出哪个事件、为什么是它
     ├── market.md                 ← 集市商品规则：货架、刷新、稀有货概率、买卖价格
     ├── npc-daily.md              ← 拜访 NPC 的日常互动：叙话、送礼与喜好、专属往来、好感上限
-    └── misc-rules.md             ← 零散小规则：属性上下限、心境恢复、伤势与中毒、背包满、结算顺序
+    ├── misc-rules.md             ← 零散小规则：属性上下限、心境恢复、伤势与中毒、背包满、结算顺序
+    └── balance-targets.md        ← 平衡验收指标：模拟上千局时对照的目标与红线
 game-assets/                      ← 免费素材库（全部 CC0）
 ├── README.md                     ← 2D 素材说明
 ├── superpowers/                  ← 2D 像素素材：本游戏会用到其中一小部分
@@ -51,6 +52,7 @@ game-assets/                      ← 免费素材库（全部 CC0）
 6. **[market.md](design/market.md)**：做集市、调物价时读。
 7. **[npc-daily.md](design/npc-daily.md)**：做「拜访人物」、写 NPC 闲话时读。
 8. **[misc-rules.md](design/misc-rules.md)**：写游戏逻辑时必读，第六节规定了一步里所有效果的结算顺序。
+9. **[balance-targets.md](design/balance-targets.md)**：写模拟脚本、调数值时读。
 
 ---
 
@@ -112,7 +114,7 @@ game-assets/                      ← 免费素材库（全部 CC0）
 | 系统与数值（18 个系统） | ✅ |
 | 设计审核及修正（已修正 11 处问题） | ✅ |
 | 斗法文字 | ✅ |
-| **还缺的规则**（见第 8 节） | ⏳ 待写 |
+| 还缺的规则（见第 8 节） | ✅ 初稿完成，各文档末尾列有待负责人确认的取舍 |
 | 把内容转成 JSON 配置 | ⏳ 未开始 |
 | H5 原型 | ⏳ 未开始 |
 | 用脚本模拟上千局、调整数值 | ⏳ 未开始 |
@@ -128,7 +130,7 @@ game-assets/                      ← 免费素材库（全部 CC0）
 2. ~~**集市商品规则**~~：初稿已完成，见 [market.md](design/market.md)。
 3. ~~**拜访 NPC 的日常互动**~~：初稿已完成，见 [npc-daily.md](design/npc-daily.md)。
 4. ~~**零散小规则**~~：初稿已完成，见 [misc-rules.md](design/misc-rules.md)。
-5. **平衡验收指标**（建议补）：平均享年、各结局比例、新手第一局的存活时长等目标，供模拟测试时对照。
+5. ~~**平衡验收指标**~~：初稿已完成，见 [balance-targets.md](design/balance-targets.md)。
 
 ### 8.2 可以在做原型时再补
 
