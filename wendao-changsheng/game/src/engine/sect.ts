@@ -3,6 +3,7 @@
 import type { Content, RunState } from './types.ts';
 import { addItem, checkAll } from './effects.ts';
 import { stoneCoef } from './calc.ts';
+import { grantAbode } from './abode.ts';
 import { chance, weighted } from './rng.ts';
 
 export const sectOfLoc = (c: Content, loc: string) => c.locations[loc]?.sect;
@@ -37,6 +38,7 @@ function autoPromote(c: Content, st: RunState, out: string[]): void {
     if(s.total < need || !realmOk) break;
     s.rank++;
     out.push(`你晋升为${c.sects.sects[s.id].name}${next.name}。`);
+    if(s.rank === 1 && !st.abode){ grantAbode(c, st, out, `${c.sects.sects[s.id].name}分了一座洞府给你`); }
     st.log.push({ age: Math.floor(st.age), type: 'sect', weight: s.rank >= 3 ? 6 : 3, text: `晋升为${c.sects.sects[s.id].name}${next.name}` });
   }
 }

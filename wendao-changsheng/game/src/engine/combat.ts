@@ -4,6 +4,7 @@ import type { Approach, CombatText, Content, DuelTier, Enemy, Frag, RunState, Br
 import { duelP, enemyPower, mods, power, clamp } from './calc.ts';
 import { rand, chance, weighted } from './rng.ts';
 import { apply, addItem, count, fill, setStatus } from './effects.ts';
+import { wardBonus } from './abode.ts';
 
 export interface DuelOutcome { tier: DuelTier | 'escaped'; text: string; lines: string[] }
 
@@ -41,7 +42,7 @@ function probFor(c: Content, st: RunState, enemy: Enemy, a: Approach, bonus: num
   const me = power(c, st);
   const tr = combat?.traits ?? {};
   switch(a){
-    case 'fight': return duelP(me, foe, m.fightAdd + bonus + (tr.thickHide ? -0.1 : 0));
+    case 'fight': return duelP(me, foe, m.fightAdd + bonus + wardBonus(st) + (tr.thickHide ? -0.1 : 0));
     case 'technique': return duelP(me, foe, (bestTechnique(c, st)?.duelAdd ?? 0) + bonus);
     case 'item': { const ch = bestCharm(c, st); return duelP(me, foe, (ch ? c.items[ch].duel ?? 0 : 0) + m.itemDuelAdd + bonus); }
     case 'env': return clamp(0.4 + (st.mood - 60) / 200 + (m.envAdd ?? 0) + bonus + (tr.thickHide ? 0.1 : 0), 0.05, 0.95);   // 心境判定，基础 40%

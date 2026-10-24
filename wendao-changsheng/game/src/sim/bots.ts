@@ -5,9 +5,10 @@ import { act, actions, buy, choose, equip, sell, usePill } from '../engine/engin
 import { estimate } from '../engine/combat.ts';
 import { count } from '../engine/effects.ts';
 import { priceOf, sellPriceOf } from '../engine/market.ts';
-import { lifeLeft, stoneCoef } from '../engine/calc.ts';
+import { atRealmPeak as atPeak, lifeLeft, stoneCoef } from '../engine/calc.ts';
 import { rand } from '../engine/rng.ts';
 import { exchange, library } from '../engine/sect.ts';
+import { build, buildings, buyAbode, expand, expandCost } from '../engine/abode.ts';
 
 export type BotKind = 'random' | 'steady' | 'aggressive';
 export interface BotOptions { kind: BotKind; watchAds: boolean }
@@ -49,6 +50,9 @@ function value(c: Content, st: RunState, effects: Effect[] | undefined): number 
     else if('examFail' in e) v -= 10;
     else if('open' in e) v += 50;
     else if('nextMaterial' in e) v += 80;
+    else if('abode' in e) v += st.abode ? 0 : 40;
+    else if('harvest' in e) v += e.harvest * 30;
+    else if('loseTag' in e) v -= 10;
   }
   return v;
 }
@@ -111,6 +115,16 @@ function housekeeping(c: Content, st: RunState, o: BotOptions): RunState {
       : count(st, e.item) < 2 && (st.sect!.avail - e.cost >= (st.realm === 0 && count(st, 'zhuji_dan') === 0 ? 150 : 0));
     if(want){ try{ st = exchange(c, st, e.item); }catch{} }
   }
+  // 洞府：灵田、静室、聚灵阵、护山阵，留够买丹药的钱
+  if(st.location === 'abode'){
+    for(const id of ['lingtian', 'juling', 'jingshi', 'hushan', 'lingtian', 'juling']){
+      const x = buildings(c, st).find(y => y.id === id);
+      if(x?.enabled && st.stones - x.cost >= 60 * stoneCoef(c, st)) st = build(c, st, id);
+    }
+    const ec = expandCost(c, st);
+    if(ec !== null && Object.keys(st.abode!.buildings).length >= st.abode!.slots && st.stones - ec >= 300 * stoneCoef(c, st)) st = expand(c, st);
+  }
+  if(st.location === 'market' && !st.abode && st.stones >= (500 + 300) * stoneCoef(c, st)) st = buyAbode(c, st);
   if(st.location === 'market' && st.market){
     // 卖掉材料，留下灵兽肉和灵泉水
     for(const id of Object.keys(st.bag)){
@@ -151,6 +165,11 @@ function pickAction(c: Content, st: RunState, o: BotOptions): string {
   const sinceSect = st.actions - Number(st.flags.botSectAt ?? -99);
   const retake = st.age < Number(st.flags['retake_' + c.locations[home]?.sect] ?? 0);
   if(has('move:' + home) && st.status.heavy === 0 && !retake && ((!st.sect && st.actions >= 3 && sinceSect > 10) || (st.sect && sinceSect >= 8))) return 'move:' + home;
+  // 洞府：有洞府就回洞府闭关（加成更高），探索时再出门
+  if(st.location === 'abode'){
+    if(st.status.heavy > 0 || (st.flags.botLast !== 'cultivate' && !atPeak(c, st))){ st.flags.botLast = 'cultivate'; return has('cultivate') ? 'cultivate' : 'move:wilds'; }
+    st.flags.botLast = 'move'; return 'move:wilds';
+  }
   const needPill = st.realm === 0 && st.layer >= 7 && count(st, 'zhuji_dan') === 0;
   const sinceMarket = st.actions - Number(st.flags.botMarketAt ?? -99);
   if(st.location === 'market'){ st.flags.botMarketAt = st.actions; return has('move:wilds') ? 'move:wilds' : list[0].id; }
@@ -166,6 +185,7 @@ function pickAction(c: Content, st: RunState, o: BotOptions): string {
   if(st.status.heavy > 0 && has('cultivate')) return 'cultivate';
   if(st.foundation < 40 && has('temper') && o.kind === 'steady') return 'temper';
   const lastWasExplore = st.flags.botLast === 'explore';
+  if(lastWasExplore && st.abode && has('move:abode') && st.location === 'wilds'){ st.flags.botLast = 'move'; return 'move:abode'; }
   const id = lastWasExplore && has(cultivateId) ? cultivateId : has('explore') ? 'explore' : cultivateId;
   st.flags.botLast = id;
   return id;

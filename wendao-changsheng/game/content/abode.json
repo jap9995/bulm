@@ -1,0 +1,19 @@
+{
+ "price": 500,
+ "baseSlots": 3,
+ "expand": [200, 200, 200, 800, 800, 800],
+ "cultAdd": 0.1,
+ "upgradeMult": 2,
+ "maxLevel": 3,
+ "growActions": 6,
+ "harvest": 5,
+ "buildings": {
+  "lingtian": { "name": "灵田", "cost": 50, "desc": "种植灵草，到时间后回洞府收获；每级多收两株" },
+  "juling":   { "name": "聚灵阵", "cost": 150, "needItem": "juling_zhentu", "desc": "在洞府闭关修为 +15%，每级再 +10%" },
+  "jingshi":  { "name": "静室", "cost": 60, "desc": "在洞府闭关时心境 +5，心魔概率 -20%；每级心境再 +5" },
+  "hushan":   { "name": "护山阵", "cost": 200, "needSchool": "array", "desc": "洞府被袭时防御判定 +20%，每级再 +20%" },
+  "danfang":  { "name": "丹房", "cost": 100, "desc": "可以在洞府炼丹，成功率 +10%", "todo": "炼丹（Z07）还没有做" },
+  "lianqi":   { "name": "炼器室", "cost": 100, "desc": "可以在洞府炼器", "todo": "炼器（Z08）还没有做" },
+  "shouyuan": { "name": "灵兽园", "cost": 80, "desc": "饲养灵宠", "todo": "灵宠还没有做" }
+ }
+}

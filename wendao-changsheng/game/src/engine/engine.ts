@@ -5,6 +5,7 @@ import { atRealmPeak, clamp, cultGain, layerName, lifeLeft, lifespan, mods, perL
 import { addItem, affordable, apply, checkAll, count, fill, passTime, setStatus } from './effects.ts';
 import { approachAvailable, duel, estimate, pickBeast } from './combat.ts';
 import { arrive } from './sect.ts';
+import { abodeCultAdd, arriveAbode, quietRoom } from './abode.ts';
 import { drawNormal, popForced, popStory, preCategory, rollFortune, rollSpecial } from './draw.ts';
 import { chance, pick, rand, seedStreams } from './rng.ts';
 import { refreshMarket, priceOf, sellPriceOf } from './market.ts';
@@ -39,7 +40,7 @@ export function newRun(c: Content, o: NewRunOptions): RunState {
     status: { light: 0, heavy: 0, poison: false, heartDemon: false, everHeavy: false },
     bag: {}, keyItems: {}, equip: {}, techniques: [...(origin.techniques ?? [])], location: 'wilds',
     npcs: {}, factions: {}, seen: {}, lastSeen: {}, queue: [], ready: [], flags: { firstRun: !!o.firstRun }, world: [],
-    special: { count: 0, until: 0 }, sect: null, recent: [], sinceFortune: 0, preCategory: {}, exploreStreak: { loc: '', n: 0 },
+    special: { count: 0, until: 0 }, sect: null, abode: null, recent: [], sinceFortune: 0, preCategory: {}, exploreStreak: { loc: '', n: 0 },
     breakCooldown: false, ads: { revive: false, relief: [] }, market: null,
     stats: { duels: 0, duelWins: 0, kills: 0, breakthroughs: 0, breakFails: 0, adsWatched: 0, calm: 0, explores: 0, events: 0 },
     log: [], pending: null, ended: null,
@@ -63,7 +64,7 @@ export function actions(c: Content, st0: RunState): ActionInfo[] {
   if(st.ended || st.pending) return [];
   const out: ActionInfo[] = [];
   const loc = c.locations[st.location];
-  if(st.location === 'wilds' || st.location === 'valley'){
+  if(st.location === 'wilds' || st.location === 'valley' || st.location === 'abode'){
     const peak = atRealmPeak(c, st);
     out.push({ id: 'cultivate', label: st.status.heavy > 0 ? '闭关疗伤' : '普通修炼', enabled: !peak, reason: peak ? '修为已满，需要突破' : undefined });
     out.push({ id: 'push', label: '全力冲关', enabled: !peak && st.status.heavy === 0, hint: '修为更多，可能遭遇心魔或灵气暴走' });
@@ -98,7 +99,7 @@ export function actions(c: Content, st0: RunState): ActionInfo[] {
   return out;
 }
 
-const CAT_NAME: Record<Category, string> = { fortune: '机缘', danger: '危险', resource: '资源', encounter: '人物', moral: '抉择', special: '异象', calm: '平静', seclusion: '闭关', sect: '宗门' };
+const CAT_NAME: Record<Category, string> = { fortune: '机缘', danger: '危险', resource: '资源', encounter: '人物', moral: '抉择', special: '异象', calm: '平静', seclusion: '闭关', sect: '宗门', abode: '洞府' };
 const pct = (p: number) => `${Math.round(p * 100)}%`;
 
 export function act(c: Content, st0: RunState, actionId: string): { state: RunState; view: View } {
@@ -128,23 +129,26 @@ export function act(c: Content, st0: RunState, actionId: string): { state: RunSt
     const mult = kind === 'push' ? 1.8 : kind === 'temper' ? 0.3 : 1;
     const vein = st.location === 'wilds' && Number(st.flags.veinLeft ?? 0) > 0;
     if(vein) st.flags.veinLeft = Number(st.flags.veinLeft) - 1;
-    const g = cultGain(c, st, perLayerGain(c, st) * mult, vein ? 0.5 : 0);
+    const g = cultGain(c, st, perLayerGain(c, st) * mult, (vein ? 0.5 : 0) + abodeCultAdd(c, st));
     st.cult += g; out.push(`${kind === 'push' ? '全力冲关' : kind === 'temper' ? '打磨根基' : st.status.heavy > 0 ? '闭关疗伤' : '闭关修炼'}，修为 +${Math.round(g * 100)}%。`);
     if(kind === 'temper'){ st.foundation += 5; out.push('根基 +5。'); }
-    if(st.mood < 50){ st.mood = Math.min(50, st.mood + 3); }                        // 心境回到 50（misc-rules 第二节）
+    if(st.mood < 50){ st.mood = Math.min(50, st.mood + 3); }
+    const quiet = quietRoom(st); if(quiet){ st.mood += 5 * quiet; }   // 静室（systems 6.2）                        // 心境回到 50（misc-rules 第二节）
     if(st.tox > 0) st.tox--;
     if(st.status.heavy > 0 && --st.status.heavy === 0){ out.push('重伤痊愈了。'); st.flags.justHealed = true; }
     st.breakCooldown = false;
     // 闭关事件 W05 / W06（event-draw 4.5）
     const m = mods(c, st);
-    const demonP = ((kind === 'push' ? 0.15 : 0) + (st.mood < 40 ? 0.25 : 0)) * (m.heartDemonMult ?? 1);
+    const demonP = ((kind === 'push' ? 0.15 : 0) + (st.mood < 40 ? 0.25 : 0)) * (m.heartDemonMult ?? 1) * (quiet ? 0.8 : 1);
     if(chance(st, 'event', demonP) && c.events.W05) eventId = 'W05';
     else if(kind === 'push' && !st.world.some(w => w.id === 'tide_high') && chance(st, 'event', 0.2) && c.events.W06) eventId = 'W06';
     if(eventId) source = 'forced';
   }
   if(kind === 'move'){
+    if(st.location === 'abode' && st.abode) st.abode.leftAt = st.actions;
     st.location = arg; out.push(`来到了${c.locations[arg].name}。`);
     if(arg === 'market'){ refreshMarket(c, st); st.flags.night = chance(st, 'event', 0.2); }
+    if(arg === 'abode'){ eventId = arriveAbode(c, st); if(eventId) source = 'forced'; }
     if(c.locations[arg].sect){ eventId = arrive(c, st, out); if(eventId) source = 'forced'; }   // 回宗必出一个宗门事件（event-draw 4.4）
   }
 

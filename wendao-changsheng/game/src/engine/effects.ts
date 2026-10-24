@@ -3,6 +3,7 @@
 import type { Cond, Content, Effect, RunState, StatKey } from './types.ts';
 import { clamp, cultGain, lifeLeft, mods, stoneCoef, years } from './calc.ts';
 import { pick, rand, weighted } from './rng.ts';
+import { grantAbode, harvest } from './abode.ts';
 
 export const BAG_SLOTS = 20;
 
@@ -39,6 +40,7 @@ export function check(c: Content, st: RunState, cond: Cond): boolean {
     case 'anyOf': return (v as Cond[]).some(x => check(c, st, x));
     case 'exploresGte': return st.stats.explores >= v;
     case 'equipped': return !!st.equip[v as 'weapon'];
+    case 'hasAbode': return !!st.abode === v;
     case 'inSect': return !!st.sect === v;
     case 'sectIs': return st.sect?.id === v;
     case 'sectRankGte': return !!st.sect && st.sect.rank >= v;
@@ -182,6 +184,13 @@ export function apply(c: Content, st: RunState, effects: Effect[] | undefined, o
     else if('nextMaterial' in e){
       const next = c.realms[st.realm + 1];
       if(next?.material) addItem(c, st, next.material, e.nextMaterial * next.materialCount, out);
+    }
+    else if('abode' in e) grantAbode(c, st, out, e.abode);
+    else if('harvest' in e) harvest(c, st, e.harvest, out);
+    else if('loseTag' in e){
+      let lost = 0;
+      for(const id of Object.keys(st.bag)) if(c.items[id]?.tags?.includes(e.loseTag)){ const k = Math.ceil(st.bag[id] * e.pct); addItem(c, st, id, -k, out); lost += k; }
+      out.push(lost ? `损失了 ${lost} 株灵草。` : '好在没什么可抢的。');
     }
     else if('repay' in e){ const n = Math.round(Number(st.flags.loan ?? 0) * e.repay); st.stones += n; st.flags.loan = 0; out.push(`灵石 +${n}。`); }
   }

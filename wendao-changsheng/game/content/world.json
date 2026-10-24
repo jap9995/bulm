@@ -115,6 +115,15 @@
      "world": "sect_secret"
     }
    ]
+  },
+  "abode": {
+   "name": "洞府",
+   "explore": false,
+   "unlock": [
+    {
+     "hasAbode": true
+    }
+   ]
   }
  },
  "market": {
@@ -379,6 +388,14 @@
    {
     "item": "book_dundi",
     "weight": 3,
+    "stock": [
+     1,
+     1
+    ]
+   },
+   {
+    "item": "juling_zhentu",
+    "weight": 4,
     "stock": [
      1,
      1

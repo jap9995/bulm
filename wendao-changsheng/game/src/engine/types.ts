@@ -3,7 +3,7 @@
 
 // ───────────── 内容配置 ─────────────
 
-export type Category = 'fortune' | 'danger' | 'resource' | 'encounter' | 'moral' | 'special' | 'calm' | 'seclusion' | 'sect';
+export type Category = 'fortune' | 'danger' | 'resource' | 'encounter' | 'moral' | 'special' | 'calm' | 'seclusion' | 'sect' | 'abode';
 export type Tier = 'common' | 'uncommon' | 'rare' | 'legendary';
 export type Rarity = 'common' | 'rare' | 'epic' | 'legend';
 export type Approach = 'fight' | 'technique' | 'item' | 'env' | 'talk' | 'flee';
@@ -93,6 +93,7 @@ export type Cond =
   | { world: string } | { lifeLeftLt: number } | { gender: 'm' | 'f' }
   | { technique: string } | { anyOf: Cond[] } | { exploresGte: number }
   | { equipped: 'weapon' | 'armor' | 'accessory' }
+  | { hasAbode: boolean }
   | { inSect: boolean } | { sectIs: string } | { sectRankGte: number } | { sectRankIs: number };
 
 export type StatKey = 'foundation' | 'luck' | 'mood' | 'dao' | 'tox';
@@ -128,7 +129,10 @@ export type Effect =
   | { expel: string }                     // 逐出 / 叛出宗门（原因），之后每 8 次行动被追杀
   | { examFail: string }                  // 入门考核失败：两年后才能再考
   | { open: string; actions: number }     // 开放一个限时地点并立刻前往
-  | { nextMaterial: number };             // 下一境界的突破材料
+  | { nextMaterial: number }              // 下一境界的突破材料
+  | { abode: string }                     // 得到洞府（人生日志的写法）
+  | { harvest: number }                   // 收获灵田（1 = 全部，0.5 = 一半）
+  | { loseTag: string; pct: number };     // 失去某类物品的一部分（洞府被袭）
 
 export interface Branch { effects?: Effect[]; text?: string }
 
@@ -182,6 +186,11 @@ export interface SectConfig {
   stipendGap: number;
 }
 
+export interface AbodeConfig {
+  price: number; baseSlots: number; expand: number[]; cultAdd: number; upgradeMult: number; maxLevel: number; growActions: number; harvest: number;
+  buildings: Record<string, { name: string; cost: number; desc: string; needItem?: string; needSchool?: string; todo?: string }>;
+}
+
 export interface MarketConfig {
   staples: { item: string; stock: number }[];
   randomSlots: number; rareBase: number; rarePerLuck: number; refreshEvery: number;
@@ -201,6 +210,7 @@ export interface Content {
   specials: SpecialDef[];
   market: MarketConfig;
   sects: SectConfig;
+  abode: AbodeConfig;
   names: { surnames: string[]; given: string[] };
 }
 
@@ -243,6 +253,7 @@ export interface RunState {
   preCategory: Record<string, Category>;    // 预抽的类别（event-draw 4.1）
   exploreStreak: { loc: string; n: number };
   breakCooldown: boolean;
+  abode: { since: number; slots: number; buildings: Record<string, number>; leftAt: number; fieldReady: number | null } | null;
   sect: { id: string; rank: number; total: number; avail: number; stipendAt: number; backdoor: boolean; s03: number[]; s05: number[] } | null;
   ads: { revive: boolean; relief: number[] };
   market: { refreshedAt: number; shelf: { item: string; stock: number; rare: boolean }[] } | null;

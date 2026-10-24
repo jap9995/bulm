@@ -1,0 +1,48 @@
+[
+ { "id": "A_raid", "name": "洞府被袭", "category": "abode", "locations": ["abode"], "tier": "common", "repeatable": true,
+   "text": "还没走近，你就看见洞府的禁制被人砸开了一道口子，里面传出翻箱倒柜的声音。",
+   "options": [
+    { "text": "冲进去", "hint": "斗法（与你同阶；护山阵每级防御 +20%）：败则灵草被抢走一半",
+      "result": { "type": "duel", "enemy": { "strength": "same", "kind": "cultivator" }, "approach": "fight",
+        "tiers": { "win": { "text": "来人被你打了出去，连自己的储物袋都没顾上捡。", "effects": [{ "stones": 30 }] }, "lose": { "effects": [{ "loseTag": "herb", "pct": 0.5 }] }, "bad": { "effects": [{ "loseTag": "herb", "pct": 0.5 }] } } } },
+    { "text": "等他们走了再进去", "hint": "灵草被抢走一半",
+      "result": { "type": "fixed", "effects": [{ "loseTag": "herb", "pct": 0.5 }], "text": "等里面没了动静，你才进去收拾。" } }
+   ] },
+
+ { "id": "Z06", "name": "灵田丰收", "category": "abode", "locations": ["abode"], "tier": "common", "repeatable": true,
+   "text": "洞府里的灵药成熟了。",
+   "options": [
+    { "text": "全部收获", "hint": "收下这一季的灵草", "result": { "type": "fixed", "effects": [{ "harvest": 1 }], "text": "你把灵田里的药一株株挖出来，抖净泥土。" } },
+    { "text": "留种", "hint": "这一季不收，下一季收成翻倍", "result": { "type": "fixed", "effects": [{ "flag": "seedDouble" }], "text": "你把种子收好，重新翻了一遍土。" } },
+    { "text": "拿一半送给村民", "hint": "收一半，道心 +5", "result": { "type": "fixed", "effects": [{ "harvest": 0.5 }, { "stat": "dao", "add": 5 }], "text": "你把一半药草送下山，村里的郎中拉着你的手说了好久。" } },
+    { "text": "拿一半上交宗门", "hint": "收一半，宗门贡献 +30", "requires": [{ "inSect": true }], "result": { "type": "fixed", "effects": [{ "harvest": 0.5 }, { "contrib": 30 }], "text": "药堂的执事清点完，在你的贡献簿上记了一笔。" } }
+   ] },
+
+ { "id": "A_pest", "name": "灵田虫害", "category": "abode", "locations": ["abode"], "tier": "common", "repeatable": true,
+   "text": "灵田里爬满了指甲盖大的青虫，叶子被啃得千疮百孔。",
+   "options": [
+    { "text": "能救多少救多少", "hint": "这一季收成减半", "result": { "type": "fixed", "effects": [{ "flag": "pest" }], "text": "你忙了一整夜，也只保住了一半。" } }
+   ] },
+
+ { "id": "J14", "name": "梦中授法", "category": "abode", "locations": ["abode"], "tier": "common",
+   "text": "你梦见一位白衣人，他在你掌心写下几个字。",
+   "options": [
+    { "text": "醒来立刻记下", "hint": "得到一卷功法，气运越高越可能是玄阶",
+      "result": { "type": "chance", "p": 0.1, "luck": true, "success": { "effects": [{ "randomItem": "book_mystic" }], "text": "你醒来时掌心还在发烫，提笔就写，一口气写满了十几页。" }, "fail": { "effects": [{ "randomItem": "book_yellow" }], "text": "你醒来只记得一半，好在这一半也是一门完整的功法。" } } },
+    { "text": "在梦中追问他的身份", "hint": "全凭气运：成功后得知他是一位上古大能",
+      "result": { "type": "chance", "p": 0.1, "luck": true, "success": { "effects": [{ "flag": "ancientHint" }, { "log": "梦中得上古大能授法", "weight": 5 }], "text": "他回过头看了你一眼。那一眼里，你看见了三千年前的一场雷劫。" }, "fail": { "effects": [{ "stat": "mood", "add": -3 }], "text": "你一开口，梦就碎了。" } } },
+    { "text": "当成心魔，以心法驱散", "hint": "心境 +5，根基 +3",
+      "result": { "type": "fixed", "effects": [{ "stat": "mood", "add": 5 }, { "stat": "foundation", "add": 3 }], "text": "你默诵心法，白衣人的身影一点点淡了下去。" } }
+   ] },
+
+ { "id": "A_neighbor", "name": "邻居来访", "category": "abode", "locations": ["abode"], "tier": "common",
+   "text": "一位修士在你洞府附近开辟了新洞府，提着一壶酒上门拜访。",
+   "options": [
+    { "text": "结交", "hint": "交换物产：得到一份材料，散修好感 +10",
+      "result": { "type": "fixed", "effects": [{ "randomItem": "material" }, { "faction": "sanxiu", "add": 10 }, { "flag": "goodNeighbor" }], "text": "你们喝到半夜。临走时，他把自己田里的药草分了你一份。" } },
+    { "text": "驱逐", "hint": "斗法（与你同阶）：胜则独占这片灵地",
+      "result": { "type": "duel", "enemy": { "strength": "same", "kind": "cultivator" }, "approach": "fight",
+        "tiers": { "win": { "effects": [{ "stones": 50 }, { "stat": "dao", "add": -5 }], "text": "他捂着伤口走了，留下半座没修好的洞府。" } } } },
+    { "text": "无视", "hint": "无事", "result": { "type": "fixed", "text": "你没开门。过了一会儿，门外的脚步声远了。" } }
+   ] }
+]

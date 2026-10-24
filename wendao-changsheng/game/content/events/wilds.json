@@ -182,7 +182,7 @@
  { "id": "Z03", "name": "废弃洞府", "category": "resource", "locations": ["wilds"], "tier": "uncommon",
    "text": "一座被遗弃的洞府，禁制早已失效。",
    "options": [
-    { "text": "据为己有", "hint": "此后可以在这里闭关", "result": { "type": "fixed", "effects": [{ "flag": "hasCave" }, { "log": "在山中有了自己的洞府", "weight": 4 }], "text": "你把洞府打扫干净，在门口挂上了自己的名牌。" } },
+    { "text": "据为己有", "hint": "得到洞府：在洞府闭关修为 +10%，还可以建灵田", "result": { "type": "fixed", "effects": [{ "abode": "在山中占下了一座废弃洞府" }], "text": "你把洞府打扫干净，在门口挂上了自己的名牌。" } },
     { "text": "搜刮后离开", "hint": "两颗丹药和一份材料", "result": { "type": "fixed", "effects": [{ "randomItem": "pill_yellow", "n": 2 }, { "randomItem": "material" }] } },
     { "text": "仔细搜寻密室", "hint": "耗时半年：一半可能发现前主人留下的功法", "time": 0.5,
       "result": { "type": "chance", "p": 0.5, "success": { "effects": [{ "randomItem": "book_yellow" }], "text": "石床底下有一块松动的砖，下面压着一卷功法。" }, "fail": { "text": "你把每一块石头都敲了一遍，什么也没找到。" } } }
