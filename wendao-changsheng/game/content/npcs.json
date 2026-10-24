@@ -76,5 +76,18 @@
    { "type": "item", "item": "qingxin_dan", "text": "「心浮气躁。」他丢给你一颗清心丹，转身就走。" },
    { "type": "heart", "text": "他说起自己年轻时也被师父罚跪过三天三夜，说完咳了一声，让你继续练剑。" }
   ]
+ },
+ "xiao_shitou": {
+  "name": "小石头", "stance": "neutral",
+  "visit": ["village"], "visitUnlock": [{ "npcAffGte": ["xiao_shitou", -49] }], "stageAt": ["village"],
+  "gifts": { "favorite": ["tag:book_yellow"], "like": ["huichun_dan", "juqi_dan"], "dislike": [] },
+  "special": { "type": "guide", "unlock": [{ "flag": "shitouDisciple" }], "gap": 5 },
+  "stages": { "60": "N_shitou60" },
+  "gossip": [
+   { "type": "heart", "text": "他把这些天练的拳一招一招打给你看，打完了满头大汗，眼睛亮亮地等你开口。" },
+   { "type": "item", "item": "lingshou_rou", "text": "「村东头王叔猎的，我给你留了一块。」" },
+   { "type": "hint", "text": "「师父，山里这几天老有怪声，村里人都不敢上山了。」" },
+   { "type": "heart", "text": "他说他姐姐要嫁人了，问你那天能不能回来。" }
+  ]
  }
 }

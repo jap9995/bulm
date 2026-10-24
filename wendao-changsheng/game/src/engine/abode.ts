@@ -19,7 +19,7 @@ const lv = (st: RunState, id: string) => st.abode?.buildings[id] ?? 0;
 export function abodeCultAdd(c: Content, st: RunState): number {
   if(st.location !== 'abode' || !st.abode) return 0;
   const j = lv(st, 'juling');
-  return c.abode.cultAdd + (j ? 0.15 + 0.1 * (j - 1) : 0);
+  return (c.abode.cultAdd + (j ? 0.15 + 0.1 * (j - 1) : 0)) * Number(st.flags.abodeVein ?? 1);   // T06 灵脉变迁
 }
 export const quietRoom = (st: RunState) => st.location === 'abode' ? lv(st, 'jingshi') : 0;
 export const wardBonus = (st: RunState) => st.location === 'abode' ? lv(st, 'hushan') * 0.2 : 0;

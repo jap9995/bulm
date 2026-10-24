@@ -5,13 +5,14 @@ import { atRealmPeak, clamp, cultGain, layerName, lifeLeft, lifespan, mods, perL
 import { addItem, affordable, apply, checkAll, count, fill, passTime, setStatus } from './effects.ts';
 import { approachAvailable, duel, estimate, pickBeast } from './combat.ts';
 import { arrive } from './sect.ts';
+import { advanceDestiny, closeDestiny, startDestiny } from './destiny.ts';
 import { chat, giftList, giveGift, openGift, openVisit, presentNpcs, special, visitReady } from './npc.ts';
 import { abodeCultAdd, arriveAbode, quietRoom } from './abode.ts';
 import { drawNormal, popForced, popStory, preCategory, rollFortune, rollSpecial } from './draw.ts';
 import { chance, pick, rand, seedStreams } from './rng.ts';
 import { refreshMarket, priceOf, sellPriceOf } from './market.ts';
 
-export interface NewRunOptions { seed: number; origin: string; talent: string; gender?: 'm' | 'f'; name?: string; firstRun?: boolean }
+export interface NewRunOptions { seed: number; origin: string; talent: string; gender?: 'm' | 'f'; name?: string; firstRun?: boolean; destiny?: string }
 
 const ACTION_TIME = { cultivate: 1, push: 1.5, temper: 1, explore: 0.5, move: 0.25, ask: 0.25, village: 0.25, visit: 0.25 };   // systems 1.3
 
@@ -41,7 +42,7 @@ export function newRun(c: Content, o: NewRunOptions): RunState {
     status: { light: 0, heavy: 0, poison: false, heartDemon: false, everHeavy: false },
     bag: {}, keyItems: {}, equip: {}, techniques: [...(origin.techniques ?? [])], location: 'wilds',
     npcs: {}, factions: {}, seen: {}, lastSeen: {}, queue: [], ready: [], flags: { firstRun: !!o.firstRun }, world: [],
-    special: { count: 0, until: 0 }, sect: null, abode: null, recent: [], sinceFortune: 0, preCategory: {}, exploreStreak: { loc: '', n: 0 },
+    special: { count: 0, until: 0 }, sect: null, abode: null, destiny: null, recent: [], sinceFortune: 0, preCategory: {}, exploreStreak: { loc: '', n: 0 },
     breakCooldown: false, ads: { revive: false, relief: [] }, market: null,
     stats: { duels: 0, duelWins: 0, kills: 0, breakthroughs: 0, breakFails: 0, adsWatched: 0, calm: 0, explores: 0, events: 0 },
     log: [], pending: null, ended: null,
@@ -52,6 +53,7 @@ export function newRun(c: Content, o: NewRunOptions): RunState {
   for(const [id, n] of Object.entries(origin.items ?? {})) addItem(c, st, id, n, junk);
   for(const id of origin.equip ?? []){ const it = c.items[id]; if(it?.slot) st.equip[it.slot] = id; }
   st.log.push({ age: 16, type: 'start', weight: 100, text: `${origin.name}·${st.name}，十六岁踏入仙途` });
+  if(o.destiny) startDestiny(c, st, o.destiny);
   preCategory(c, st, st.location);
   return st;
 }
@@ -150,6 +152,17 @@ export function act(c: Content, st0: RunState, actionId: string): { state: RunSt
     if(st.location === 'abode' && st.abode) st.abode.leftAt = st.actions;
     st.location = arg; out.push(`来到了${c.locations[arg].name}。`);
     if(arg === 'market'){ refreshMarket(c, st); st.flags.night = chance(st, 'event', 0.2); }
+    if(arg === 'village' && (st.flags.villageOffering || st.flags.shitouSteward) && st.actions - Number(st.flags.offerAt ?? -99) >= 3){
+      st.flags.offerAt = st.actions;
+      const base = (st.flags.villageOffering ? 10 : 0) + (st.flags.shitouSteward ? 20 : 0);
+      st.flags.offerings = Number(st.flags.offerings ?? 0) + base;
+      const n = Math.round(base * stoneCoef(c, st)); st.stones += n; out.push(`村里送来了供奉，灵石 +${n}。`);
+    }
+    if(arg === 'market' && st.flags.stall && st.actions - Number(st.flags.stallAt ?? -99) >= 3){
+      st.flags.stallAt = st.actions;
+      if(chance(st, 'loot', 0.15)){ delete st.flags.stall; out.push('你入股的那个摊子倒闭了。'); }
+      else { const n = Math.round(20 * stoneCoef(c, st)); st.stones += n; out.push(`摊主把这一期的分红交给你，灵石 +${n}。`); }
+    }
     if(arg === 'abode'){ eventId = arriveAbode(c, st); if(eventId) source = 'forced'; }
     if(c.locations[arg].sect){ eventId = arrive(c, st, out); if(eventId) source = 'forced'; }   // 回宗必出一个宗门事件（event-draw 4.4）
   }
@@ -270,6 +283,10 @@ function resolveOption(c: Content, st: RunState, ev: EventDef, opt: OptionDef, o
   out.unshift(d.text);
   out.push(...d.lines);
   if(d.tier !== 'escaped') st.flags.lastDuelDeath = true;
+  if((d.tier === 'big' || d.tier === 'win') && !st.flags.__chain){
+    if(r.enemy.kind === 'beast' && chance(st, 'loot', 0.2)) st.flags.__chain = 'Z09';
+    else if(r.enemy.kind === 'cultivator' && chance(st, 'loot', 0.1)) st.flags.__chain = 'Z10';
+  }
 }
 
 // ───────────── 突破（systems 1.5，misc-rules 6.6） ─────────────
@@ -404,6 +421,7 @@ function tick(c: Content, st: RunState, out: string[], skipDeath = false): void 
   st.mood = clamp(st.mood, st.talents.includes('C11') ? 30 : 0, st.status.heartDemon ? 80 : 100);
   st.dao = clamp(st.dao, -100, 100); st.tox = clamp(st.tox, 0, 10);
   // 特殊事件（event-draw 第七节）
+  advanceDestiny(c, st, out);
   const sp = rollSpecial(c, st, !!st.flags.firstRun);
   if(sp){
     st.seen[sp.id] = (st.seen[sp.id] ?? 0) + 1;
@@ -411,11 +429,13 @@ function tick(c: Content, st: RunState, out: string[], skipDeath = false): void 
     if(sp.world) st.world.push({ id: sp.world.id, until: st.actions + sp.world.actions });
     apply(c, st, sp.effects, out);
     st.log.push({ age: Math.floor(st.age), type: 'special', weight: 6, text: `亲历${sp.name}` });
+    if(sp.event) st.queue.push({ event: sp.event, due: st.actions, prio: 1 });
   }
 }
 
 function endRun(c: Content, st: RunState, how: 'death' | 'lifespan' | 'retire', cause?: string): void {
   st.pending = null;
+  closeDestiny(c, st);
   const ending = how === 'death' ? 'death' : 'natural';   // TODO(下一步)：一方强者、传承留世、飞升问道的判定（systems 第 10 节）
   st.ended = { ending, cause };
   st.log.push({ age: Math.floor(st.age), type: 'end', weight: 100, text: how === 'death' ? `${cnAge(st.age)}岁身死道消` : `最终坐化于${cnAge(st.age)}岁` });

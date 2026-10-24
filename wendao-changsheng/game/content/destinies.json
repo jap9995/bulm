@@ -1,0 +1,58 @@
+[
+ { "id": "F03", "name": "百岁前结丹", "unlocked": true, "deadline": 100,
+   "steps": [
+    { "desc": "筑基", "cond": [{ "realmGte": 1 }] },
+    { "desc": "八十岁前达到筑基圆满", "cond": [{ "anyOf": [{ "realmGte": 2 }, { "layerGte": 4 }] }, { "realmGte": 1 }], "before": 80 },
+    { "desc": "百岁前结成金丹", "cond": [{ "realmGte": 2 }], "before": 100 }
+   ],
+   "done": "少年金丹", "fail": "终究没能在百岁前结丹" },
+ { "id": "F04", "name": "富甲一方", "unlocked": true,
+   "steps": [
+    { "desc": "开垦一块灵田，或做一笔投资", "cond": [{ "anyOf": [{ "building": "lingtian" }, { "flag": "invested" }] }] },
+    { "desc": "攒下 1000× 灵石", "cond": [{ "stonesGte": 1000 }] },
+    { "desc": "攒下 5000× 灵石", "cond": [{ "stonesGte": 5000 }] }
+   ],
+   "done": "富可敌国", "fail": "家财终究没能撑起一方" },
+ { "id": "F05", "name": "剑道第一", "unlocked": true,
+   "steps": [
+    { "desc": "学会一门玄阶以上的剑道功法", "cond": [{ "techSchool": "sword", "gradeGte": "mystic" }] },
+    { "desc": "击败柳寒衣", "cond": [{ "flag": "beatLiu" }] },
+    { "desc": "在宗门大比夺得魁首", "cond": [{ "flag": "champion" }] }
+   ],
+   "done": "一剑光寒", "fail": "剑道一途，终究差了一步" },
+ { "id": "F07", "name": "一诺千金", "unlocked": true, "start": "F07_start",
+   "steps": [
+    { "desc": "答应一位垂死的老人照顾他的孙子", "cond": [{ "npcMet": "xiao_shitou" }] },
+    { "desc": "让小石头筑基", "cond": [{ "shitouGte": 10 }] },
+    { "desc": "让小石头结丹", "cond": [{ "shitouGte": 15 }] }
+   ],
+   "done": "不负所托", "fail": "答应老人的事，只做到了一半" },
+ { "id": "F08", "name": "长生", "unlocked": true,
+   "steps": [
+    { "desc": "活过两百岁", "cond": [{ "ageGte": 200 }] },
+    { "desc": "活过五百岁", "cond": [{ "ageGte": 500 }] },
+    { "desc": "活过一千岁", "cond": [{ "ageGte": 1000 }] }
+   ],
+   "done": "与天同寿", "fail": "求长生而不得" },
+ { "id": "F10", "name": "斩妖除魔", "unlocked": true,
+   "steps": [
+    { "desc": "斗法击败 10 个妖兽或魔修", "cond": [{ "killsGte": 10 }] },
+    { "desc": "击败 30 个", "cond": [{ "killsGte": 30 }] },
+    { "desc": "讨伐血煞老人并获胜", "cond": [{ "flag": "slewXuesha" }] }
+   ],
+   "done": "除魔卫道", "fail": "妖魔未尽，斯人已逝" },
+ { "id": "F11", "name": "护一方百姓", "unlocked": true,
+   "steps": [
+    { "desc": "守住一次村庄，或留下救治疫病", "cond": [{ "anyOf": [{ "flag": "guardedVillage" }, { "flag": "healedPlague" }] }] },
+    { "desc": "凡人的供奉累计达到 100×", "cond": [{ "flagGte": ["offerings", 100] }] },
+    { "desc": "晚年（剩余寿元不足 20 年）回到村子", "cond": [{ "lifeLeftLt": 20 }, { "at": "village" }] }
+   ],
+   "done": "万家生佛", "doneEffects": [{ "stat": "dao", "add": 30 }], "fail": "终究没能回到那个村子" },
+ { "id": "F16", "name": "归乡", "unlocked": true, "deadline": 60, "start": "F16_start",
+   "steps": [
+    { "desc": "答应母亲六十岁前回乡", "cond": [{ "flag": "promisedMother" }] },
+    { "desc": "六十岁前回到凡人村落", "cond": [{ "at": "village" }], "before": 60 },
+    { "desc": "回到母亲身边", "cond": [] }
+   ],
+   "done": "游子归乡", "fail": "子欲养而亲不待", "failEffects": [{ "stat": "mood", "add": -20 }] }
+]

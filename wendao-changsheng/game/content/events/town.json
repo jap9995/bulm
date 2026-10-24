@@ -88,7 +88,7 @@
    "text": "凡人村落爆发瘟疫，死者日增。",
    "options": [
     { "text": "留下救治", "hint": "耗时两年，灵石 -150×：道心 +20，村民为你建祠", "time": 2, "cost": [{ "stones": -150 }],
-      "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": 20 }, { "flag": "villageShrine" }, { "log": "在瘟疫中救下了一整个村子", "weight": 6 }] } },
+      "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": 20 }, { "flag": "villageShrine" }, { "flag": "healedPlague" }, { "log": "在瘟疫中救下了一整个村子", "weight": 6 }] } },
     { "text": "封锁村子，以免疫病外传", "hint": "道心 -10", "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": -10 }] } },
     { "text": "离开", "hint": "道心 -15", "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": -15 }] } }
    ] }

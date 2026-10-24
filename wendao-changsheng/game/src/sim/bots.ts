@@ -175,11 +175,19 @@ function pickAction(c: Content, st: RunState, o: BotOptions): string {
   if(o.kind === 'steady' && has('break:forced') && lifeLeft(c, st) < 15) return 'break:forced';
   const study = list.find(a => a.id.startsWith('study:')); if(study) return study.id;
 
-  // 拜访：每 4 次行动最多一次，挑好感最低（但未满 60）的人
+  // 拜访：每 4 次行动最多一次，挑好感最低（但未满 60）的人；徒弟小石头能指点就去指点
+  if(st.flags.shitouDisciple && has('visit:xiao_shitou') && st.actions - Number(st.flags.guideAt ?? -99) >= 5){ st.flags.botVisitAt = st.actions; return 'visit:xiao_shitou'; }
   if(st.actions - Number(st.flags.botVisitAt ?? -99) >= 4){
     const v = list.filter(a => a.id.startsWith('visit:')).map(a => a.id).sort((x, y) => (st.npcs[x.slice(6)]?.aff ?? 0) - (st.npcs[y.slice(6)]?.aff ?? 0))[0];
     if(v && ((st.npcs[v.slice(6)]?.aff ?? 0) < 60 || st.ready.some(r => Object.values(c.npcs[v.slice(6)].stages).includes(r.event)))){ st.flags.botVisitAt = st.actions; return v; }
   }
+  // 宿命：要回村的时候回村
+  const ds = st.destiny;
+  const goHome = ds?.state === 'active' && ((ds.id === 'F16' && ds.step === 1) || (ds.id === 'F11' && ds.step === 2 && lifeLeft(c, st) < 20));
+  if(goHome && st.location !== 'village' && has('move:village')) return 'move:village';
+  if(st.location === 'village' && !goHome && has('move:wilds') && !list.some(x => x.id.startsWith('visit:') && st.actions - Number(st.flags.botVisitAt ?? -99) >= 4)) return 'move:wilds';
+  // 有徒弟、有供奉时，每 10 次行动回一趟村
+  if((st.flags.shitouDisciple || st.flags.villageOffering) && st.actions - Number(st.flags.botVillageAt ?? -99) >= 10 && has('move:village') && st.status.heavy === 0){ st.flags.botVillageAt = st.actions; return 'move:village'; }
   // 宗门：稳健型去丹鼎门，激进型去问剑宗；入门后每 8 次行动回一趟
   const home = st.sect ? c.sects.sects[st.sect.id].location : o.kind === 'aggressive' ? 'sect_wenjian' : 'sect_danding';
   if(c.locations[st.location]?.sect){ st.flags.botSectAt = st.actions; return has('move:wilds') ? 'move:wilds' : list[0].id; }

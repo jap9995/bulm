@@ -6,8 +6,8 @@
     { "text": "应战", "hint": "斗法（高你一层）：胜则他对你另眼相看；败了他也敬你有骨气",
       "result": { "type": "duel", "enemy": { "strength": "higher_layer", "kind": "cultivator" }, "approach": "fight",
         "tiers": {
-         "big": { "effects": [{ "meet": "liu_hanyi" }, { "npc": "liu_hanyi", "add": 30 }, { "log": "与剑客柳寒衣比剑，胜了他半招", "weight": 4 }], "text": "他收剑入背，第一次笑了：「我叫柳寒衣。下回再比。」" },
-         "win": { "effects": [{ "meet": "liu_hanyi" }, { "npc": "liu_hanyi", "add": 30 }, { "log": "与剑客柳寒衣比剑，胜了他半招", "weight": 4 }], "text": "他收剑入背，第一次笑了：「我叫柳寒衣。下回再比。」" },
+         "big": { "effects": [{ "meet": "liu_hanyi" }, { "npc": "liu_hanyi", "add": 30 }, { "flag": "beatLiu" }, { "log": "与剑客柳寒衣比剑，胜了他半招", "weight": 4 }], "text": "他收剑入背，第一次笑了：「我叫柳寒衣。下回再比。」" },
+         "win": { "effects": [{ "meet": "liu_hanyi" }, { "npc": "liu_hanyi", "add": 30 }, { "flag": "beatLiu" }, { "log": "与剑客柳寒衣比剑，胜了他半招", "weight": 4 }], "text": "他收剑入背，第一次笑了：「我叫柳寒衣。下回再比。」" },
          "lose": { "effects": [{ "meet": "liu_hanyi" }, { "npc": "liu_hanyi", "add": 10 }], "text": "「还算有骨气。」他留下名字，走了。" },
          "bad": { "effects": [{ "meet": "liu_hanyi" }, { "npc": "liu_hanyi", "add": 10 }] } } } },
     { "text": "拒绝", "hint": "他会不高兴",

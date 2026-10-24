@@ -1,0 +1,184 @@
+[
+ { "id": "F07_start", "name": "托孤", "category": "encounter", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "山脚的破屋里，一个老人拉住你的袖子，指着缩在墙角的孩子：「仙长……这孩子叫小石头，爹娘都没了。我撑不过这个冬天了。」",
+   "options": [
+    { "text": "答应他", "hint": "从此你要照看小石头（之后可以去凡人村落指点他）",
+      "result": { "type": "fixed", "effects": [{ "meet": "xiao_shitou" }, { "npc": "xiao_shitou", "add": 20 }, { "flag": "shitouDisciple" }, { "log": "答应一位垂死的老人，照看他的孙子小石头", "weight": 6 }], "text": "老人松开手，笑了一下，再没睁开眼。小石头跪在床前，哭得说不出话。" } }
+   ] },
+ { "id": "F16_start", "name": "辞母", "category": "encounter", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "出门那天，母亲把一包干粮塞进你怀里，替你理了理衣领：「娘不求你成仙。六十岁前，回来看看娘。」",
+   "options": [
+    { "text": "答应她", "hint": "六十岁前回到凡人村落",
+      "result": { "type": "fixed", "effects": [{ "flag": "promisedMother" }, { "log": "答应母亲六十岁前回乡", "weight": 5 }], "text": "你走出很远，回头时她还站在村口。" } }
+   ] },
+
+ { "id": "P02", "name": "山精抓人", "category": "encounter", "locations": ["village"], "tier": "uncommon", "tags": ["commoner"],
+   "conditions": [{ "notNpcMet": "xiao_shitou" }],
+   "text": "一个满脸泪痕的少年拦住你：「仙人！山精把我姐姐抓走了！」",
+   "options": [
+    { "text": "出手相救", "hint": "斗法（山精比你弱一个境界）：胜则道心 +10、心境 +10，少年会缠着你拜师",
+      "result": { "type": "duel", "enemy": { "strength": "lower_realm", "kind": "beast" }, "approach": "fight",
+        "tiers": { "big": { "effects": [{ "stat": "dao", "add": 10 }, { "stat": "mood", "add": 10 }, { "meet": "xiao_shitou" }, { "npc": "xiao_shitou", "add": 20 }, { "chain": "P02_b" }], "text": "姐弟俩抱在一起哭了很久。那天晚上，他们给你煮了一碗热腾腾的素面。" },
+                   "win": { "effects": [{ "stat": "dao", "add": 10 }, { "stat": "mood", "add": 10 }, { "meet": "xiao_shitou" }, { "npc": "xiao_shitou", "add": 20 }, { "chain": "P02_b" }], "text": "姐弟俩抱在一起哭了很久。那天晚上，他们给你煮了一碗热腾腾的素面。" } } } },
+    { "text": "先谈报酬", "hint": "灵石 +10×（这已经是他们全部的家当），道心 -5",
+      "result": { "type": "fixed", "effects": [{ "stones": 10 }, { "stat": "dao", "add": -5 }, { "meet": "xiao_shitou" }, { "npc": "xiao_shitou", "add": -20 }, { "chain": "P02_b" }], "text": "少年把一个布包塞给你，里面是几块碎灵石和一把铜钱。" } },
+    { "text": "无视", "hint": "道心 -10", "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": -10 }], "text": "你从他身边走了过去。哭声在身后响了很久。" } }
+   ] },
+ { "id": "P02_b", "name": "拜师", "category": "encounter", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "少年扑通一声跪下：「我叫小石头。仙人，收我为徒吧！」",
+   "options": [
+    { "text": "收他为徒", "hint": "之后每次回村可以指点他一次（相隔至少 5 次行动）", "result": { "type": "fixed", "effects": [{ "flag": "shitouDisciple" }, { "npc": "xiao_shitou", "add": 10 }, { "log": "收凡人少年小石头为徒", "weight": 5 }], "text": "他磕了三个响头，额头都磕红了。" } },
+    { "text": "拒绝，但留下一本入门功法", "hint": "20× 灵石", "cost": [{ "stones": -20 }], "result": { "type": "fixed", "effects": [{ "flag": "shitouSelf" }], "text": "你把一本手抄的入门功法放在他面前。他捧着书，半天没说出话。" } },
+    { "text": "直接拒绝", "hint": "这条线就此关闭", "result": { "type": "fixed", "effects": [{ "npc": "xiao_shitou", "add": -60 }], "text": "他站起来，拍了拍膝盖上的土，没再说什么。" } }
+   ] },
+ { "id": "N_shitou60", "name": "徒弟出师", "category": "encounter", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "小石头筑基了。他说往后村里的事交给他，你只管去修你的道。",
+   "options": [{ "text": "好", "hint": "此后每次回村领取 20× 灵石", "result": { "type": "fixed", "effects": [{ "flag": "shitouSteward" }, { "log": "徒弟小石头筑基出师", "weight": 5 }], "text": "他站在村口送你，个子已经比你还高了。" } }] },
+
+ { "id": "J06", "name": "崖上断剑", "category": "fortune", "locations": ["wilds"], "tier": "uncommon", "tags": ["sword"],
+   "text": "一柄断剑斜插在崖壁上，剑身上仍有不散的寒意。",
+   "options": [
+    { "text": "拔剑", "hint": "斗法（剑意反噬，与你同阶）：胜则得到玄阶长剑「秋水」",
+      "result": { "type": "duel", "enemy": { "strength": "same" }, "approach": "fight", "tiers": { "win": { "effects": [{ "item": "qiushui" }], "text": "剑意散尽，断剑在你手里重新亮了起来。" } } } },
+    { "text": "以剑意感应", "hint": "需要剑心通明或剑道功法：必定成功，并会有人循着剑意找来",
+      "requires": [{ "anyOf": [{ "talent": "R03" }, { "technique": "qingfeng" }, { "technique": "liuyun" }] }],
+      "result": { "type": "fixed", "effects": [{ "item": "qiushui" }, { "chain": "F_liu" }], "text": "断剑在崖上轻轻一颤，自己落进了你的手里。身后有人鼓了鼓掌。" } },
+    { "text": "对剑行礼后离开", "hint": "气运 +2", "result": { "type": "fixed", "effects": [{ "stat": "luck", "add": 2 }], "text": "你朝那柄断剑拱了拱手。" } }
+   ] },
+ { "id": "J13", "name": "天外陨铁", "category": "fortune", "locations": ["wilds"], "tier": "common",
+   "conditions": [{ "seen": "T01" }],
+   "text": "天降异象之后，山谷中多了一个焦黑的大坑。",
+   "options": [
+    { "text": "挖取陨铁", "hint": "耗时半年：得到天外陨铁", "time": 0.5, "result": { "type": "fixed", "effects": [{ "item": "tianwai_yuntie" }], "text": "坑底的陨铁还烫手，你用了半年才把它完整地挖出来。" } },
+    { "text": "守在坑边", "hint": "会有人来争夺（斗法，两人，与你同阶）：胜则双份陨铁，外加对方的储物袋",
+      "result": { "type": "duel", "enemy": { "strength": "same", "kind": "cultivator", "count": 2 }, "approach": "fight", "tiers": { "win": { "effects": [{ "item": "tianwai_yuntie", "n": 2 }, { "stones": 100 }], "text": "来抢的人都躺下了。" } } } },
+    { "text": "把位置卖给玄机阁", "hint": "灵石 +200×", "result": { "type": "fixed", "effects": [{ "stones": 200 }], "text": "玄机阁的人来得很快，付钱也很爽快。" } }
+   ] },
+
+ { "id": "W07", "name": "妖兽潮", "category": "danger", "locations": ["village", "wilds"], "tier": "rare", "tags": ["commoner"],
+   "conditions": [{ "actionsGte": 15 }],
+   "text": "远方烟尘滚滚，兽吼声震得山谷发颤。前方就是一座凡人村落。",
+   "options": [
+    { "text": "守护村庄", "hint": "斗法（兽群，与你同阶）：大胜则此后回村可以领供奉；险胜保住一半；败则重伤，被村民救回",
+      "result": { "type": "duel", "enemy": { "strength": "same", "kind": "beast", "count": 2 }, "approach": "fight",
+        "tiers": { "big": { "effects": [{ "stat": "dao", "add": 15 }, { "flag": "guardedVillage" }, { "flag": "villageOffering" }, { "log": "独力挡住妖兽潮，护住了一座凡人村落", "weight": 7 }], "text": "天亮的时候，村口堆满了妖兽的尸体。村民们跪了一地。" },
+                   "win": { "effects": [{ "stat": "dao", "add": 5 }, { "flag": "guardedVillage" }], "text": "村子保住了一半。" },
+                   "lose": { "effects": [{ "status": "heavy" }] } } } },
+    { "text": "带领村民撤离", "hint": "耗时半年：道心 +10，安全", "time": 0.5, "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": 10 }], "text": "你领着一村老小翻过了山。回头看时，村子已经没了。" } },
+    { "text": "独自离开", "hint": "安全，道心 -10", "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": -10 }], "text": "你没有回头。" } },
+    { "text": "趁乱猎杀落单的妖兽", "hint": "灵石 +150×；三成被兽群包围，受轻伤",
+      "result": { "type": "chance", "p": 0.7, "success": { "effects": [{ "stones": 150 }], "text": "你专挑落单的下手，收获颇丰。" }, "fail": { "effects": [{ "stones": 80 }, { "status": "light" }], "text": "你被兽群围住，拼着挨了几下才杀出来。" } } }
+   ] },
+ { "id": "W09", "name": "鬼市", "category": "danger", "locations": ["market"], "tier": "common", "tags": ["yin"],
+   "conditions": [{ "flag": "night" }],
+   "text": "集市的灯笼忽然变成了惨绿色，摊主们都没有影子。",
+   "options": [
+    { "text": "用寿元交易", "hint": "寿元上限 -5：换一件玄阶法器", "cost": [{ "lifespan": -5 }], "result": { "type": "fixed", "effects": [{ "randomItem": "equip_mystic" }], "text": "摊主伸出一只惨白的手，在你眉心轻轻一点。" } },
+    { "text": "用灵石购买", "hint": "价格是平时的两倍：240× 灵石换一件玄阶法器", "cost": [{ "stones": -240 }], "result": { "type": "fixed", "effects": [{ "randomItem": "equip_mystic" }], "text": "灵石落进他手里，就变成了一捧纸灰。" } },
+    { "text": "离开", "hint": "一半可能迷路，耗时三个月；阴阳眼可以直接离开",
+      "result": { "type": "chance", "p": 0.5, "success": { "text": "你低着头往外走，没有回应任何一声招呼。" }, "fail": { "effects": [{ "years": 0.25 }], "text": "你走了很久，绕回来的还是那盏绿灯笼。" } } },
+    { "text": "看穿鬼市的出路", "hint": "需要阴阳眼", "requires": [{ "talent": "R06" }], "result": { "type": "fixed", "text": "你一眼就看见了来时的路。" } }
+   ] },
+ { "id": "W14", "name": "魔修追杀", "category": "danger", "locations": ["any"], "tier": "uncommon", "tags": ["demonic"], "repeatable": true, "cooldown": 8,
+   "conditions": [{ "anyOf": [{ "stat": "dao", "gte": 50 }, { "flag": "killedXuesha" }] }],
+   "text": "一道血光拦在你面前：「杀我同门者，偿命！」",
+   "options": [
+    { "text": "迎战", "hint": "斗法（魔修，高你一层）",
+      "result": { "type": "duel", "enemy": { "strength": "higher_layer", "kind": "cultivator" }, "approach": "fight", "tiers": { "win": { "effects": [{ "flag": "killedXuesha" }, { "stones": 60 }], "text": "血光散了，地上只剩一件破烂的血袍。" } } } },
+    { "text": "逃往宗门", "hint": "需要已加入正道宗门：安全", "requires": [{ "anyOf": [{ "sectIs": "wenjian" }, { "sectIs": "danding" }, { "sectIs": "xuanji" }] }],
+      "result": { "type": "fixed", "text": "你一路逃回山门。护山大阵亮起，追兵在门外骂了半天，走了。" } },
+    { "text": "假死脱身", "hint": "消耗一张替身符：安全", "requires": [{ "hasItem": "tishen_fu" }], "cost": [{ "item": "tishen_fu", "n": -1 }],
+      "result": { "type": "fixed", "text": "替身符化作你的模样倒在血泊里。追兵确认过「尸体」，满意地走了。" } },
+    { "text": "示弱求饶", "hint": "灵石 -50%，道心 -10", "result": { "type": "fixed", "effects": [{ "stonesPct": -0.5 }, { "stat": "dao", "add": -10 }], "text": "你跪下的时候，听见他笑了。" } }
+   ] },
+
+ { "id": "P01", "name": "交易会邀请", "category": "encounter", "locations": ["market"], "tier": "uncommon",
+   "text": "一张烫金请柬塞到你手里：「城东拍卖会，今夜子时。」",
+   "options": [
+    { "text": "参加", "hint": "门票加竞价共 150× 灵石：拍下一件玄阶法器", "cost": [{ "stones": -150 }], "result": { "type": "fixed", "effects": [{ "randomItem": "equip_mystic" }], "text": "你举了三次牌，总算把它拍了下来。" } },
+    { "text": "冒充贵宾混进去", "hint": "全凭口才：成功白看一场，还能顺手捡点便宜；失败散修们会看不起你",
+      "result": { "type": "chance", "p": 0.7, "luck": true, "success": { "effects": [{ "randomItem": "pill_yellow", "n": 2 }], "text": "你混在贵宾席里，散场时还顺走了两颗赠品丹药。" }, "fail": { "effects": [{ "faction": "sanxiu", "add": -10 }], "text": "门口的管事一眼就认出了你，当众把你赶了出去。" } } },
+    { "text": "不去", "hint": "无事", "result": { "type": "fixed" } }
+   ] },
+ { "id": "P08", "name": "散修擂台", "category": "encounter", "locations": ["market"], "tier": "common", "repeatable": true, "cooldown": 8,
+   "text": "擂台上已经连胜七场的壮汉正在叫阵。报名费 20 灵石。",
+   "options": [
+    { "text": "挑战一关", "hint": "20× 报名费，斗法（与你同阶）：胜则灵石 +30×", "cost": [{ "stones": -20 }],
+      "result": { "type": "duel", "enemy": { "strength": "same", "kind": "cultivator" }, "approach": "fight", "tiers": { "win": { "effects": [{ "stones": 30 }], "text": "台下一片叫好。" } } } },
+    { "text": "挑战两关", "hint": "20× 报名费，斗法（高你一层）：胜则灵石 +80×，外加一颗丹药", "cost": [{ "stones": -20 }],
+      "result": { "type": "duel", "enemy": { "strength": "higher_layer", "kind": "cultivator" }, "approach": "fight", "tiers": { "win": { "effects": [{ "stones": 80 }, { "randomItem": "pill_yellow" }], "text": "两关连胜，擂主亲自给你递了赏钱。" } } } },
+    { "text": "挑战三关", "hint": "20× 报名费，斗法（高你一层，更难）：胜则得到一卷功法和「擂台霸主」的名号（集市价格 -10%）", "cost": [{ "stones": -20 }],
+      "result": { "type": "duel", "enemy": { "strength": "higher_layer", "kind": "cultivator" }, "approach": "fight", "bonus": -0.1,
+        "tiers": { "win": { "effects": [{ "randomItem": "book_yellow" }, { "flag": "arenaChampion" }, { "log": "在散修擂台连过三关，成为擂台霸主", "weight": 4 }], "text": "三关过完，整条街的摊主都认识你了。" } } } },
+    { "text": "看看热闹", "hint": "无事", "result": { "type": "fixed" } }
+   ] },
+ { "id": "P11", "name": "落魄前辈", "category": "encounter", "locations": ["market"], "tier": "uncommon",
+   "text": "一位气息衰败的金丹修士正在变卖家当。",
+   "options": [
+    { "text": "买下他的法宝", "hint": "200× 灵石：一件玄阶法器，只有市价的一半", "cost": [{ "stones": -200 }], "result": { "type": "fixed", "effects": [{ "randomItem": "equip_mystic" }], "text": "他把法宝递过来时，手指在上面停了一下。" } },
+    { "text": "请他喝酒，听他讲往事", "hint": "气运 +2，修为 +5%", "result": { "type": "fixed", "effects": [{ "stat": "luck", "add": 2 }, { "cult": 0.05 }], "text": "他讲了一夜，讲他年轻时闯过的秘境，讲他折在哪一步。你听得很仔细。" } },
+    { "text": "资助他", "hint": "100× 灵石：他日后东山再起，会记得你", "cost": [{ "stones": -100 }],
+      "result": { "type": "fixed", "effects": [{ "schedule": "P11_back", "after": 20 }], "text": "他愣了很久，把灵石收下，郑重地问了你的名字。" } }
+   ] },
+ { "id": "P11_back", "name": "东山再起", "category": "encounter", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "当年那位落魄的前辈找到了你。他气色好了很多，身后还跟着两个弟子。",
+   "options": [{ "text": "叙旧", "hint": "他送你一份大礼", "result": { "type": "fixed", "effects": [{ "randomItem": "book_mystic" }, { "stones": 200 }, { "log": "资助过的落魄前辈东山再起，登门道谢", "weight": 4 }], "text": "「当年那一百灵石，救了我一条命。」" } }] },
+
+ { "id": "Z09", "name": "妖兽内丹", "category": "resource", "locations": ["any"], "tier": "common", "chainOnly": true, "repeatable": true,
+   "text": "妖兽尸身中滚出一颗内丹。",
+   "options": [
+    { "text": "直接吞服", "hint": "修为 +40%；三成妖气入体，心境 -10",
+      "result": { "type": "chance", "p": 0.7, "success": { "effects": [{ "cult": 0.4 }], "text": "内丹化开，一股热流涌遍全身。" }, "fail": { "effects": [{ "cult": 0.4 }, { "stat": "mood", "add": -10 }], "text": "热流里夹着一股腥气，你心里莫名烦躁起来。" } } },
+    { "text": "炼成丹药", "hint": "需要丹道功法：两颗聚气丹", "requires": [{ "anyOf": [{ "technique": "baicao" }, { "technique": "huichun_jue" }] }],
+      "result": { "type": "fixed", "effects": [{ "item": "juqi_dan", "n": 2 }], "text": "你就地起了一炉。" } },
+    { "text": "收起来", "hint": "得到妖兽内丹", "result": { "type": "fixed", "effects": [{ "item": "yaoshou_neidan" }] } }
+   ] },
+ { "id": "Z10", "name": "宝库钥匙", "category": "resource", "locations": ["any"], "tier": "common", "chainOnly": true, "repeatable": true,
+   "text": "劫修的尸身上有一把造型奇特的钥匙，钥匙柄上刻着一幅小小的地图。",
+   "options": [
+    { "text": "按图去找", "hint": "宝库里有灵石和一件玄阶法器；一半可能有劫修留守（斗法，两人，与你同阶）",
+      "result": { "type": "chance", "p": 0.5, "success": { "effects": [{ "stones": 300 }, { "randomItem": "equip_mystic" }], "text": "宝库没人看守，你搬了个痛快。" }, "fail": { "effects": [{ "chain": "Z10_b" }], "text": "宝库门口，两个劫修正在喝酒。" } } },
+    { "text": "卖给钱多多", "hint": "灵石 +80×", "result": { "type": "fixed", "effects": [{ "stones": 80 }] } }
+   ] },
+ { "id": "Z10_b", "name": "宝库守卫", "category": "danger", "locations": ["any"], "tier": "common", "chainOnly": true, "repeatable": true,
+   "text": "他们看见你手里的钥匙，扔下酒碗站了起来。",
+   "options": [
+    { "text": "动手", "hint": "斗法（两人，与你同阶）", "result": { "type": "duel", "enemy": { "strength": "same", "kind": "cultivator", "count": 2 }, "approach": "fight", "tiers": { "win": { "effects": [{ "stones": 300 }, { "randomItem": "equip_mystic" }], "text": "宝库归你了。" } } } },
+    { "text": "退走", "hint": "逃跑", "result": { "type": "duel", "enemy": { "strength": "same", "kind": "cultivator", "count": 2 }, "approach": "flee" } }
+   ] },
+ { "id": "Z11", "name": "投资", "category": "resource", "locations": ["market"], "tier": "uncommon",
+   "conditions": [{ "anyOf": [{ "origin": "merchant" }, { "npcAffGte": ["qian_duoduo", 30] }] }],
+   "text": "几个商人都在找人入股。",
+   "options": [
+    { "text": "投资灵药铺", "hint": "200× 灵石：10 次行动后回报 400×；两成亏掉一半", "cost": [{ "stones": -200 }], "result": { "type": "fixed", "effects": [{ "flag": "invested" }, { "schedule": "Z11_a", "after": 10 }], "text": "你在契书上按了手印。" } },
+    { "text": "投资商队", "hint": "300× 灵石：6 次行动后回报 600×；四成血本无归", "cost": [{ "stones": -300 }], "result": { "type": "fixed", "effects": [{ "flag": "invested" }, { "schedule": "Z11_b", "after": 6 }], "text": "商队第二天一早就出发了。" } },
+    { "text": "入股散修的摊子", "hint": "50× 灵石：此后每次来集市分红 20×", "cost": [{ "stones": -50 }], "result": { "type": "fixed", "effects": [{ "flag": "invested" }, { "flag": "stall" }], "text": "摊主千恩万谢，说以后每回都给你留一份。" } },
+    { "text": "不投", "hint": "无事", "result": { "type": "fixed" } }
+   ] },
+ { "id": "Z11_a", "name": "灵药铺的账", "category": "resource", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "灵药铺的掌柜派人送来了账本。",
+   "options": [{ "text": "看账", "hint": "八成回报翻倍", "result": { "type": "chance", "p": 0.8, "success": { "effects": [{ "stones": 400 }], "text": "生意不错。" }, "fail": { "effects": [{ "stones": 100 }], "text": "这一季亏了，只拿回一半本钱。" } } }] },
+ { "id": "Z11_b", "name": "商队归来", "category": "resource", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "你投的那支商队有消息了。",
+   "options": [{ "text": "听消息", "hint": "六成回报翻倍", "result": { "type": "chance", "p": 0.6, "success": { "effects": [{ "stones": 600 }], "text": "商队满载而归。" }, "fail": { "text": "商队在半路遭了劫，一个人都没回来。" } } }] },
+
+ { "id": "D09", "name": "恩人之子", "category": "moral", "locations": ["any"], "tier": "uncommon",
+   "conditions": [{ "anyOf": [{ "seen": "N_lin30" }, { "seen": "N_bai30" }, { "seen": "N_liu30" }, { "seen": "P11_back" }] }],
+   "text": "昔日恩人的儿子犯下大错，被宗门通缉，跑来求你收留。",
+   "options": [
+    { "text": "收留", "hint": "道心 +5；三成被宗门发现，贡献 -50", "result": { "type": "chance", "p": 0.7, "success": { "effects": [{ "stat": "dao", "add": 5 }], "text": "你把他藏了半年，风声过去后送他出了青州。" }, "fail": { "effects": [{ "stat": "dao", "add": 5 }, { "contrib": -50 }], "text": "执法堂还是找上门来了。" } } },
+    { "text": "劝他自首", "hint": "道心 +5", "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": 5 }], "text": "他哭了一夜，第二天自己去了执法堂。" } },
+    { "text": "把他交给宗门", "hint": "宗门贡献 +50，道心 -10", "result": { "type": "fixed", "effects": [{ "contrib": 50 }, { "stat": "dao", "add": -10 }], "text": "你亲手把他交了出去。他看你的眼神，你很久都忘不掉。" } }
+   ] },
+
+ { "id": "T03_ev", "name": "大能传承现世", "category": "special", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "一位上古大能的传承之地重现人间，各方势力云集。",
+   "options": [
+    { "text": "全力争夺", "hint": "斗法（高你一个大境界）：大胜得到全部传承（玄阶功法、玄阶法器、修为 +50%）；险胜得到其中的功法",
+      "result": { "type": "duel", "enemy": { "strength": "higher_realm", "kind": "cultivator" }, "approach": "fight",
+        "tiers": { "big": { "effects": [{ "randomItem": "book_mystic" }, { "randomItem": "equip_mystic" }, { "cult": 0.5 }, { "log": "力压群雄，夺得上古大能的传承", "weight": 8 }], "text": "最后一个对手倒下时，传承之地的石门在你面前缓缓打开。" },
+                   "win": { "effects": [{ "randomItem": "book_mystic" }], "text": "你抢到了一卷功法，便再没有力气往里走了。" } } } },
+    { "text": "暗中跟随，坐收渔利", "hint": "一半可能在混战后捡到一卷功法", "result": { "type": "chance", "p": 0.5, "luck": true, "success": { "effects": [{ "randomItem": "book_mystic" }], "text": "混战过后，你从一具尸体的怀里摸出了一卷玉简。" }, "fail": { "text": "等你摸进去，里面已经空了。" } } },
+    { "text": "不参与", "hint": "无事", "result": { "type": "fixed", "text": "你远远看着那道冲天的光柱，转身回去闭关了。" } }
+   ] }
+]

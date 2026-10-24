@@ -42,6 +42,13 @@ export function check(c: Content, st: RunState, cond: Cond): boolean {
     case 'exploresGte': return st.stats.explores >= v;
     case 'equipped': return !!st.equip[v as 'weapon'];
     case 'hasAbode': return !!st.abode === v;
+    case 'building': return (st.abode?.buildings[v] ?? 0) > 0;
+    case 'stonesGte': return st.stones >= v * stoneCoef(c, st);
+    case 'techSchool': { const g = ['yellow', 'mystic', 'earth', 'heaven']; const min = g.indexOf((cond as any).gradeGte ?? 'yellow'); return st.techniques.some(t => c.techniques[t]?.school === v && g.indexOf(c.techniques[t].grade) >= min); }
+    case 'shitouGte': return Number(st.flags.shitouNurture ?? 0) + Number(st.flags.shitouCompany ?? 0) >= v;
+    case 'killsGte': return st.stats.kills >= v;
+    case 'flagGte': return Number(st.flags[v[0]] ?? 0) >= v[1];
+    case 'at': return st.location === v;
     case 'inSect': return !!st.sect === v;
     case 'sectIs': return st.sect?.id === v;
     case 'sectRankGte': return !!st.sect && st.sect.rank >= v;
@@ -194,6 +201,7 @@ export function apply(c: Content, st: RunState, effects: Effect[] | undefined, o
       for(const id of Object.keys(st.bag)) if(c.items[id]?.tags?.includes(e.loseTag)){ const k = Math.ceil(st.bag[id] * e.pct); addItem(c, st, id, -k, out); lost += k; }
       out.push(lost ? `损失了 ${lost} 株灵草。` : '好在没什么可抢的。');
     }
+    else if('abodeVein' in e){ st.flags.abodeVein = pick(st, 'loot', [0, 0.5, 1.5, 2]); if(st.abode) out.push(Number(st.flags.abodeVein) >= 1.5 ? '你的洞府成了一处福地。' : '你的洞府灵气稀薄了许多。'); }
     else if('repay' in e){ const n = Math.round(Number(st.flags.loan ?? 0) * e.repay); st.stones += n; st.flags.loan = 0; out.push(`灵石 +${n}。`); }
   }
 }

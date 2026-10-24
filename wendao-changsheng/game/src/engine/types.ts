@@ -94,6 +94,8 @@ export type Cond =
   | { technique: string } | { anyOf: Cond[] } | { exploresGte: number }
   | { equipped: 'weapon' | 'armor' | 'accessory' }
   | { hasAbode: boolean }
+  | { building: string } | { stonesGte: number } | { techSchool: string; gradeGte?: string } | { shitouGte: number }
+  | { killsGte: number } | { flagGte: [string, number] } | { at: string }
   | { inSect: boolean } | { sectIs: string } | { sectRankGte: number } | { sectRankIs: number };
 
 export type StatKey = 'foundation' | 'luck' | 'mood' | 'dao' | 'tox';
@@ -132,7 +134,8 @@ export type Effect =
   | { nextMaterial: number }              // 下一境界的突破材料
   | { abode: string }                     // 得到洞府（人生日志的写法）
   | { harvest: number }                   // 收获灵田（1 = 全部，0.5 = 一半）
-  | { loseTag: string; pct: number };     // 失去某类物品的一部分（洞府被袭）
+  | { loseTag: string; pct: number }      // 失去某类物品的一部分（洞府被袭）
+  | { abodeVein: boolean };               // T06 灵脉变迁：洞府的修炼加成重新随机
 
 export interface Branch { effects?: Effect[]; text?: string }
 
@@ -176,7 +179,15 @@ export interface CombatText {
   extra?: Record<string, Frag[]>;   // 专属片段，例如劫修「给他灵石」、洞府防御
 }
 
-export interface SpecialDef { id: string; name: string; weight: number; conditions?: Cond[]; once?: boolean; text: string; world?: { id: string; actions: number }; effects?: Effect[] }
+export interface SpecialDef { id: string; name: string; weight: number; conditions?: Cond[]; once?: boolean; text: string; world?: { id: string; actions: number }; effects?: Effect[]; event?: string }
+
+export interface DestinyDef {
+  id: string; name: string; unlocked: boolean; origin?: string; forOrigin?: string;
+  deadline?: number;             // 期限（岁）
+  start?: string;                // 开局的引子事件
+  steps: { desc: string; cond: Cond[]; before?: number }[];
+  done: string; fail: string; doneEffects?: Effect[]; failEffects?: Effect[];
+}
 
 export interface SectRank { name: string; total: number; realmGte: number; layerGte: number; stipend: number; byEvent?: string }
 export interface SectConfig {
@@ -191,7 +202,7 @@ export interface NpcDef {
   visit: string[]; wander?: number; visitUnlock?: Cond[];
   stageAt?: string[];   // 阶段事件在哪里等你；不写就是能拜访的地点
   gifts: { favorite: string[]; like: string[]; dislike: string[] };
-  special?: { type: 'spar' | 'heal' | 'intel' | 'cocultivate' | 'teach'; unlock?: Cond[]; strength?: EnemyStrength; win?: number; lose?: number; gap?: number; cost?: number };
+  special?: { type: 'spar' | 'heal' | 'intel' | 'cocultivate' | 'teach' | 'guide'; unlock?: Cond[]; strength?: EnemyStrength; win?: number; lose?: number; gap?: number; cost?: number };
   stages: Record<string, string>;
   gossip: { type: 'hint' | 'item' | 'heart'; text: string; item?: string }[];
 }
@@ -222,6 +233,7 @@ export interface Content {
   sects: SectConfig;
   abode: AbodeConfig;
   npcs: Record<string, NpcDef>;
+  destinies: DestinyDef[];
   names: { surnames: string[]; given: string[] };
 }
 
@@ -264,6 +276,7 @@ export interface RunState {
   preCategory: Record<string, Category>;    // 预抽的类别（event-draw 4.1）
   exploreStreak: { loc: string; n: number };
   breakCooldown: boolean;
+  destiny: { id: string; step: number; state: 'active' | 'done' | 'failed' } | null;
   abode: { since: number; slots: number; buildings: Record<string, number>; leftAt: number; fieldReady: number | null } | null;
   sect: { id: string; rank: number; total: number; avail: number; stipendAt: number; backdoor: boolean; s03: number[]; s05: number[] } | null;
   ads: { revive: boolean; relief: number[] };

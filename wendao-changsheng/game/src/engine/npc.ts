@@ -120,8 +120,8 @@ export function giveGift(c: Content, st: RunState, item: string, out: string[]):
   addItem(c, st, item, -1, out);
   const since = st.actions - Number(st.flags['giftAt_' + id] ?? -99);
   st.flags['giftAt_' + id] = st.actions;
-  if(id === 'xiao_shitou' && ['technique', 'pill'].includes(c.items[item].kind)) st.flags.shitouNurture = Number(st.flags.shitouNurture ?? 0) + 1;
   if(since < 3){ out.push(`${d.name}收下了，笑着说：「你上回送的还没用完呢。」`); return; }
+  if(id === 'xiao_shitou' && ['technique', 'pill'].includes(c.items[item].kind)) st.flags.shitouNurture = Number(st.flags.shitouNurture ?? 0) + 1;   // 栽培（npc-daily 5.3）；冷却中送的不算
   const t = taste(c, id, item);
   let add = 3;
   if(t === 'favorite'){ add = st.flags['favRealm_' + id] === st.realm ? 8 : 15; st.flags['favRealm_' + id] = st.realm; out.push(`${d.name}眼睛一亮。`); }
@@ -175,6 +175,7 @@ function specialOption(c: Content, st: RunState, id: string): Omit<PendingOption
     }
     case 'intel': { const cost = Math.round((sp.cost ?? 20) * coef); return { text: '买情报', hint: `${cost} 灵石：打听下一次外出探索会遇到什么`, enabled: st.stones >= cost, reason: st.stones >= cost ? undefined : '灵石不足' }; }
     case 'cocultivate': return { text: '同修', hint: '一起打坐：心境 +5', enabled: true };
+    case 'guide': { const wait = Number(st.flags.guideAt ?? -99) + (sp.gap ?? 5) - st.actions; return { text: '指点', hint: '教他几招，他的修为会随之提升', enabled: wait <= 0, reason: wait > 0 ? `${wait} 次行动后才能再指点` : undefined }; }
     case 'teach': {
       const key = st.realm * 10 + st.layer;
       return { text: '请教', hint: `修为 +${st.npcs[id].aff >= 30 ? 15 : 10}%；每个小层级只能请教一次`, enabled: st.flags.taughtAt !== key, reason: st.flags.taughtAt === key ? '这一层已经请教过了' : undefined };
@@ -210,6 +211,7 @@ export function special(c: Content, st: RunState, out: string[]): void {
       out.push(`${d.name}凑过来，压低声音说了几句。`, `（下一次在${c.locations[loc].name}外出探索，会遇到${CAT_NAME[cat ?? ''] ?? '平静'}。）`);
       return;
     }
+    case 'guide': st.flags.guideAt = st.actions; st.flags.shitouCompany = Number(st.flags.shitouCompany ?? 0) + 1; out.push(`你指点了${d.name}一番。他练得很认真。`); addAff(c, st, id, 3, true); return;
     case 'cocultivate': st.mood += 5; out.push(`你和${d.name}对坐了一夜。心境 +5。`); addAff(c, st, id, 2, true); return;
     case 'teach': {
       st.flags.taughtAt = st.realm * 10 + st.layer;

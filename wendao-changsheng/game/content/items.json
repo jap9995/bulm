@@ -62,6 +62,7 @@
  "recipe_jiedu":  { "name": "解毒丹丹方", "kind": "recipe", "grade": "yellow", "price": 40 },
  "recipe_lingshou": { "name": "灵兽丹丹方", "kind": "recipe", "grade": "yellow", "price": 40 },
  "dongfu_zuobiao": { "name": "洞府坐标", "kind": "material", "grade": "mystic", "price": null, "sell": 100 },
+ "tianwai_yuntie": { "name": "天外陨铁", "kind": "material", "grade": "mystic", "price": null, "sell": 120 },
  "juling_zhentu":  { "name": "聚灵阵图", "kind": "key", "grade": "mystic", "price": 120 },
  "book_xingluo":   { "name": "星罗棋阵", "kind": "technique", "grade": "mystic", "price": null, "technique": "xingluo_qizhen" }
 }

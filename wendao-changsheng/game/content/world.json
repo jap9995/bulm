@@ -525,6 +525,47 @@
     "actions": 12
    },
    "text": "天边裂开一道青色的光门。「青冥秘境」开启了——只开放一段时日，里面的收获是外面的两倍，危险也是。"
+  },
+  {
+   "id": "T03",
+   "name": "大能传承现世",
+   "weight": 10,
+   "once": true,
+   "conditions": [
+    {
+     "realmGte": 1
+    }
+   ],
+   "event": "T03_ev",
+   "text": "一道光柱冲天而起，三日不散。"
+  },
+  {
+   "id": "T04",
+   "name": "魔道入侵",
+   "weight": 10,
+   "once": true,
+   "conditions": [
+    {
+     "realmGte": 2
+    }
+   ],
+   "world": {
+    "id": "demon_war",
+    "actions": 20
+   },
+   "text": "血煞宗大举进犯，正道各宗烽烟四起。接下来一段时日，处处凶险，物价飞涨。"
+  },
+  {
+   "id": "T06",
+   "name": "灵脉变迁",
+   "weight": 10,
+   "once": true,
+   "effects": [
+    {
+     "abodeVein": true
+    }
+   ],
+   "text": "大地震动，灵脉改道。各处洞府的灵气，有的浓了，有的淡了。"
   }
  ]
 }

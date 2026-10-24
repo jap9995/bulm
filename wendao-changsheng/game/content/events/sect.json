@@ -84,7 +84,7 @@
    "options": [
     { "text": "放手一搏", "hint": "斗法：胜则成为大比魁首——下一境界的突破材料，地位升一级",
       "result": { "type": "duel", "enemy": { "strength": "higher_layer" }, "approach": "fight", "bonus": -0.05,
-        "tiers": { "win": { "effects": [{ "nextMaterial": 1 }, { "promote": 1 }, { "log": "夺得宗门大比魁首", "weight": 6 }], "text": "最后一招落下，宗主亲自起身，把魁首的玉牌挂在了你的腰间。" } } } },
+        "tiers": { "win": { "effects": [{ "nextMaterial": 1 }, { "promote": 1 }, { "flag": "champion" }, { "log": "夺得宗门大比魁首", "weight": 6 }], "text": "最后一招落下，宗主亲自起身，把魁首的玉牌挂在了你的腰间。" } } } },
     { "text": "认输", "hint": "保住已经拿到的贡献", "result": { "type": "fixed", "text": "你看了看对手，又看了看自己发抖的手，认输下台。" } }
    ] },
 

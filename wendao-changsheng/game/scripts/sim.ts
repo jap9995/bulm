@@ -3,6 +3,7 @@
 //       node scripts/sim.ts 1 steady --log       （打印一局的完整过程）
 import { loadContent } from './load.ts';
 import { newRun, offerTalents } from '../src/engine/engine.ts';
+import { offerDestinies } from '../src/engine/destiny.ts';
 import { step, type BotKind } from '../src/sim/bots.ts';
 import type { RunState } from '../src/engine/types.ts';
 
@@ -16,7 +17,8 @@ const RANK: Record<string, number> = { common: 0, rare: 1, epic: 2, legend: 3 };
 function play(seed: number, origin: string, kind: BotKind, watchAds: boolean): RunState {
   const offers = offerTalents(c, seed);
   const talent = kind === 'random' ? offers[seed % offers.length] : offers.sort((a, b) => RANK[c.talents.find(t => t.id === b)!.rarity] - RANK[c.talents.find(t => t.id === a)!.rarity])[0];
-  let st = newRun(c, { seed, origin, talent });
+  const dests = offerDestinies(c, seed, origin);
+  let st = newRun(c, { seed, origin, talent, destiny: dests[kind === 'random' ? seed % dests.length : 0] });
   for(let i = 0; i < 1000 && !st.ended; i++){
     const before = st.steps;
     st = step(c, st, { kind, watchAds });
@@ -61,6 +63,8 @@ for(const kind of bots){
     const stages = Object.values(n.stages).map(ev => pct(runs.filter(s => s.seen[ev]).length, runs.length)).join('/');
     return `${n.name} ${pct(met.length, runs.length)}${stages ? `（阶段 ${stages}）` : ''}`;
   });
+  const dLine = c.destinies.map(d => { const rs = runs.filter(s => s.destiny?.id === d.id); return rs.length ? `${d.name} ${pct(rs.filter(s => s.destiny!.state === 'done').length, rs.length)}（${rs.length} 局）` : ''; }).filter(Boolean);
+  console.log(`宿命　　　完成 ${pct(runs.filter(s => s.destiny?.state === 'done').length, runs.length)}：${dLine.join('　')}`);
   console.log(`NPC　　　认识的比例：${npcLine.join('　')}`);
   for(const origin of origins){
     const rs = runs.filter(s => s.origin === origin);
