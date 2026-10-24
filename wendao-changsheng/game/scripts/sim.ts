@@ -53,6 +53,9 @@ for(const kind of bots){
   console.log(`死因　　　${Object.entries(causes).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${pct(v, deaths.length)}`).join('　') || '-'}`);
   console.log(`享年　　　中位数 ${median(runs.map(s => Math.floor(s.age)))} 岁；30 岁前死亡 ${pct(runs.filter(s => s.age < 30 && s.ended?.ending === 'death').length, runs.length)}`);
   console.log(`斗法　　　胜率 ${pct(wins, duels)}（${duels} 场）；平静事件占探索 ${pct(calm, explores)}；平均看广告 ${(runs.reduce((a, s) => a + s.stats.adsWatched, 0) / runs.length).toFixed(2)} 次`);
+  const inSect = runs.filter(s => s.sect), everSect = runs.filter(s => s.sect || s.flags.hunted);
+  const ranks = c.sects.ranks.map((r, i) => `${r.name} ${pct(inSect.filter(s => s.sect!.rank === i).length, runs.length)}`).filter(s => !s.endsWith(' 0.0%'));
+  console.log(`宗门　　　入过宗门 ${pct(everSect.length, runs.length)}，被除名 ${pct(runs.filter(s => s.flags.hunted).length, runs.length)}；结束时 ${ranks.join('　') || '-'}`);
   for(const origin of origins){
     const rs = runs.filter(s => s.origin === origin);
     console.log(`　${c.origins.find(o => o.id === origin)!.name}：筑基以上 ${pct(rs.filter(s => s.realm >= 1).length, rs.length)}，身死 ${pct(rs.filter(s => s.ended?.ending === 'death').length, rs.length)}，享年中位数 ${median(rs.map(s => Math.floor(s.age)))}`);

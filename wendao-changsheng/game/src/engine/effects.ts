@@ -39,6 +39,10 @@ export function check(c: Content, st: RunState, cond: Cond): boolean {
     case 'anyOf': return (v as Cond[]).some(x => check(c, st, x));
     case 'exploresGte': return st.stats.explores >= v;
     case 'equipped': return !!st.equip[v as 'weapon'];
+    case 'inSect': return !!st.sect === v;
+    case 'sectIs': return st.sect?.id === v;
+    case 'sectRankGte': return !!st.sect && st.sect.rank >= v;
+    case 'sectRankIs': return !!st.sect && st.sect.rank === v;
   }
   throw new Error('未知条件：' + k);
 }
@@ -67,6 +71,7 @@ export function affordable(c: Content, st: RunState, cost?: Effect[]): string | 
     if('item' in e && (e.n ?? 1) < 0 && count(st, e.item) < -(e.n ?? 1)) return `缺少${c.items[e.item]?.name ?? e.item}`;
     if('cult' in e && e.cult < 0 && st.cult < -e.cult) return '修为不足';
     if('lifespan' in e && e.lifespan < 0 && lifeLeft(c, st) + e.lifespan <= 0) return '寿元不足';
+    if('contrib' in e && e.contrib < 0 && (st.sect?.avail ?? 0) < -e.contrib) return `可用贡献不足（需要 ${-e.contrib}）`;
   }
   return null;
 }
@@ -142,6 +147,42 @@ export function apply(c: Content, st: RunState, effects: Effect[] | undefined, o
     else if('die' in e) st.flags.dying = e.die;
     else if('log' in e) st.log.push({ age: Math.floor(st.age), type: 'event', weight: e.weight, text: e.log });
     else if('lend' in e){ const n = Math.floor(st.stones * e.lend); st.stones -= n; st.flags.loan = Number(st.flags.loan ?? 0) + n; out.push(`借出灵石 ${n}。`); }
+    else if('join' in e){
+      const rank = e.rank ?? 0;
+      st.sect = { id: e.join, rank, total: 0, avail: 0, stipendAt: st.actions, backdoor: !!e.backdoor, s03: [], s05: [] };
+      const name = c.sects.sects[e.join].name;
+      out.push(`你成了${name}的${c.sects.ranks[rank].name}。`);
+      st.log.push({ age: Math.floor(st.age), type: 'sect', weight: 4, text: `拜入${name}` });
+    }
+    else if('contrib' in e){
+      if(!st.sect) continue;
+      st.sect.total = Math.max(0, st.sect.total + e.contrib); st.sect.avail = Math.max(0, st.sect.avail + e.contrib);
+      out.push(`宗门贡献 ${e.contrib >= 0 ? '+' : ''}${e.contrib}。`);
+    }
+    else if('promote' in e){
+      if(!st.sect) continue;
+      st.sect.rank = Math.min(c.sects.ranks.length - 1, st.sect.rank + e.promote);
+      out.push(`你晋升为${c.sects.ranks[st.sect.rank].name}。`);
+    }
+    else if('expel' in e){
+      if(!st.sect) continue;
+      const name = c.sects.sects[st.sect.id].name;
+      st.factions[st.sect.id] = -100; st.flags.hunted = st.sect.id; st.sect = null;
+      st.queue.push({ event: 'S_hunt', due: st.actions + 8, prio: 5 });
+      out.push(`你被${name}除名了。从今往后，同门就是追兵。`);
+      st.log.push({ age: Math.floor(st.age), type: 'sect', weight: 6, text: `因${e.expel}，被${name}除名` });
+    }
+    else if('examFail' in e) st.flags['retake_' + e.examFail] = st.age + 2;
+    else if('open' in e){
+      const l = c.locations[e.open];
+      const w = (l.unlock?.find(u => 'world' in u) as { world: string } | undefined)?.world;
+      if(w){ st.world = st.world.filter(x => x.id !== w); st.world.push({ id: w, until: st.actions + e.actions }); }
+      st.location = e.open; out.push(`来到了${l.name}。`);
+    }
+    else if('nextMaterial' in e){
+      const next = c.realms[st.realm + 1];
+      if(next?.material) addItem(c, st, next.material, e.nextMaterial * next.materialCount, out);
+    }
     else if('repay' in e){ const n = Math.round(Number(st.flags.loan ?? 0) * e.repay); st.stones += n; st.flags.loan = 0; out.push(`灵石 +${n}。`); }
   }
 }

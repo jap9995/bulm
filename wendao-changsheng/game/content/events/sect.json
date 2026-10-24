@@ -1,0 +1,195 @@
+[
+ { "id": "S01_wenjian", "name": "入门考核", "category": "sect", "locations": ["sect_wenjian"], "tier": "common", "repeatable": true,
+   "text": "问剑宗山门前排着长队。执事弟子扫了你一眼，冷冷道：「剑意考核，下一个。」",
+   "options": [
+    { "text": "正常参加考核", "hint": "斗法（剑意，与你同阶）：胜则入门；败则要等两年才能再考", "requires": [{ "stat": "dao", "gte": -20 }],
+      "result": { "type": "duel", "enemy": { "strength": "same" }, "approach": "fight",
+        "tiers": { "win": { "effects": [{ "join": "wenjian" }], "text": "执事弟子收起木剑，第一次正眼看你：「明日来领道袍。」" }, "lose": { "effects": [{ "examFail": "wenjian" }] }, "bad": { "effects": [{ "examFail": "wenjian" }] } } } },
+    { "text": "走后门", "hint": "100× 灵石：直接入门，但升内门要多攒一半贡献", "requires": [{ "stat": "dao", "gte": -20 }], "cost": [{ "stones": -100 }],
+      "result": { "type": "fixed", "effects": [{ "join": "wenjian", "backdoor": true }], "text": "灵石递过去，执事弟子的脸色立刻和缓了：「师弟这边请。」" } },
+    { "text": "拿出信物", "hint": "白芷好感 ≥ 60：直接成为内门弟子", "requires": [{ "npcAffGte": ["baizhi", 60] }],
+      "result": { "type": "fixed", "effects": [{ "join": "wenjian", "rank": 1 }], "text": "执事弟子看过信物，亲自把你领上了内峰。" } },
+    { "text": "改日再来", "hint": "离开", "result": { "type": "fixed" } }
+   ] },
+
+ { "id": "S01_danding", "name": "入门考核", "category": "sect", "locations": ["sect_danding"], "tier": "common", "repeatable": true,
+   "text": "丹鼎门的考核在一间满是药香的屋子里。案上摆着三十六味灵药，考官要你一一说出药性。",
+   "options": [
+    { "text": "辨药", "hint": "六成把握（气运越高越有把握；会丹道必过）：成功入门；失败要等两年再考", "requires": [{ "stat": "dao", "gte": -20 }],
+      "result": { "type": "chance", "p": 0.6, "luck": true, "success": { "effects": [{ "join": "danding" }], "text": "你说完最后一味，考官捻着胡子点了点头。" }, "fail": { "effects": [{ "examFail": "danding" }], "text": "说到第二十味，你把赤血参认成了凝露草。考官摇了摇头。" } } },
+    { "text": "以丹道辨药", "hint": "会丹道功法：稳过", "requires": [{ "stat": "dao", "gte": -20 }, { "anyOf": [{ "technique": "baicao" }, { "technique": "huichun_jue" }] }],
+      "result": { "type": "fixed", "effects": [{ "join": "danding" }], "text": "你连药渣都辨得出来。考官当场在名册上写下了你的名字。" } },
+    { "text": "走后门", "hint": "100× 灵石：直接入门，但升内门要多攒一半贡献", "requires": [{ "stat": "dao", "gte": -20 }], "cost": [{ "stones": -100 }],
+      "result": { "type": "fixed", "effects": [{ "join": "danding", "backdoor": true }], "text": "灵石落进考官的袖子里，那三十六味药你一味都没认。" } },
+    { "text": "拿出信物", "hint": "白芷好感 ≥ 60：直接成为内门弟子", "requires": [{ "npcAffGte": ["baizhi", 60] }],
+      "result": { "type": "fixed", "effects": [{ "join": "danding", "rank": 1 }], "text": "考官认出了白芷的字迹，笑道：「原来是白师侄举荐的人。」" } },
+    { "text": "改日再来", "hint": "离开", "result": { "type": "fixed" } }
+   ] },
+
+ { "id": "S01_xuesha", "name": "投名状", "category": "sect", "locations": ["sect_xuesha"], "tier": "common", "repeatable": true,
+   "text": "血煞宗的山门是一道血红的石阙。守门的弟子咧嘴一笑：「想入我血煞宗？拿一个修士的储物袋来。」他朝山道上一个落单的散修努了努嘴。",
+   "options": [
+    { "text": "去抢那个散修", "hint": "斗法（与你同阶），道心 -10：胜则入门；败则要等两年再来", "requires": [{ "stat": "dao", "lte": 20 }],
+      "result": { "type": "duel", "enemy": { "strength": "same", "kind": "cultivator" }, "approach": "fight",
+        "tiers": { "win": { "effects": [{ "stat": "dao", "add": -10 }, { "join": "xuesha" }], "text": "你把还带着血的储物袋扔在石阶上。守门弟子拍了拍你的肩：「是块料子。」" }, "lose": { "effects": [{ "examFail": "xuesha" }] }, "bad": { "effects": [{ "examFail": "xuesha" }] } } } },
+    { "text": "转身离开", "hint": "离开", "result": { "type": "fixed" } }
+   ] },
+
+ { "id": "S01_xuanji", "name": "山门阵法", "category": "sect", "locations": ["sect_xuanji"], "tier": "common", "repeatable": true,
+   "text": "玄机阁没有山门，只有一座不断变换的迷阵。阵前立着一块石碑：「交三百灵石，或者自己走进来。」",
+   "options": [
+    { "text": "交灵石", "hint": "300× 灵石：入门", "cost": [{ "stones": -300 }],
+      "result": { "type": "fixed", "effects": [{ "join": "xuanji" }], "text": "灵石放上石碑，迷阵里让出了一条笔直的路。" } },
+    { "text": "破解山门阵法", "hint": "四成把握（气运越高越有把握）：成功入门；失败要等两年再来",
+      "result": { "type": "chance", "p": 0.4, "luck": true, "success": { "effects": [{ "join": "xuanji" }], "text": "你在阵里走了三天三夜，最后一步踏出时，阵外站着一位笑眯眯的老者。" }, "fail": { "effects": [{ "examFail": "xuanji" }], "text": "你在阵里绕了半个月，最后被阵法原样送回了石碑前。" } } },
+    { "text": "以阵法破阵", "hint": "会阵法：稳稳走进去", "requires": [{ "anyOf": [{ "technique": "zhenfa_chujie" }, { "technique": "xingluo_qizhen" }] }],
+      "result": { "type": "fixed", "effects": [{ "join": "xuanji" }], "text": "这座阵你看得懂。一炷香后，你已经站在了阁中。" } },
+    { "text": "改日再来", "hint": "离开", "result": { "type": "fixed" } }
+   ] },
+
+ { "id": "S02", "name": "宗门任务", "category": "sect", "locations": ["sect"], "tier": "common", "repeatable": true, "combat": "@beast",
+   "text": "任务堂的玉简上列着三个任务。",
+   "options": [
+    { "text": "采集任务", "hint": "耗时半年：贡献 +20；三成额外得到一株灵草", "time": 0.5,
+      "result": { "type": "chance", "p": 0.3, "success": { "effects": [{ "contrib": 20 }, { "randomItem": "herb" }], "text": "任务要的药草采齐了，你还顺手多挖了一株。" }, "fail": { "effects": [{ "contrib": 20 }], "text": "你在山里转了半年，把任务要的药草一株株采齐了。" } } },
+    { "text": "剿灭任务", "hint": "斗法（与你同阶）：胜则贡献 +40，并得到战利品",
+      "result": { "type": "duel", "enemy": { "strength": "same", "kind": "beast" }, "approach": "fight",
+        "tiers": { "win": { "effects": [{ "contrib": 40 }, { "randomItem": "beast" }], "text": "你提着妖兽的首级回到任务堂交差。" } } } },
+    { "text": "护送任务", "hint": "耗时一年：贡献 +30，散修好感 +5", "time": 1,
+      "result": { "type": "fixed", "effects": [{ "contrib": 30 }, { "faction": "sanxiu", "add": 5 }], "text": "一路平安。分别时，同行的散修硬塞给你一壶酒。" } }
+   ] },
+
+ { "id": "S03", "name": "宗门大比", "category": "sect", "locations": ["sect"], "tier": "common",
+   "text": "演武场上旌旗招展，各峰弟子摩拳擦掌。",
+   "options": [
+    { "text": "全力以赴", "hint": "连闯三关（对手都比你强）：每过一关贡献 +50；三关全过成为大比魁首，得到下一境界的突破材料，地位直接升一级",
+      "result": { "type": "duel", "enemy": { "strength": "higher_layer" }, "approach": "fight", "bonus": -0.05,
+        "tiers": { "win": { "effects": [{ "contrib": 50 }, { "chain": "S03_2" }], "text": "第一关，你赢了。" } } } },
+    { "text": "藏拙", "hint": "斗法（与你同阶）：胜则贡献 +20，不惹人眼红",
+      "result": { "type": "duel", "enemy": { "strength": "same" }, "approach": "fight",
+        "tiers": { "win": { "effects": [{ "contrib": 20 }], "text": "你赢得不声不响，看台上没几个人记住你的名字。" } } } },
+    { "text": "接受长老的暗示", "hint": "第二关「放一放」：贡献 +60，道心 -10；两成被执法堂察觉，逐出宗门",
+      "result": { "type": "chance", "p": 0.8, "success": { "effects": [{ "contrib": 60 }, { "stat": "dao", "add": -10 }], "text": "第二关你输得恰到好处。散场时，那位长老远远地朝你点了点头。" }, "fail": { "effects": [{ "stat": "dao", "add": -10 }, { "expel": "大比放水被执法堂察觉" }], "text": "大比结束的第三天，执法堂的人找上了门。" } } }
+   ] },
+ { "id": "S03_2", "name": "宗门大比 · 第二关", "category": "sect", "locations": ["sect"], "tier": "common", "chainOnly": true,
+   "text": "第二关的对手是上一届的前三。他抱了抱拳，眼神却很冷。",
+   "options": [
+    { "text": "继续", "hint": "斗法：胜则贡献 +50，进入第三关",
+      "result": { "type": "duel", "enemy": { "strength": "higher_layer" }, "approach": "fight", "bonus": -0.05,
+        "tiers": { "win": { "effects": [{ "contrib": 50 }, { "chain": "S03_3" }], "text": "第二关，你也赢了。看台上开始有人念你的名字。" } } } },
+    { "text": "认输", "hint": "保住已经拿到的贡献", "result": { "type": "fixed", "text": "你朝对手拱了拱手，退下了擂台。" } }
+   ] },
+ { "id": "S03_3", "name": "宗门大比 · 决胜", "category": "sect", "locations": ["sect"], "tier": "common", "chainOnly": true,
+   "text": "决胜一关。整个演武场都安静了下来。",
+   "options": [
+    { "text": "放手一搏", "hint": "斗法：胜则成为大比魁首——下一境界的突破材料，地位升一级",
+      "result": { "type": "duel", "enemy": { "strength": "higher_layer" }, "approach": "fight", "bonus": -0.05,
+        "tiers": { "win": { "effects": [{ "nextMaterial": 1 }, { "promote": 1 }, { "log": "夺得宗门大比魁首", "weight": 6 }], "text": "最后一招落下，宗主亲自起身，把魁首的玉牌挂在了你的腰间。" } } } },
+    { "text": "认输", "hint": "保住已经拿到的贡献", "result": { "type": "fixed", "text": "你看了看对手，又看了看自己发抖的手，认输下台。" } }
+   ] },
+
+ { "id": "S04", "name": "同门倾轧", "category": "sect", "locations": ["sect"], "tier": "uncommon", "tags": ["sect"],
+   "conditions": [{ "sectRankGte": 1 }],
+   "text": "有师兄在长老面前诬告你偷盗丹药。",
+   "options": [
+    { "text": "自证清白", "hint": "心境越高越有把握（约五成）：成功则诬告者受罚；失败贡献 -50",
+      "result": { "type": "chance", "p": 0.5, "stat": "mood", "success": { "effects": [{ "stat": "mood", "add": 5 }], "text": "你把那几日的行踪一一说清，人证物证俱在。诬告你的师兄被罚去思过崖。" }, "fail": { "effects": [{ "contrib": -50 }], "text": "你越解释，长老的脸色越沉。" } } },
+    { "text": "私下找他决斗", "hint": "斗法（与你同阶）：胜则他再不敢招惹你；但违反门规，贡献 -30",
+      "result": { "type": "duel", "enemy": { "strength": "same", "kind": "cultivator" }, "approach": "fight",
+        "tiers": { "win": { "effects": [{ "contrib": -30 }], "text": "他躺在地上，再没敢抬头看你。" }, "lose": { "effects": [{ "contrib": -30 }] }, "bad": { "effects": [{ "contrib": -30 }] } } } },
+    { "text": "忍了", "hint": "心境 -10；三成被长老看在眼里，暗中提携（贡献 +30）",
+      "result": { "type": "chance", "p": 0.3, "success": { "effects": [{ "stat": "mood", "add": -10 }, { "contrib": 30 }], "text": "你一句没辩。几天后，长老把一份美差交到了你手上。" }, "fail": { "effects": [{ "stat": "mood", "add": -10 }], "text": "你一句没辩，事情就这么过去了，只是心里堵得慌。" } } }
+   ] },
+
+ { "id": "S05", "name": "宗门秘境", "category": "sect", "locations": ["sect"], "tier": "common",
+   "conditions": [{ "sectRankGte": 1 }],
+   "text": "宗门秘境开启，名额只有十人。",
+   "options": [
+    { "text": "争取名额", "hint": "消耗 100 贡献：宗门秘境为你开放 3 次行动，探索收益 ×1.5", "cost": [{ "contrib": -100 }],
+      "result": { "type": "fixed", "effects": [{ "open": "sect_secret", "actions": 3 }], "text": "你踏进秘境的那一刻，身后的光门缓缓合上了一半。" } },
+    { "text": "把名额让给同门", "hint": "贡献 +30", "result": { "type": "fixed", "effects": [{ "contrib": 30 }], "text": "师弟接过玉牌，朝你深深一揖。" } },
+    { "text": "买别人的名额", "hint": "200× 灵石：宗门秘境为你开放 3 次行动", "cost": [{ "stones": -200 }],
+      "result": { "type": "fixed", "effects": [{ "open": "sect_secret", "actions": 3 }], "text": "一个外门弟子收了灵石，把玉牌塞给你就走了。" } }
+   ] },
+
+ { "id": "S06", "name": "宗门危机", "category": "sect", "locations": ["sect"], "tier": "common",
+   "conditions": [{ "world": "demon_war" }],
+   "text": "魔修攻山，护山大阵摇摇欲坠。",
+   "options": [
+    { "text": "死守山门", "hint": "斗法（高你一层）：胜则贡献 +200、地位升一级；败则重伤，但仍记功（贡献 +100）",
+      "result": { "type": "duel", "enemy": { "strength": "higher_layer", "kind": "cultivator", "count": 2 }, "approach": "fight",
+        "tiers": { "win": { "effects": [{ "contrib": 200 }, { "promote": 1 }, { "log": "魔修攻山时死守山门", "weight": 6 }], "text": "大阵合拢的那一刻，你身边只剩下满地的魔修。" }, "lose": { "effects": [{ "contrib": 100 }] }, "bad": { "effects": [{ "contrib": 100 }] } } } },
+    { "text": "护送弟子撤离", "hint": "贡献 +100，道心 +10，安全",
+      "result": { "type": "fixed", "effects": [{ "contrib": 100 }, { "stat": "dao", "add": 10 }], "text": "你带着一群年幼的弟子从后山小路撤了出去，一个都没少。" } },
+    { "text": "趁乱盗取藏经阁", "hint": "得到两卷功法，道心 -30，等同叛宗",
+      "result": { "type": "fixed", "effects": [{ "randomItem": "book_mystic" }, { "randomItem": "book_yellow" }, { "stat": "dao", "add": -30 }, { "expel": "趁魔修攻山盗取藏经阁" }], "text": "藏经阁里一片狼藉。你揣着两卷功法，从另一个方向下了山。" } }
+   ] },
+
+ { "id": "S07", "name": "核心弟子之争", "category": "sect", "locations": ["sect"], "tier": "common",
+   "conditions": [{ "sectRankIs": 2 }, { "realmGte": 2 }],
+   "text": "宗主要在三名真传中选一位核心弟子。",
+   "options": [
+    { "text": "凭实力争", "hint": "斗法（高你一层）：胜则成为核心弟子，得到一卷玄阶功法",
+      "result": { "type": "duel", "enemy": { "strength": "higher_layer", "kind": "cultivator" }, "approach": "fight",
+        "tiers": { "win": { "effects": [{ "promote": 1 }, { "randomItem": "book_mystic" }, { "log": "在核心弟子之争中胜出", "weight": 6 }], "text": "宗主看着你，许久才开口：「从今日起，你便是本宗的核心弟子。」" } } } },
+    { "text": "拉拢长老", "hint": "300× 灵石：六成成为核心弟子", "cost": [{ "stones": -300 }],
+      "result": { "type": "chance", "p": 0.6, "success": { "effects": [{ "promote": 1 }], "text": "三位长老里有两位替你说了话。" }, "fail": { "text": "灵石送出去了，长老们却改了主意。" } } },
+    { "text": "让给他人", "hint": "心境 +20", "result": { "type": "fixed", "effects": [{ "stat": "mood", "add": 20 }, { "flag": "s07Yield" }], "text": "你在殿上推辞了。被你让出机会的那位师兄，看你的眼神变了。" } }
+   ] },
+
+ { "id": "S08", "name": "继任宗主", "category": "sect", "locations": ["sect"], "tier": "common",
+   "conditions": [{ "sectRankIs": 4 }, { "realmGte": 4 }],
+   "text": "老宗主坐化，临终前召你入殿。",
+   "options": [
+    { "text": "接任宗主", "hint": "成为宗主（「传承留世」结局的条件之一）",
+      "result": { "type": "fixed", "effects": [{ "flag": "sectMaster" }, { "log": "继任宗主", "weight": 9 }], "text": "你接过宗主令的时候，殿外的钟响了九下。" } },
+    { "text": "推辞，回去闭关", "hint": "得到老宗主的毕生感悟：修为 +100%",
+      "result": { "type": "fixed", "effects": [{ "cult": 1 }], "text": "老宗主没有勉强，只把一枚玉简放进了你手里。" } },
+    { "text": "带着宗门至宝离开", "hint": "得到一件玄阶法器，叛出宗门",
+      "result": { "type": "fixed", "effects": [{ "randomItem": "equip_mystic" }, { "expel": "带着宗门至宝离开" }], "text": "灵堂里的烛火还没熄，你已经走出了山门。" } }
+   ] },
+
+ { "id": "D04", "name": "盗取宗门功法", "category": "sect", "locations": ["sect"], "tier": "uncommon", "tags": ["sect"],
+   "text": "你无意中发现藏经阁的禁制有一处破绽。",
+   "options": [
+    { "text": "偷取禁术", "hint": "得到一卷玄阶功法；三成被发现，逐出宗门并遭到追杀",
+      "result": { "type": "chance", "p": 0.7, "success": { "effects": [{ "randomItem": "book_mystic" }, { "stat": "dao", "add": -10 }], "text": "你趁夜摸进藏经阁，又趁夜摸了出来，没有惊动任何人。" }, "fail": { "effects": [{ "randomItem": "book_mystic" }, { "expel": "盗取宗门功法" }], "text": "你刚跨出藏经阁的门槛，四周就亮起了执法堂的灯笼。" } } },
+    { "text": "上报长老", "hint": "贡献 +100", "result": { "type": "fixed", "effects": [{ "contrib": 100 }], "text": "长老亲自来看了那处破绽，脸色很难看，看你的眼神却多了几分赞许。" } },
+    { "text": "当作不知道", "hint": "无事", "result": { "type": "fixed", "effects": [{ "schedule": "D04_after", "after": 3 }], "text": "你装作什么也没看见。" } }
+   ] },
+ { "id": "D04_after", "name": "藏经阁失窃", "category": "sect", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "藏经阁失窃了。宗门彻查，你也被列为嫌疑人之一。",
+   "options": [
+    { "text": "配合调查", "hint": "心境 -5；三成被冤枉，贡献 -50",
+      "result": { "type": "chance", "p": 0.7, "success": { "effects": [{ "stat": "mood", "add": -5 }], "text": "查了一个月，最后查到了一个外门执事头上。" }, "fail": { "effects": [{ "stat": "mood", "add": -5 }, { "contrib": -50 }], "text": "真凶没找到，你倒是被记了一笔。" } } }
+   ] },
+
+ { "id": "D06", "name": "同门的秘密", "category": "sect", "locations": ["sect"], "tier": "uncommon", "tags": ["sect"],
+   "text": "你撞见一位交好的同门在偷偷与魔修来往。",
+   "options": [
+    { "text": "告发", "hint": "贡献 +80；他会被废去修为", "result": { "type": "fixed", "effects": [{ "contrib": 80 }], "text": "执法堂当夜就拿了人。他被押走时，回头看了你一眼。" } },
+    { "text": "私下劝他", "hint": "五成他回头是岸；五成他杀人灭口（斗法，与你同阶）",
+      "result": { "type": "chance", "p": 0.5, "success": { "effects": [{ "stat": "dao", "add": 5 }, { "flag": "d06Friend" }], "text": "他沉默了很久，最后把那块魔道令牌扔进了山涧。" }, "fail": { "effects": [{ "chain": "D06_fight" }], "text": "他听完你的话，手却慢慢按上了剑柄。" } } },
+    { "text": "替他保密", "hint": "他会记住你的好", "result": { "type": "fixed", "effects": [{ "flag": "d06Secret" }], "text": "你什么也没说。他拍了拍你的肩膀，说欠你一个人情。" } }
+   ] },
+ { "id": "D06_fight", "name": "杀人灭口", "category": "sect", "locations": ["sect"], "tier": "common", "chainOnly": true,
+   "text": "剑光从你背后亮起。",
+   "options": [
+    { "text": "迎战", "hint": "斗法（与你同阶）",
+      "result": { "type": "duel", "enemy": { "strength": "same", "kind": "cultivator" }, "approach": "fight",
+        "tiers": { "win": { "effects": [{ "contrib": 50 }, { "stat": "mood", "add": -10 }], "text": "你把他制住，交给了执法堂。一路上他一句话也没说。" } } } }
+   ] },
+
+ { "id": "S_hunt", "name": "宗门追杀", "category": "danger", "locations": ["any"], "tier": "common", "chainOnly": true,
+   "text": "几道剑光拦住了你的去路。为首的是你从前的同门：「宗门有令，带你回去。」",
+   "options": [
+    { "text": "迎战", "hint": "斗法（两人，与你同阶）",
+      "result": { "type": "duel", "enemy": { "strength": "same", "kind": "cultivator", "count": 2 }, "approach": "fight",
+        "tiers": { "win": { "text": "你杀出了一条路。" } } } },
+    { "text": "逃", "hint": "逃跑", "result": { "type": "duel", "enemy": { "strength": "same", "kind": "cultivator", "count": 2 }, "approach": "flee" } }
+   ] },
+
+ { "id": "calm_ss", "name": "宗门秘境", "category": "calm", "locations": ["sect_secret"], "tier": "common", "repeatable": true,
+   "text": "宗门秘境里灵气充沛，草木都比外面高出一截。",
+   "options": [{ "text": "继续", "hint": "修为 +5%", "result": { "type": "fixed", "effects": [{ "cult": 0.05 }] } }] }
+]

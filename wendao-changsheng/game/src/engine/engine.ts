@@ -4,6 +4,7 @@ import type { Category, Content, EventDef, OptionDef, Pending, PendingOption, Ru
 import { atRealmPeak, clamp, cultGain, layerName, lifeLeft, lifespan, mods, perLayerGain, realmOf, stoneCoef, years } from './calc.ts';
 import { addItem, affordable, apply, checkAll, count, fill, passTime, setStatus } from './effects.ts';
 import { approachAvailable, duel, estimate, pickBeast } from './combat.ts';
+import { arrive } from './sect.ts';
 import { drawNormal, popForced, popStory, preCategory, rollFortune, rollSpecial } from './draw.ts';
 import { chance, pick, rand, seedStreams } from './rng.ts';
 import { refreshMarket, priceOf, sellPriceOf } from './market.ts';
@@ -38,7 +39,7 @@ export function newRun(c: Content, o: NewRunOptions): RunState {
     status: { light: 0, heavy: 0, poison: false, heartDemon: false, everHeavy: false },
     bag: {}, keyItems: {}, equip: {}, techniques: [...(origin.techniques ?? [])], location: 'wilds',
     npcs: {}, factions: {}, seen: {}, lastSeen: {}, queue: [], ready: [], flags: { firstRun: !!o.firstRun }, world: [],
-    special: { count: 0, until: 0 }, recent: [], sinceFortune: 0, preCategory: {}, exploreStreak: { loc: '', n: 0 },
+    special: { count: 0, until: 0 }, sect: null, recent: [], sinceFortune: 0, preCategory: {}, exploreStreak: { loc: '', n: 0 },
     breakCooldown: false, ads: { revive: false, relief: [] }, market: null,
     stats: { duels: 0, duelWins: 0, kills: 0, breakthroughs: 0, breakFails: 0, adsWatched: 0, calm: 0, explores: 0, events: 0 },
     log: [], pending: null, ended: null,
@@ -88,6 +89,7 @@ export function actions(c: Content, st0: RunState): ActionInfo[] {
     if(id === st.location) continue;
     const l = c.locations[id];
     if(!checkAll(c, st, l.unlock)) continue;
+    if(l.sect && st.sect && st.sect.id !== l.sect) continue;   // 已入门时，其他宗门不再出现在去处里
     const blocked = l.secret && st.status.heavy > 0;
     out.push({ id: 'move:' + id, label: '前往' + l.name, enabled: !blocked, reason: blocked ? '重伤时不能进入秘境' : undefined });
   }
@@ -96,7 +98,7 @@ export function actions(c: Content, st0: RunState): ActionInfo[] {
   return out;
 }
 
-const CAT_NAME: Record<Category, string> = { fortune: '机缘', danger: '危险', resource: '资源', encounter: '人物', moral: '抉择', special: '异象', calm: '平静', seclusion: '闭关' };
+const CAT_NAME: Record<Category, string> = { fortune: '机缘', danger: '危险', resource: '资源', encounter: '人物', moral: '抉择', special: '异象', calm: '平静', seclusion: '闭关', sect: '宗门' };
 const pct = (p: number) => `${Math.round(p * 100)}%`;
 
 export function act(c: Content, st0: RunState, actionId: string): { state: RunState; view: View } {
@@ -143,6 +145,7 @@ export function act(c: Content, st0: RunState, actionId: string): { state: RunSt
   if(kind === 'move'){
     st.location = arg; out.push(`来到了${c.locations[arg].name}。`);
     if(arg === 'market'){ refreshMarket(c, st); st.flags.night = chance(st, 'event', 0.2); }
+    if(c.locations[arg].sect){ eventId = arrive(c, st, out); if(eventId) source = 'forced'; }   // 回宗必出一个宗门事件（event-draw 4.4）
   }
 
   st.actions++;
@@ -361,6 +364,7 @@ function tick(c: Content, st: RunState, out: string[], skipDeath = false): void 
   if(lifeLeft(c, st) <= 0){ endRun(c, st, 'lifespan'); return; }
   if(lifeLeft(c, st) < 10 && !st.flags.w13 && c.events.W13){ st.flags.w13 = true; st.queue.push({ event: 'W13', due: st.actions, prio: 2 }); }
   // 第 11 步：世界状态计时
+  if(st.flags.hunted && !st.queue.some(q => q.event === 'S_hunt')) st.queue.push({ event: 'S_hunt', due: st.actions + 8, prio: 5 });   // 叛宗：每 8 次行动追杀一次
   for(const w of [...st.world]) if(st.actions >= w.until){
     st.world.splice(st.world.indexOf(w), 1);
     if(w.id === 'tide_high') st.world.push({ id: 'tide_low', until: st.actions + 5 });

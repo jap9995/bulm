@@ -7,6 +7,7 @@ import { count } from '../engine/effects.ts';
 import { priceOf, sellPriceOf } from '../engine/market.ts';
 import { lifeLeft, stoneCoef } from '../engine/calc.ts';
 import { rand } from '../engine/rng.ts';
+import { exchange, library } from '../engine/sect.ts';
 
 export type BotKind = 'random' | 'steady' | 'aggressive';
 export interface BotOptions { kind: BotKind; watchAds: boolean }
@@ -41,6 +42,13 @@ function value(c: Content, st: RunState, effects: Effect[] | undefined): number 
     else if('chain' in e) v += e.chain === 'W01' || e.chain.startsWith('W') ? -15 : 0;
     else if('lend' in e) v -= e.lend * st.stones / sc * 0.15;
     else if('schedule' in e) v += 5;
+    else if('contrib' in e) v += e.contrib * 0.4;
+    else if('join' in e) v += 60;
+    else if('promote' in e) v += 60;
+    else if('expel' in e) v -= 200;
+    else if('examFail' in e) v -= 10;
+    else if('open' in e) v += 50;
+    else if('nextMaterial' in e) v += 80;
   }
   return v;
 }
@@ -93,6 +101,16 @@ function housekeeping(c: Content, st: RunState, o: BotOptions): RunState {
     const it = c.items[id];
     if(it?.slot && !st.equip[it.slot]) st = equip(c, st, id);
   }
+  // 藏经阁：先换突破要用的，再换丹药和功法
+  for(const e of library(c, st)){
+    if(!e.enabled) continue;
+    const it = c.items[e.item];
+    const want = e.item === 'zhuji_dan' ? st.realm === 0 && count(st, 'zhuji_dan') === 0
+      : it.kind === 'technique' ? !st.techniques.includes(it.technique!) && count(st, e.item) === 0
+      : e.item === 'pojing_dan' ? count(st, e.item) === 0
+      : count(st, e.item) < 2 && (st.sect!.avail - e.cost >= (st.realm === 0 && count(st, 'zhuji_dan') === 0 ? 150 : 0));
+    if(want){ try{ st = exchange(c, st, e.item); }catch{} }
+  }
   if(st.location === 'market' && st.market){
     // 卖掉材料，留下灵兽肉和灵泉水
     for(const id of Object.keys(st.bag)){
@@ -127,10 +145,17 @@ function pickAction(c: Content, st: RunState, o: BotOptions): string {
   if(o.kind === 'steady' && has('break:forced') && lifeLeft(c, st) < 15) return 'break:forced';
   const study = list.find(a => a.id.startsWith('study:')); if(study) return study.id;
 
+  // 宗门：稳健型去丹鼎门，激进型去问剑宗；入门后每 8 次行动回一趟
+  const home = st.sect ? c.sects.sects[st.sect.id].location : o.kind === 'aggressive' ? 'sect_wenjian' : 'sect_danding';
+  if(c.locations[st.location]?.sect){ st.flags.botSectAt = st.actions; return has('move:wilds') ? 'move:wilds' : list[0].id; }
+  const sinceSect = st.actions - Number(st.flags.botSectAt ?? -99);
+  const retake = st.age < Number(st.flags['retake_' + c.locations[home]?.sect] ?? 0);
+  if(has('move:' + home) && st.status.heavy === 0 && !retake && ((!st.sect && st.actions >= 3 && sinceSect > 10) || (st.sect && sinceSect >= 8))) return 'move:' + home;
   const needPill = st.realm === 0 && st.layer >= 7 && count(st, 'zhuji_dan') === 0;
   const sinceMarket = st.actions - Number(st.flags.botMarketAt ?? -99);
   if(st.location === 'market'){ st.flags.botMarketAt = st.actions; return has('move:wilds') ? 'move:wilds' : list[0].id; }
   if(has('move:market') && ((needPill && st.stones >= 200) || (sinceMarket > 12 && st.stones > 40 * stoneCoef(c, st)))) return 'move:market';
+  if(st.location === 'sect_secret') return has('explore') ? 'explore' : 'move:wilds';
   if(has('move:qingming') && st.status.heavy === 0 && st.location !== 'qingming') return 'move:qingming';
   if(st.location === 'qingming' && st.status.heavy === 0) return has('explore') ? 'explore' : 'cultivate';
   if(st.location !== 'wilds' && st.location !== 'valley' && has('move:wilds')) return 'move:wilds';

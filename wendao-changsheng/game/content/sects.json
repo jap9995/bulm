@@ -1,0 +1,41 @@
+{
+ "ranks": [
+  { "name": "外门弟子", "total": 0, "realmGte": 0, "layerGte": 0, "stipend": 10 },
+  { "name": "内门弟子", "total": 100, "realmGte": 0, "layerGte": 5, "stipend": 20 },
+  { "name": "真传弟子", "total": 300, "realmGte": 1, "layerGte": 0, "stipend": 40 },
+  { "name": "核心弟子", "total": 600, "realmGte": 2, "layerGte": 0, "stipend": 80, "byEvent": "S07" },
+  { "name": "长老", "total": 1000, "realmGte": 3, "layerGte": 0, "stipend": 160 }
+ ],
+ "sects": {
+  "wenjian": { "name": "问剑宗", "location": "sect_wenjian", "exam": "S01_wenjian", "stipendItems": [] },
+  "danding": { "name": "丹鼎门", "location": "sect_danding", "exam": "S01_danding", "stipendItems": ["huichun_dan"] },
+  "xuesha":  { "name": "血煞宗", "location": "sect_xuesha",  "exam": "S01_xuesha",  "stipendItems": [] },
+  "xuanji":  { "name": "玄机阁", "location": "sect_xuanji",  "exam": "S01_xuanji",  "stipendItems": [] }
+ },
+ "library": {
+  "wenjian": [
+   { "item": "book_qingfeng", "rank": 0, "cost": 30 },
+   { "item": "book_tiebu", "rank": 0, "cost": 30 },
+   { "item": "book_liuyun", "rank": 1, "cost": 150 }
+  ],
+  "danding": [
+   { "item": "book_baicao", "rank": 0, "cost": 30 },
+   { "item": "book_huichun", "rank": 1, "cost": 150 }
+  ],
+  "xuesha": [
+   { "item": "book_longxiang", "rank": 1, "cost": 120 }
+  ],
+  "xuanji": [
+   { "item": "book_zhenfa", "rank": 0, "cost": 30 },
+   { "item": "book_fulu", "rank": 0, "cost": 30 },
+   { "item": "tishen_fu", "rank": 3, "cost": 300 }
+  ],
+  "common": [
+   { "item": "huichun_dan", "rank": 0, "cost": 10 },
+   { "item": "juqi_dan", "rank": 0, "cost": 15 },
+   { "item": "zhuji_dan", "rank": 0, "cost": 150 },
+   { "item": "pojing_dan", "rank": 1, "cost": 80 }
+  ]
+ },
+ "stipendGap": 3
+}

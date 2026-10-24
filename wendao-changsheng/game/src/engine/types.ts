@@ -3,7 +3,7 @@
 
 // ───────────── 内容配置 ─────────────
 
-export type Category = 'fortune' | 'danger' | 'resource' | 'encounter' | 'moral' | 'special' | 'calm' | 'seclusion';
+export type Category = 'fortune' | 'danger' | 'resource' | 'encounter' | 'moral' | 'special' | 'calm' | 'seclusion' | 'sect';
 export type Tier = 'common' | 'uncommon' | 'rare' | 'legendary';
 export type Rarity = 'common' | 'rare' | 'epic' | 'legend';
 export type Approach = 'fight' | 'technique' | 'item' | 'env' | 'talk' | 'flee';
@@ -79,7 +79,7 @@ export interface Item {
 
 export interface Technique { id: string; name: string; school: string; grade: string; mods?: Mods; duelAdd?: number; moves: string[] }
 
-export interface Location { id: string; name: string; explore: boolean; secret?: boolean; categories?: Partial<Record<Category, number>>; reward?: number; unlock?: Cond[] }
+export interface Location { id: string; name: string; explore: boolean; secret?: boolean; sect?: string; categories?: Partial<Record<Category, number>>; reward?: number; unlock?: Cond[] }
 
 export type Cond =
   | { stat: StatKey; gte?: number; lte?: number }
@@ -92,7 +92,8 @@ export type Cond =
   | { status: StatusKey } | { notStatus: StatusKey }
   | { world: string } | { lifeLeftLt: number } | { gender: 'm' | 'f' }
   | { technique: string } | { anyOf: Cond[] } | { exploresGte: number }
-  | { equipped: 'weapon' | 'armor' | 'accessory' };
+  | { equipped: 'weapon' | 'armor' | 'accessory' }
+  | { inSect: boolean } | { sectIs: string } | { sectRankGte: number } | { sectRankIs: number };
 
 export type StatKey = 'foundation' | 'luck' | 'mood' | 'dao' | 'tox';
 export type StatusKey = 'light' | 'heavy' | 'poison' | 'heartDemon';
@@ -120,7 +121,14 @@ export type Effect =
   | { die: string }                       // 死亡（死因）
   | { log: string; weight: number }       // 写一条人生日志
   | { lend: number }                      // 借出当前灵石的一部分（记下金额）
-  | { repay: number };                    // 归还借出的灵石 × 倍数
+  | { repay: number }                     // 归还借出的灵石 × 倍数
+  | { join: string; rank?: number; backdoor?: boolean }   // 加入宗门
+  | { contrib: number }                   // 宗门贡献（累计与可用同时增减，systems 15.1）
+  | { promote: number }                   // 宗门地位直接升 N 级
+  | { expel: string }                     // 逐出 / 叛出宗门（原因），之后每 8 次行动被追杀
+  | { examFail: string }                  // 入门考核失败：两年后才能再考
+  | { open: string; actions: number }     // 开放一个限时地点并立刻前往
+  | { nextMaterial: number };             // 下一境界的突破材料
 
 export interface Branch { effects?: Effect[]; text?: string }
 
@@ -166,6 +174,14 @@ export interface CombatText {
 
 export interface SpecialDef { id: string; name: string; weight: number; conditions?: Cond[]; once?: boolean; text: string; world?: { id: string; actions: number }; effects?: Effect[] }
 
+export interface SectRank { name: string; total: number; realmGte: number; layerGte: number; stipend: number; byEvent?: string }
+export interface SectConfig {
+  ranks: SectRank[];
+  sects: Record<string, { name: string; location: string; exam: string; stipendItems: string[] }>;
+  library: Record<string, { item: string; rank: number; cost: number }[]>;
+  stipendGap: number;
+}
+
 export interface MarketConfig {
   staples: { item: string; stock: number }[];
   randomSlots: number; rareBase: number; rarePerLuck: number; refreshEvery: number;
@@ -184,6 +200,7 @@ export interface Content {
   combat: Record<string, CombatText>;
   specials: SpecialDef[];
   market: MarketConfig;
+  sects: SectConfig;
   names: { surnames: string[]; given: string[] };
 }
 
@@ -226,6 +243,7 @@ export interface RunState {
   preCategory: Record<string, Category>;    // 预抽的类别（event-draw 4.1）
   exploreStreak: { loc: string; n: number };
   breakCooldown: boolean;
+  sect: { id: string; rank: number; total: number; avail: number; stipendAt: number; backdoor: boolean; s03: number[]; s05: number[] } | null;
   ads: { revive: boolean; relief: number[] };
   market: { refreshedAt: number; shelf: { item: string; stock: number; rare: boolean }[] } | null;
   stats: { duels: number; duelWins: number; kills: number; breakthroughs: number; breakFails: number; adsWatched: number; calm: number; explores: number; events: number };

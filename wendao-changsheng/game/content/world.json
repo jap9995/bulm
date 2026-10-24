@@ -65,6 +65,56 @@
      "world": "secret_open"
     }
    ]
+  },
+  "sect_wenjian": {
+   "name": "问剑宗",
+   "explore": false,
+   "sect": "wenjian"
+  },
+  "sect_danding": {
+   "name": "丹鼎门",
+   "explore": false,
+   "sect": "danding"
+  },
+  "sect_xuesha": {
+   "name": "血煞宗",
+   "explore": false,
+   "sect": "xuesha",
+   "unlock": [
+    {
+     "anyOf": [
+      {
+       "stat": "dao",
+       "lte": 20
+      },
+      {
+       "sectIs": "xuesha"
+      }
+     ]
+    }
+   ]
+  },
+  "sect_xuanji": {
+   "name": "玄机阁",
+   "explore": false,
+   "sect": "xuanji"
+  },
+  "sect_secret": {
+   "name": "宗门秘境",
+   "explore": true,
+   "secret": true,
+   "reward": 1.5,
+   "categories": {
+    "fortune": 40,
+    "danger": 15,
+    "resource": 35,
+    "encounter": 10
+   },
+   "unlock": [
+    {
+     "world": "sect_secret"
+    }
+   ]
   }
  },
  "market": {

@@ -11,6 +11,7 @@ const DRAWN: Category[] = ['fortune', 'danger', 'resource', 'encounter', 'moral'
 const locMatch = (c: Content, ev: EventDef, loc: string) =>
   ev.locations.includes(loc)
   || (ev.locations.includes('secret') && !!c.locations[loc]?.secret)
+  || (ev.locations.includes('sect') && !!c.locations[loc]?.sect)
   || (ev.locations.includes('explore') && !!c.locations[loc]?.explore)
   || (ev.locations.includes('any') && (!!c.locations[loc]?.explore || loc === 'market'));
 
