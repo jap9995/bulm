@@ -1,0 +1,12 @@
+[
+ { "id": "orphan", "name": "凡人孤儿", "unlocked": true, "layer": 1, "stones": 50, "lifespan": 80, "foundation": 55, "mood": 70,
+   "desc": "无依无靠，反倒心无挂碍。平民机缘更容易找上你，凡人对你天然亲近。", "tags": ["commoner"] },
+ { "id": "fallen", "name": "没落世家", "unlocked": true, "layer": 2, "stones": 150, "lifespan": 85,
+   "desc": "祖上阔过。集市买东西便宜一成半，也欠着几笔祖辈的旧债。", "mods": { "buyMult": 0.85 } },
+ { "id": "outcast", "name": "宗门弃徒", "unlocked": true, "layer": 3, "stones": 80, "lifespan": 75,
+   "desc": "曾经入过宗门，又被赶了出来。底子扎实，宗门的事总会找上你。", "mods": { "powerAdd": 0.15 }, "equip": ["tie_jian"] },
+ { "id": "merchant", "name": "商贾之子", "unlocked": true, "layer": 1, "stones": 250, "lifespan": 80,
+   "desc": "从小在账房里长大。卖东西多赚一成半，集市总给你留一件稀罕货。", "mods": { "powerAdd": -0.1, "sellMult": 1.15, "rareSlot": 1 } },
+ { "id": "destined", "name": "天命异人", "unlocked": true, "layer": 1, "stones": 80, "lifespan": 90, "luck": 25,
+   "desc": "生来气运过人，天地异象格外偏爱你——也会引来窥伺的目光。" }
+]

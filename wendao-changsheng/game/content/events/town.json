@@ -1,0 +1,95 @@
+[
+ { "id": "J01", "name": "神秘戒指", "category": "fortune", "locations": ["wilds", "market"], "tier": "uncommon",
+   "text": "路边泥里半埋着一枚锈迹斑斑的戒指，你一碰，指尖竟有些发烫。",
+   "options": [
+    { "text": "滴血认主", "hint": "六成唤醒戒中之物，此后修炼更快；四成戒指反噬，心境 -10",
+      "result": { "type": "chance", "p": 0.6, "success": { "effects": [{ "flag": "ringElder" }, { "schedule": "J01_2", "after": 3 }], "text": "戒指上浮起一缕青烟，一个苍老的声音在你脑海里响起：「小娃娃，总算等到你了。」" }, "fail": { "effects": [{ "stat": "mood", "add": -10 }], "text": "戒指猛地一烫，随即碎成了几瓣。你的头疼了好几天。" } } },
+    { "text": "拿去集市卖掉", "hint": "灵石 +40×", "result": { "type": "fixed", "effects": [{ "stones": 40 }] } }
+   ] },
+ { "id": "J01_2", "name": "老者的请求", "category": "fortune", "locations": ["any"], "tier": "uncommon", "chainOnly": true,
+   "text": "戒中老者终于坦白：他需要一具肉身。",
+   "options": [
+    { "text": "拒绝他", "hint": "他会试图夺舍你：心境判定，失败重伤，成功则吞下他残留的修为",
+      "result": { "type": "chance", "p": 0.5, "stat": "mood", "success": { "effects": [{ "cult": 0.5 }, { "flag": "ringElder", "value": false }], "text": "你守住了灵台。老者一声惨叫，魂飞魄散，只留下一团精纯的修为。" }, "fail": { "effects": [{ "status": "heavy" }, { "flag": "ringElder", "value": false }], "text": "一股阴冷的力量冲进你的识海。你拼死把它赶了出去，自己也去了半条命。" } } },
+    { "text": "把戒指封印后卖给血煞宗", "hint": "灵石 +300×，道心 -15", "result": { "type": "fixed", "effects": [{ "stones": 300 }, { "stat": "dao", "add": -15 }, { "flag": "ringElder", "value": false }] } }
+   ] },
+
+ { "id": "W12", "name": "集市骗局", "category": "danger", "locations": ["market"], "tier": "uncommon",
+   "text": "一个摊主神秘兮兮地拿出一块「上古玉简」。",
+   "options": [
+    { "text": "买下", "hint": "灵石 -100×：七成是假货，三成真的捡漏", "cost": [{ "stones": -100 }],
+      "result": { "type": "chance", "p": 0.3, "success": { "effects": [{ "randomItem": "book_mystic" }], "text": "回去一看，竟然是真的。" }, "fail": { "text": "回去一看，玉简里只有一行字：「此物乃本摊出品，童叟无欺。」" } } },
+    { "text": "当场揭穿", "hint": "巧舌如簧可用：摊主赔你 50×", "requires": [{ "anyOf": [{ "talent": "C06" }, { "talent": "R08" }] }],
+      "result": { "type": "fixed", "effects": [{ "stones": 50 }], "text": "你三言两语就点破了他的把戏。围观的人一起哄，他只好赔了你一笔灵石。" } },
+    { "text": "不理会", "hint": "无事", "result": { "type": "fixed" } }
+   ] },
+
+ { "id": "P04", "name": "说书人", "category": "encounter", "locations": ["market"], "tier": "uncommon",
+   "text": "茶楼里的说书人正讲到「上古仙宫」的传说。",
+   "options": [
+    { "text": "打赏听完", "hint": "灵石 -5×：得到一条秘境情报", "cost": [{ "stones": -5 }], "result": { "type": "fixed", "effects": [{ "flag": "realmTip" }], "text": "散场后，他压低声音告诉你，青冥秘境的入口就在落霞谷的西边。" } },
+    { "text": "离开", "hint": "无事", "result": { "type": "fixed" } }
+   ] },
+
+ { "id": "P06", "name": "老友借钱", "category": "encounter", "locations": ["market", "village"], "tier": "uncommon", "tags": ["commoner"],
+   "text": "一位故人找上门来，吞吞吐吐地开口借灵石。",
+   "options": [
+    { "text": "借出一半灵石", "hint": "七成两年后加倍归还；三成一去不返",
+      "result": { "type": "chance", "p": 0.7, "success": { "effects": [{ "lend": 0.5 }, { "schedule": "P06_back2", "after": 2 }], "text": "他千恩万谢地走了。" }, "fail": { "effects": [{ "lend": 0.5 }, { "flag": "loanLost" }], "text": "他千恩万谢地走了。" } } },
+    { "text": "全部借出", "hint": "同上，但若归还则 ×3，心境 +10",
+      "result": { "type": "chance", "p": 0.7, "success": { "effects": [{ "lend": 1 }, { "schedule": "P06_back3", "after": 2 }], "text": "他愣了很久，眼眶都红了。" }, "fail": { "effects": [{ "lend": 1 }, { "flag": "loanLost" }], "text": "他愣了很久，眼眶都红了。" } } },
+    { "text": "拒绝", "hint": "心境 -5", "result": { "type": "fixed", "effects": [{ "stat": "mood", "add": -5 }] } }
+   ] },
+ { "id": "P06_back2", "name": "故人还钱", "category": "encounter", "locations": ["any"], "tier": "uncommon", "chainOnly": true,
+   "text": "当年借钱的那位故人找到了你，把一只沉甸甸的钱袋放在桌上。",
+   "options": [{ "text": "收下", "hint": "借出的灵石加倍归还", "result": { "type": "fixed", "effects": [{ "repay": 2 }] } }] },
+ { "id": "P06_back3", "name": "故人还钱", "category": "encounter", "locations": ["any"], "tier": "uncommon", "chainOnly": true,
+   "text": "当年借钱的那位故人找到了你。他如今衣着光鲜，一进门就要给你磕头。",
+   "options": [{ "text": "扶起他", "hint": "借出的灵石三倍归还，心境 +10", "result": { "type": "fixed", "effects": [{ "repay": 3 }, { "stat": "mood", "add": 10 }] } }] },
+
+ { "id": "P09", "name": "护送商队", "category": "encounter", "locations": ["market"], "tier": "common", "repeatable": true,
+   "text": "商队管事在招护卫，报酬优厚。",
+   "options": [
+    { "text": "接下差事", "hint": "耗时一年：灵石 +60×；一半可能遇上劫修", "time": 1,
+      "result": { "type": "chance", "p": 0.5, "success": { "effects": [{ "stones": 60 }], "text": "一路平安，管事爽快地结了账。" }, "fail": { "effects": [{ "stones": 60 }, { "chain": "W02" }], "text": "走到半路，林子里跳出来几个人。" } } },
+    { "text": "讨价还价，要求先付一半", "hint": "耗时一年：预付 +30×，完成后再 +50×", "time": 1, "result": { "type": "fixed", "effects": [{ "stones": 30 }, { "stones": 50 }] } },
+    { "text": "不接", "hint": "无事", "result": { "type": "fixed" } }
+   ] },
+
+ { "id": "P10", "name": "求医的凡人", "category": "encounter", "locations": ["village"], "tier": "uncommon", "tags": ["commoner"],
+   "text": "一位母亲抱着高烧的孩子，跪在你面前。",
+   "options": [
+    { "text": "用丹药救治", "hint": "消耗一颗回春丹：道心 +10，心境 +10", "requires": [{ "hasItem": "huichun_dan" }], "cost": [{ "item": "huichun_dan", "n": -1 }],
+      "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": 10 }, { "stat": "mood", "add": 10 }], "text": "孩子的烧到半夜就退了。" } },
+    { "text": "以灵力救治", "hint": "修为 -10%：道心 +10，心境 +10", "cost": [{ "cult": -0.1 }],
+      "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": 10 }, { "stat": "mood", "add": 10 }], "text": "你把掌心贴在孩子额头上，一点点把灵力渡了过去。" } },
+    { "text": "「凡人生死自有天命」", "hint": "道心 -5", "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": -5 }] } }
+   ] },
+
+ { "id": "D03", "name": "灭门之仇", "category": "moral", "locations": ["village"], "tier": "uncommon", "tags": ["commoner"],
+   "text": "一个少年跪在你面前，求你为他被魔修灭门的家人报仇。",
+   "options": [
+    { "text": "答应", "hint": "找上那名魔修（比你高一层）：胜利后道心 +15", "result": { "type": "fixed", "effects": [{ "chain": "D03_fight" }] } },
+    { "text": "教他修炼，让他自己报仇", "hint": "10 次行动后他会回来找你", "result": { "type": "fixed", "effects": [{ "schedule": "D03_back", "after": 10 }], "text": "你留给他一套入门的吐纳法门。他磕了三个头，转身走了。" } },
+    { "text": "劝他放下仇恨", "hint": "心境判定：成功道心 +5；失败他心怀怨恨",
+      "result": { "type": "chance", "p": 0.5, "stat": "mood", "success": { "effects": [{ "stat": "dao", "add": 5 }], "text": "他哭了很久，最后点了点头。" }, "fail": { "effects": [{ "flag": "boyEmbittered" }], "text": "他站起来，拍掉膝盖上的土，什么也没说就走了。" } } }
+   ] },
+ { "id": "D03_fight", "name": "复仇", "category": "moral", "locations": ["village"], "tier": "uncommon", "chainOnly": true, "combat": "c5_15",
+   "text": "你循着线索找到了那名魔修的落脚处。",
+   "options": [
+    { "text": "动手", "hint": "胜利后道心 +15", "result": { "type": "duel", "enemy": { "strength": "higher_layer", "kind": "cultivator" }, "approach": "fight", "tiers": { "win": { "effects": [{ "stat": "dao", "add": 15 }, { "log": "替一个少年报了灭门之仇", "weight": 6 }] } } } },
+    { "text": "借助符箓", "hint": "消耗一张符箓，胜率大增", "result": { "type": "duel", "enemy": { "strength": "higher_layer", "kind": "cultivator" }, "approach": "item", "tiers": { "win": { "effects": [{ "stat": "dao", "add": 15 }] } } } }
+   ] },
+ { "id": "D03_back", "name": "少年归来", "category": "moral", "locations": ["any"], "tier": "uncommon", "chainOnly": true,
+   "text": "当年那个少年回来了。他瘦了，也结实了，腰间挂着一柄带血的刀。「我报仇了，」他说，「谢谢你。」",
+   "options": [{ "text": "拍拍他的肩", "hint": "道心 +5，心境 +5", "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": 5 }, { "stat": "mood", "add": 5 }] } }] },
+
+ { "id": "D08", "name": "疫病", "category": "moral", "locations": ["village"], "tier": "uncommon", "tags": ["commoner"], "conditions": [{ "actionsGte": 40 }],
+   "text": "凡人村落爆发瘟疫，死者日增。",
+   "options": [
+    { "text": "留下救治", "hint": "耗时两年，灵石 -150×：道心 +20，村民为你建祠", "time": 2, "cost": [{ "stones": -150 }],
+      "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": 20 }, { "flag": "villageShrine" }, { "log": "在瘟疫中救下了一整个村子", "weight": 6 }] } },
+    { "text": "封锁村子，以免疫病外传", "hint": "道心 -10", "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": -10 }] } },
+    { "text": "离开", "hint": "道心 -15", "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": -15 }] } }
+   ] }
+]

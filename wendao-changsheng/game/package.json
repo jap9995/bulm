@@ -1,0 +1,18 @@
+{
+  "name": "wendao-changsheng",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "《问道长生》游戏引擎、内容配置与模拟脚本",
+  "engines": { "node": ">=23.6" },
+  "scripts": {
+    "test": "node --test test/engine.test.ts",
+    "sim": "node scripts/sim.ts",
+    "import-combat": "node scripts/import-combat.ts",
+    "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "typescript": "5.7.2"
+  }
+}

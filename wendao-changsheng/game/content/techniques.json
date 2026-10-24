@@ -1,0 +1,12 @@
+{
+ "qingfeng":      { "name": "青锋剑诀", "school": "sword", "grade": "yellow", "duelAdd": 0.10, "moves": ["青锋三叠"] },
+ "liuyun":        { "name": "流云剑诀", "school": "sword", "grade": "mystic", "duelAdd": 0.15, "moves": ["流云回风"] },
+ "baicao":        { "name": "百草经", "school": "alchemy", "grade": "yellow", "moves": ["百草迷烟"] },
+ "huichun_jue":   { "name": "回春诀", "school": "alchemy", "grade": "mystic", "moves": ["枯木逢春"] },
+ "zhenfa_chujie": { "name": "阵法初解", "school": "array", "grade": "yellow", "moves": ["困字诀"] },
+ "tiebu":         { "name": "铁布衫", "school": "body", "grade": "yellow", "mods": { "injuryReduce": 0.15 }, "moves": ["铁布横身"] },
+ "longxiang":     { "name": "龙象功", "school": "body", "grade": "mystic", "mods": { "fightAdd": 0.2, "lifespan": 10 }, "moves": ["龙象之力"] },
+ "fulu_rumen":    { "name": "符箓入门", "school": "talisman", "grade": "yellow", "moves": ["火符"] },
+ "dundi_fufa":    { "name": "遁地符法", "school": "talisman", "grade": "mystic", "moves": ["土遁"] },
+ "xuehe_jue":     { "name": "血河诀", "school": "demonic", "grade": "yellow", "mods": { "cultAdd": 0.2 }, "moves": ["血河倒卷"] }
+}

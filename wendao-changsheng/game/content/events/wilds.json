@@ -1,0 +1,255 @@
+[
+ { "id": "J03", "name": "云游高人论道", "category": "fortune", "locations": ["any"], "tier": "uncommon",
+   "text": "一位白衣修士坐在溪边，邀你喝茶论道。",
+   "options": [
+    { "text": "虚心请教", "hint": "耗时半年：根基 +5，修为 +15%", "time": 0.5, "result": { "type": "fixed", "effects": [{ "stat": "foundation", "add": 5 }, { "cult": 0.15 }], "text": "他说得不多，每一句却都落在你修行的关窍上。" } },
+    { "text": "与他辩道", "hint": "心境越高越有把握：成功则修为大进，失败心境 -5",
+      "result": { "type": "chance", "p": 0.7, "stat": "mood", "success": { "effects": [{ "cult": 0.3 }, { "flag": "techUpgrade" }], "text": "你们争了整整一夜。天亮时，他起身向你一揖：「受教了。」" }, "fail": { "effects": [{ "stat": "mood", "add": -5 }], "text": "你说到一半，忽然发现自己的道理站不住脚，只好讪讪住口。" } } },
+    { "text": "请求拜师", "hint": "全凭缘分（约一成，气运越高越有机会）：成功后直到下一个大境界，突破成功率 +10%",
+      "result": { "type": "chance", "p": 0.1, "luck": true, "success": { "effects": [{ "flag": "tempMaster", "value": "@realm" }], "text": "他打量了你很久，终于点了点头：「也罢，就带你一程。」" }, "fail": { "text": "他笑着摇了摇头，拂袖而去，只留下半壶还温着的茶。" } } }
+   ] },
+
+ { "id": "J04", "name": "无名功法", "category": "fortune", "locations": ["wilds", "secret"], "tier": "uncommon",
+   "text": "崖壁上刻着残缺的功法，字迹被风雨侵蚀得只剩一半。",
+   "options": [
+    { "text": "当场参悟", "hint": "耗时一年：得到一门功法；一成可能走火入魔，根基 -10", "time": 1,
+      "result": { "type": "chance", "p": 0.9, "success": { "effects": [{ "randomItem": "book_yellow" }], "text": "你对着崖壁坐了一年，终于把残缺的字句补全了。" }, "fail": { "effects": [{ "stat": "foundation", "add": -10 }], "text": "参到一半，体内灵力忽然逆行，你吐出一口血，再看崖壁时只觉得头晕目眩。" } } },
+    { "text": "拓印带走，找人鉴定", "hint": "花 20× 灵石请人鉴定，稳妥地得到一门功法", "cost": [{ "stones": -20 }],
+      "result": { "type": "fixed", "effects": [{ "randomItem": "book_yellow" }], "text": "坊市的老先生对着拓本看了半天，给你誊抄了一份完整的。" } },
+    { "text": "刻下自己的感悟再离开", "hint": "心境 +10；也许会有后来人因此受益",
+      "result": { "type": "fixed", "effects": [{ "stat": "mood", "add": 10 }, { "flag": "leftDao" }, { "log": "曾在崖壁上留下自己的感悟", "weight": 4 }], "text": "你在崖壁的空白处，一笔一划刻下了自己的心得。" } }
+   ] },
+
+ { "id": "J05", "name": "发现灵脉", "category": "fortune", "locations": ["wilds"], "tier": "uncommon",
+   "text": "你脚下的地面隐隐发热——这里有一条小灵脉。",
+   "options": [
+    { "text": "就地闭关", "hint": "接下来 3 次在山野修炼，修为 +50%", "result": { "type": "fixed", "effects": [{ "flag": "veinLeft", "value": 3 }], "text": "你在灵脉上方盘膝坐下，灵气顺着脚底缓缓涌了上来。" } },
+    { "text": "开采灵石", "hint": "灵石 +150×，灵脉随之枯竭", "result": { "type": "fixed", "effects": [{ "stones": 150 }], "text": "你挖了整整三个月，挖到最后一块时，地面的热度也散尽了。" } },
+    { "text": "把消息卖给游商", "hint": "灵石 +80×", "result": { "type": "fixed", "effects": [{ "stones": 80 }], "text": "坊市里一个圆脸游商听完，笑眯眯地数给你一袋灵石。" } }
+   ] },
+
+ { "id": "J07", "name": "灵兽蛋", "category": "fortune", "locations": ["wilds"], "tier": "uncommon",
+   "text": "被掏空的兽巢里只剩一枚温热的蛋。",
+   "options": [
+    { "text": "带走孵化", "hint": "过些时日也许能孵出一只灵宠", "result": { "type": "fixed", "effects": [{ "flag": "egg" }], "text": "你用衣服把蛋裹好，揣进了怀里。" } },
+    { "text": "卖掉", "hint": "灵石 +60×", "result": { "type": "fixed", "effects": [{ "stones": 60 }], "text": "坊市里有人专收这东西，给的价钱还算公道。" } },
+    { "text": "放回巢中", "hint": "气运 +3；也许会有回报", "result": { "type": "fixed", "effects": [{ "stat": "luck", "add": 3 }, { "flag": "motherBeast" }], "text": "你把蛋放回原处，又往巢里添了几把干草。" } }
+   ] },
+
+ { "id": "J08", "name": "前辈坐化之地", "category": "fortune", "locations": ["wilds", "secret"], "tier": "uncommon",
+   "text": "一具盘坐的骸骨，膝上放着一只储物袋。",
+   "options": [
+    { "text": "拜三拜后取走", "hint": "灵石 +100×，两颗丹药，气运 +2", "result": { "type": "fixed", "effects": [{ "stones": 100 }, { "randomItem": "pill_yellow", "n": 2 }, { "stat": "luck", "add": 2 }], "text": "你恭恭敬敬地拜了三拜，才取下那只储物袋。" } },
+    { "text": "直接搜刮", "hint": "同样的收获，但三成可能触发残留禁制，受轻伤",
+      "result": { "type": "chance", "p": 0.7, "success": { "effects": [{ "stones": 100 }, { "randomItem": "pill_yellow", "n": 2 }] }, "fail": { "effects": [{ "stones": 100 }, { "randomItem": "pill_yellow", "n": 2 }, { "status": "light" }], "text": "储物袋上残留的禁制猛地一跳，在你手上烧出一片焦痕。" } } },
+    { "text": "安葬前辈", "hint": "耗时三个月：心境 +10；可能在骸骨下发现遗书；储物袋随前辈下葬", "time": 0.25,
+      "result": { "type": "chance", "p": 0.5, "success": { "effects": [{ "stat": "mood", "add": 10 }, { "randomItem": "book_mystic" }], "text": "挖坑时，你在骸骨下找到一封遗书，里面夹着前辈毕生的功法心得。" }, "fail": { "effects": [{ "stat": "mood", "add": 10 }], "text": "你堆好坟，在坟前站了一会儿，才转身离开。" } } }
+   ] },
+
+ { "id": "J09", "name": "顿悟", "category": "fortune", "locations": ["any"], "tier": "rare", "conditions": [{ "stat": "mood", "gte": 70 }],
+   "text": "看着云卷云舒，你心中忽然一片澄明。",
+   "options": [
+    { "text": "就地入定", "hint": "耗时一年：修为 +80%", "time": 1, "result": { "type": "fixed", "effects": [{ "cult": 0.8 }], "text": "你在原地坐了一整年，醒来时，身上落满了枯叶。" } },
+    { "text": "回去再悟", "hint": "修为 +40%，稳妥", "result": { "type": "fixed", "effects": [{ "cult": 0.4 }], "text": "你把那一刻的感觉牢牢记住，回去后慢慢体会。" } },
+    { "text": "借机打磨根基", "hint": "根基 +10", "result": { "type": "fixed", "effects": [{ "stat": "foundation", "add": 10 }], "text": "你没有急着往前走，而是回头把每一步都踩实了。" } }
+   ] },
+
+ { "id": "J11", "name": "灵泉", "category": "fortune", "locations": ["wilds", "secret"], "tier": "uncommon",
+   "text": "一汪泛着淡淡金光的泉水。",
+   "options": [
+    { "text": "沐浴", "hint": "清除所有伤势，根基 +3", "result": { "type": "fixed", "effects": [{ "cure": "injury" }, { "stat": "foundation", "add": 3 }], "text": "泉水温温的，身上的旧伤一点点化开。" } },
+    { "text": "装瓶带走", "hint": "灵泉水 ×3（可以疗伤，也是炼丹辅料）", "result": { "type": "fixed", "effects": [{ "item": "lingquan_shui", "n": 3 }] } },
+    { "text": "直接饮用", "hint": "修为 +30%；两成可能灵力过盛，心境 -5",
+      "result": { "type": "chance", "p": 0.8, "success": { "effects": [{ "cult": 0.3 }] }, "fail": { "effects": [{ "cult": 0.3 }, { "stat": "mood", "add": -5 }], "text": "灵力在体内横冲直撞，你好半天才平复下来。" } } }
+   ] },
+
+ { "id": "W01", "name": "遭遇妖兽", "category": "danger", "locations": ["wilds", "secret"], "tier": "common", "repeatable": true, "combat": "@beast",
+   "text": "林子里忽然静了下来。",
+   "options": [
+    { "text": "正面迎战", "hint": "胜利后获得妖兽材料 ×2，修为 +10%",
+      "result": { "type": "duel", "enemy": { "strength": "same", "kind": "beast" }, "approach": "fight", "tiers": { "win": { "effects": [{ "item": "yaoshou_cailiao", "n": 2 }, { "cult": 0.1 }] } } } },
+    { "text": "施展功法", "hint": "以功法应敌，胜率更高",
+      "result": { "type": "duel", "enemy": { "strength": "same", "kind": "beast" }, "approach": "technique", "tiers": { "win": { "effects": [{ "item": "yaoshou_cailiao", "n": 2 }, { "cult": 0.1 }] } } } },
+    { "text": "借助符箓", "hint": "消耗一张符箓，胜率大增",
+      "result": { "type": "duel", "enemy": { "strength": "same", "kind": "beast" }, "approach": "item", "tiers": { "win": { "effects": [{ "item": "yaoshou_cailiao", "n": 2 }, { "cult": 0.1 }] } } } },
+    { "text": "尝试逃跑", "hint": "失败则轻伤，并丢失 1 件随机物品",
+      "result": { "type": "duel", "enemy": { "strength": "same", "kind": "beast" }, "approach": "flee" } },
+    { "text": "扔出灵兽肉引开它", "hint": "必定脱身", "requires": [{ "hasItem": "lingshou_rou" }], "cost": [{ "item": "lingshou_rou", "n": -1 }],
+      "result": { "type": "fixed", "text": "你把灵兽肉远远扔了出去。它犹豫了一下，叼起肉钻回了林子。" } }
+   ] },
+
+ { "id": "W02", "name": "劫修拦路", "category": "danger", "locations": ["wilds"], "tier": "common", "repeatable": true, "combat": "bandit",
+   "text": "「此山是我开，此树是我栽……」两名散修拦在了路中间。",
+   "options": [
+    { "text": "交出三成灵石", "hint": "安全通过", "result": { "type": "fixed", "effects": [{ "stonesPct": -0.3 }], "text": "你掏出一把灵石扔了过去。他们掂了掂，让开了路。" } },
+    { "text": "动手", "hint": "胜利后得到他们的储物袋（+80×）；失败则灵石 -50%",
+      "result": { "type": "duel", "enemy": { "strength": "same", "count": 2, "kind": "cultivator" }, "approach": "fight", "tiers": { "win": { "effects": [{ "stones": 80 }] }, "lose": { "effects": [{ "stonesPct": -0.5 }] }, "bad": { "effects": [{ "stonesPct": -0.5 }] } } } },
+    { "text": "借助符箓", "hint": "消耗一张符箓，胜率大增；胜利后 +80×",
+      "result": { "type": "duel", "enemy": { "strength": "same", "count": 2, "kind": "cultivator" }, "approach": "item", "tiers": { "win": { "effects": [{ "stones": 80 }] }, "lose": { "effects": [{ "stonesPct": -0.5 }] }, "bad": { "effects": [{ "stonesPct": -0.5 }] } } } },
+    { "text": "交涉", "hint": "巧舌判定：成功则不战而退，说不定还能听到点消息",
+      "result": { "type": "duel", "enemy": { "strength": "same", "count": 2, "kind": "cultivator" }, "approach": "talk", "tiers": { "lose": { "effects": [{ "stonesPct": -0.3 }] } } } }
+   ] },
+
+ { "id": "W03", "name": "误入禁地", "category": "danger", "locations": ["wilds", "secret"], "tier": "uncommon",
+   "text": "浓雾忽起，你回过神来，四周已是一片陌生的石林。",
+   "options": [
+    { "text": "原路摸索回去", "hint": "耗时半年，安全", "time": 0.5, "result": { "type": "fixed", "text": "你沿着来时的脚印一点点往回摸，总算走出了雾。" } },
+    { "text": "继续深入", "hint": "三成可能找到禁地至宝；七成会遇上守护者，只能逃跑",
+      "result": { "type": "chance", "p": 0.3, "success": { "effects": [{ "randomItem": "book_mystic" }, { "stones": 100 }], "text": "石林深处的石台上，静静躺着一件无主之物。" }, "fail": { "effects": [{ "chain": "W03b" }], "text": "雾里亮起一双绿色的眼睛。" } } },
+    { "text": "破阵", "hint": "需要阵道功法：安全离开", "requires": [{ "technique": "zhenfa_chujie" }], "result": { "type": "fixed", "text": "你看出了石林的阵眼，轻轻推倒一块石头，雾便散了。" } }
+   ] },
+ { "id": "W03b", "name": "禁地守护者", "category": "danger", "locations": ["wilds", "secret"], "tier": "uncommon", "chainOnly": true, "combat": "c5_7",
+   "text": "守护者从雾里走了出来。你知道，这不是你能打的东西。",
+   "options": [
+    { "text": "逃", "hint": "只能逃跑：失败按落败结算", "result": { "type": "duel", "enemy": { "strength": "higher_realm" }, "approach": "flee" } }
+   ] },
+
+ { "id": "W04", "name": "中毒", "category": "danger", "locations": ["wilds", "secret"], "tier": "uncommon",
+   "text": "你吞下一枚野果，片刻后，舌根发麻，眼前发黑。",
+   "options": [
+    { "text": "运功逼毒", "hint": "耗时一年：七成干净解毒，三成解毒但根基 -5", "time": 1,
+      "result": { "type": "chance", "p": 0.7, "success": { "text": "你运功一年，终于把毒逼了出来。" }, "fail": { "effects": [{ "stat": "foundation", "add": -5 }], "text": "毒是逼出来了，经脉却也伤了几分。" } } },
+    { "text": "服用解毒丹", "hint": "立刻解毒", "requires": [{ "hasItem": "jiedu_dan" }], "cost": [{ "item": "jiedu_dan", "n": -1 }], "result": { "type": "fixed", "text": "丹药入腹，一股凉意压下了毒性。" } },
+    { "text": "去药铺求医", "hint": "灵石 -30×，解毒", "cost": [{ "stones": -30 }], "result": { "type": "fixed", "text": "药铺的郎中给你扎了几针，又灌下一碗苦得发涩的汤药。" } },
+    { "text": "硬扛过去", "hint": "中毒：时间过得像平时两倍快，直到解毒为止", "result": { "type": "fixed", "effects": [{ "status": "poison" }] } }
+   ] },
+
+ { "id": "W05", "name": "心魔", "category": "seclusion", "locations": ["any"], "tier": "uncommon", "chainOnly": true, "repeatable": true,
+   "text": "你看见了自己最不愿面对的那段记忆。",
+   "options": [
+    { "text": "斩心魔", "hint": "心境判定：成功则心境 +20、根基 +5；失败则修为 -30%、心境 -10",
+      "result": { "type": "chance", "p": 0.5, "stat": "mood", "success": { "effects": [{ "stat": "mood", "add": 20 }, { "stat": "foundation", "add": 5 }], "text": "你直直地看着它，一步也没有退。幻象终于碎了。" }, "fail": { "effects": [{ "cult": -0.3 }, { "stat": "mood", "add": -10 }], "text": "你没能挺过去。等回过神来，冷汗已经浸透了衣衫。" } } },
+    { "text": "顺从心魔", "hint": "修为 +50%，道心 -20，种下心魔", "requires": [{ "notFlag": "noYield" }],
+      "result": { "type": "fixed", "effects": [{ "cult": 0.5 }, { "stat": "dao", "add": -20 }, { "status": "heartDemon" }], "text": "你不再抵抗。那个声音说得对——你本来就想这么做。" } },
+    { "text": "服用清心丹", "hint": "安然度过", "requires": [{ "hasItem": "qingxin_dan" }], "cost": [{ "item": "qingxin_dan", "n": -1 }], "result": { "type": "fixed", "text": "一股清凉直冲灵台，幻象如潮水般退去。" } }
+   ] },
+
+ { "id": "W06", "name": "灵气暴走", "category": "seclusion", "locations": ["any"], "tier": "uncommon", "chainOnly": true, "repeatable": true,
+   "text": "经脉中的灵力像脱缰的野马，横冲直撞。",
+   "options": [
+    { "text": "强行压制", "hint": "根基 -10，修为保留", "result": { "type": "fixed", "effects": [{ "stat": "foundation", "add": -10 }] } },
+    { "text": "散去部分修为", "hint": "修为 -50%，不受伤", "result": { "type": "fixed", "effects": [{ "cult": -0.5 }] } },
+    { "text": "顺势冲关", "hint": "一半可能直接提升一个小层级；一半重伤，根基 -15",
+      "result": { "type": "chance", "p": 0.5, "success": { "effects": [{ "cult": 1 }], "text": "你咬牙把那股乱流引向了关口——关口应声而开。" }, "fail": { "effects": [{ "status": "heavy" }, { "stat": "foundation", "add": -15 }], "text": "关口没开，乱流却反冲回来，你一口血喷在了蒲团上。" } } }
+   ] },
+
+ { "id": "W10", "name": "大能斗法", "category": "danger", "locations": ["any"], "tier": "rare",
+   "text": "天边两道遁光相撞，余波扫平了半座山。",
+   "options": [
+    { "text": "躲起来观战", "hint": "一半可能有所领悟（修为 +20%），一半被余波波及（轻伤）",
+      "result": { "type": "chance", "p": 0.5, "success": { "effects": [{ "cult": 0.2 }], "text": "你看得目不转睛，其中一招，你好像看懂了。" }, "fail": { "effects": [{ "status": "light" }], "text": "一道余波扫过，你连人带石头被掀出去老远。" } } },
+    { "text": "等斗法结束后去捡漏", "hint": "三成可能从败者身上得到好东西；也可能被胜者发现",
+      "result": { "type": "chance", "p": 0.3, "success": { "effects": [{ "randomItem": "book_mystic" }], "text": "你在焦土里翻出了半截储物袋。" }, "fail": { "effects": [{ "status": "light" }], "text": "你刚摸到战场边上，一道目光便扫了过来。你连滚带爬地逃了。" } } },
+    { "text": "立刻离开", "hint": "安全", "result": { "type": "fixed", "text": "这种热闹，还是不凑为好。" } }
+   ] },
+
+ { "id": "W11", "name": "旧伤复发", "category": "danger", "locations": ["any"], "tier": "uncommon", "conditions": [{ "anyOf": [{ "ageGte": 60 }, { "flag": "everHeavy" }] }],
+   "text": "早年留下的暗伤又开始隐隐作痛。",
+   "options": [
+    { "text": "闭关疗伤", "hint": "耗时一年：痊愈", "time": 1, "result": { "type": "fixed", "effects": [{ "cure": "injury" }] } },
+    { "text": "不予理会", "hint": "寿元 -2", "result": { "type": "fixed", "effects": [{ "lifespan": -2 }] } },
+    { "text": "服用虎狼之药", "hint": "立即压下伤势，但寿元 -5", "requires": [{ "hasItem": "hulang_yao" }], "cost": [{ "item": "hulang_yao", "n": -1 }], "result": { "type": "fixed", "effects": [{ "cure": "injury" }, { "lifespan": -5 }] } }
+   ] },
+
+ { "id": "W13", "name": "寿元将尽", "category": "danger", "locations": ["any"], "tier": "uncommon", "chainOnly": true,
+   "text": "镜中的自己两鬓斑白。你第一次清楚地感觉到，时间不多了。",
+   "options": [
+    { "text": "坦然接受", "hint": "心境 +20", "result": { "type": "fixed", "effects": [{ "stat": "mood", "add": 20 }, { "flag": "acceptedEnd" }, { "log": "晚年看淡了生死", "weight": 5 }] } },
+    { "text": "搏命冲关", "hint": "下一次突破成功率 +15%，但失败即死亡", "result": { "type": "fixed", "effects": [{ "flag": "desperate" }] } },
+    { "text": "寻找延寿之法", "hint": "四处打听延寿的法子", "result": { "type": "fixed", "effects": [{ "flag": "seekLongevity" }] } }
+   ] },
+
+ { "id": "Z01", "name": "灵药将熟", "category": "resource", "locations": ["wilds"], "tier": "common",
+   "text": "山林深处，一株灵药即将成熟，附近似乎有妖兽活动。",
+   "options": [
+    { "text": "立即采摘", "hint": "获得灵药；四成可能惊动妖兽",
+      "result": { "type": "chance", "p": 0.6, "success": { "effects": [{ "randomItem": "herb" }] }, "fail": { "effects": [{ "randomItem": "herb" }, { "chain": "W01" }], "text": "你刚把灵药揣进怀里，身后就传来一声低吼。" } } },
+    { "text": "先观察四周", "hint": "耗时三个月，危险降为一成", "time": 0.25,
+      "result": { "type": "chance", "p": 0.9, "success": { "effects": [{ "randomItem": "herb" }] }, "fail": { "effects": [{ "randomItem": "herb" }, { "chain": "W01" }] } } },
+    { "text": "另寻他路", "hint": "放弃这株灵药，立刻触发一个新的探索事件", "result": { "type": "fixed", "effects": [{ "chain": "@redraw" }] } },
+    { "text": "直接离开", "hint": "无事", "result": { "type": "fixed" } }
+   ] },
+
+ { "id": "Z02", "name": "灵石矿脉线索", "category": "resource", "locations": ["market", "wilds"], "tier": "uncommon", "tags": ["commoner"],
+   "text": "有人说城外废矿里还有没挖完的灵石。",
+   "options": [
+    { "text": "亲自去挖", "hint": "耗时一年：灵石 +120×；两成可能矿洞坍塌，轻伤", "time": 1,
+      "result": { "type": "chance", "p": 0.8, "success": { "effects": [{ "stones": 120 }] }, "fail": { "effects": [{ "stones": 120 }, { "status": "light" }], "text": "最后一镐下去，头顶的石头哗啦啦塌了下来。" } } },
+    { "text": "雇凡人矿工", "hint": "灵石 -30×，换来 +80×，没有风险", "cost": [{ "stones": -30 }], "result": { "type": "fixed", "effects": [{ "stones": 80 }] } },
+    { "text": "把线索转卖", "hint": "灵石 +30×", "result": { "type": "fixed", "effects": [{ "stones": 30 }] } }
+   ] },
+
+ { "id": "Z03", "name": "废弃洞府", "category": "resource", "locations": ["wilds"], "tier": "uncommon",
+   "text": "一座被遗弃的洞府，禁制早已失效。",
+   "options": [
+    { "text": "据为己有", "hint": "此后可以在这里闭关", "result": { "type": "fixed", "effects": [{ "flag": "hasCave" }, { "log": "在山中有了自己的洞府", "weight": 4 }], "text": "你把洞府打扫干净，在门口挂上了自己的名牌。" } },
+    { "text": "搜刮后离开", "hint": "两颗丹药和一份材料", "result": { "type": "fixed", "effects": [{ "randomItem": "pill_yellow", "n": 2 }, { "randomItem": "material" }] } },
+    { "text": "仔细搜寻密室", "hint": "耗时半年：一半可能发现前主人留下的功法", "time": 0.5,
+      "result": { "type": "chance", "p": 0.5, "success": { "effects": [{ "randomItem": "book_yellow" }], "text": "石床底下有一块松动的砖，下面压着一卷功法。" }, "fail": { "text": "你把每一块石头都敲了一遍，什么也没找到。" } } }
+   ] },
+
+ { "id": "Z04", "name": "丹药遗失", "category": "resource", "locations": ["wilds"], "tier": "uncommon",
+   "text": "路边草丛里滚出一个药瓶，瓶身刻着丹鼎门的标记。",
+   "options": [
+    { "text": "据为己有", "hint": "三颗随机丹药", "result": { "type": "fixed", "effects": [{ "randomItem": "pill_yellow", "n": 3 }] } },
+    { "text": "送还丹鼎门", "hint": "丹鼎门好感 +20，获得回礼", "result": { "type": "fixed", "effects": [{ "faction": "danding", "add": 20 }, { "item": "huichun_dan", "n": 2 }], "text": "丹鼎门的弟子再三道谢，硬塞给你两颗回春丹。" } },
+    { "text": "先服一颗试试药性", "hint": "一半是聚气丹（修为 +20%），一半是试验品",
+      "result": { "type": "chance", "p": 0.5, "success": { "effects": [{ "cult": 0.2 }] }, "fail": { "effects": [{ "status": "poison" }], "text": "药一入口，你就知道坏了。" } } }
+   ] },
+
+ { "id": "Z05", "name": "拾得法器", "category": "resource", "locations": ["wilds", "secret"], "tier": "uncommon",
+   "text": "一件沾满泥土的法器。",
+   "options": [
+    { "text": "擦干净直接用", "hint": "得到一件装备；一成可能带着诅咒",
+      "result": { "type": "chance", "p": 0.9, "success": { "effects": [{ "randomItem": "equip_yellow" }] }, "fail": { "effects": [{ "stat": "mood", "add": -10 }], "text": "法器上的阴气顺着手指钻了进来，你赶紧把它扔了。" } } },
+    { "text": "找人鉴定", "hint": "灵石 -10×，稳妥地得到一件装备", "cost": [{ "stones": -10 }], "result": { "type": "fixed", "effects": [{ "randomItem": "equip_yellow" }] } },
+    { "text": "卖掉", "hint": "灵石 +50×", "result": { "type": "fixed", "effects": [{ "stones": 50 }] } }
+   ] },
+
+ { "id": "P03", "name": "散修结伴", "category": "encounter", "locations": ["wilds"], "tier": "uncommon",
+   "text": "一名爽朗的散修邀你同探一处秘境。",
+   "options": [
+    { "text": "同行", "hint": "收获更多；一成半可能被他背叛",
+      "result": { "type": "chance", "p": 0.85, "success": { "effects": [{ "randomItem": "herb", "n": 2 }, { "stones": 40 }], "text": "一路有说有笑，收获也比你独自一人时多了不少。" }, "fail": { "effects": [{ "chain": "P03b" }], "text": "走到秘境深处，他忽然停下了脚步。" } } },
+    { "text": "婉拒", "hint": "无事", "result": { "type": "fixed" } }
+   ] },
+ { "id": "P03b", "name": "背叛的散修", "category": "encounter", "locations": ["wilds"], "tier": "uncommon", "chainOnly": true, "combat": "c5_12",
+   "text": "他转过身来，脸上的笑容已经不见了。",
+   "options": [
+    { "text": "迎战", "hint": "胜利后得到他的储物袋", "result": { "type": "duel", "enemy": { "strength": "same", "kind": "cultivator" }, "approach": "fight", "tiers": { "win": { "effects": [{ "stones": 60 }] } } } },
+    { "text": "逃", "hint": "失败按落败结算", "result": { "type": "duel", "enemy": { "strength": "same", "kind": "cultivator" }, "approach": "flee" } }
+   ] },
+
+ { "id": "D01", "name": "最后一枚丹药", "category": "moral", "locations": ["wilds"], "tier": "uncommon",
+   "text": "一名重伤的少女修士倒在路边，请求你分出一枚救命丹药。你只剩下最后一枚。",
+   "options": [
+    { "text": "救她", "hint": "消耗一颗回春丹：道心 +10", "requires": [{ "hasItem": "huichun_dan" }], "cost": [{ "item": "huichun_dan", "n": -1 }],
+      "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": 10 }, { "meet": "lin_xiaowan" }, { "npc": "lin_xiaowan", "add": 50 }, { "log": "救过一名少女", "weight": 7 }], "text": "她吞下丹药，脸上渐渐有了血色。「我叫林小婉，」她撑着坐起来，「这份恩情，我记下了。」" } },
+    { "text": "拒绝", "hint": "保留丹药，道心 -5", "result": { "type": "fixed", "effects": [{ "stat": "dao", "add": -5 }, { "flag": "linRefused" }], "text": "你别过头去，从她身边走了过去。" } },
+    { "text": "与她交易", "hint": "她用 50× 灵石换你的丹药", "requires": [{ "hasItem": "huichun_dan" }], "cost": [{ "item": "huichun_dan", "n": -1 }],
+      "result": { "type": "fixed", "effects": [{ "stones": 50 }, { "meet": "lin_xiaowan" }, { "npc": "lin_xiaowan", "add": 20 }, { "flag": "linTrade" }], "text": "她把身上所有的灵石都倒了出来。你收下灵石，把丹药递了过去。" } }
+   ] },
+
+ { "id": "D02", "name": "迷路的妖童", "category": "moral", "locations": ["wilds"], "tier": "uncommon",
+   "text": "一个头顶长着小角的孩子，在山路上哭着找妈妈。",
+   "options": [
+    { "text": "送他回山", "hint": "妖族好感 +20", "result": { "type": "fixed", "effects": [{ "faction": "yao", "add": 20 }, { "flag": "helpedYao" }], "text": "你牵着他走了半天山路。快到山口时，林子里有一双眼睛，静静地看着你们。" } },
+    { "text": "卖给血煞宗", "hint": "灵石 +200×，道心 -30", "result": { "type": "fixed", "effects": [{ "stones": 200 }, { "stat": "dao", "add": -30 }], "text": "接货的人笑得很满意。那孩子的哭声，你很久都忘不掉。" } }
+   ] },
+
+ { "id": "calm_w1", "name": "山间小憩", "category": "calm", "locations": ["wilds"], "tier": "common", "repeatable": true,
+   "text": "这一趟走得很顺，什么也没遇上。你在溪边歇脚时，顺手采了几株草药。",
+   "options": [{ "text": "继续赶路", "hint": "随手采到一株灵草", "result": { "type": "fixed", "effects": [{ "randomItem": "herb" }] } }] },
+ { "id": "calm_w2", "name": "山风", "category": "calm", "locations": ["wilds"], "tier": "common", "repeatable": true,
+   "text": "山顶的风很大，吹得你衣袂猎猎作响。你站了一会儿，心里忽然很静。",
+   "options": [{ "text": "下山", "hint": "心境 +3", "result": { "type": "fixed", "effects": [{ "stat": "mood", "add": 3 }] } }] },
+ { "id": "calm_w3", "name": "猎户的小屋", "category": "calm", "locations": ["wilds"], "tier": "common", "repeatable": true,
+   "text": "你在一间没人住的猎户小屋里过了一夜。墙角的陶罐里，还剩几块碎灵石。",
+   "options": [{ "text": "收下", "hint": "灵石 +5×", "result": { "type": "fixed", "effects": [{ "stones": 5 }] } }] },
+ { "id": "calm_v1", "name": "落霞", "category": "calm", "locations": ["valley"], "tier": "common", "repeatable": true,
+   "text": "谷口的晚霞烧了半边天。你看着看着，体内的灵力也跟着慢慢流转起来。",
+   "options": [{ "text": "回去", "hint": "修为 +5%", "result": { "type": "fixed", "effects": [{ "cult": 0.05 }] } }] },
+ { "id": "calm_v2", "name": "谷中旧路", "category": "calm", "locations": ["valley"], "tier": "common", "repeatable": true,
+   "text": "你沿着一条早已荒废的石阶往下走，在台阶缝里找到一株长歪了的灵草。",
+   "options": [{ "text": "收下", "hint": "一株灵草", "result": { "type": "fixed", "effects": [{ "randomItem": "herb" }] } }] }
+]

@@ -1,0 +1,43 @@
+{
+ "locations": {
+  "wilds":   { "name": "山野", "explore": true, "categories": { "fortune": 22, "danger": 28, "resource": 28, "encounter": 12, "moral": 10 } },
+  "valley":  { "name": "落霞谷", "explore": true, "reward": 1.2, "categories": { "fortune": 26, "danger": 34, "resource": 22, "encounter": 8, "moral": 10 }, "unlock": [{ "flag": "valley" }] },
+  "market":  { "name": "青石坊市", "explore": false, "categories": { "fortune": 10, "danger": 20, "resource": 15, "encounter": 55 } },
+  "village": { "name": "凡人村落", "explore": false, "categories": { "danger": 20, "encounter": 45, "moral": 35 } }
+ },
+ "market": {
+  "staples": [
+   { "item": "huichun_dan", "stock": 5 }, { "item": "jiedu_dan", "stock": 3 }, { "item": "juqi_dan", "stock": 3 },
+   { "item": "huoqiu_fu", "stock": 5 }, { "item": "dundi_fu", "stock": 3 }, { "item": "lingshou_rou", "stock": 5 }
+  ],
+  "randomSlots": 4, "rareBase": 0.15, "rarePerLuck": 0.005, "refreshEvery": 6, "sellRatio": 0.4,
+  "common": [
+   { "item": "xuming_dan", "weight": 10, "stock": [1, 3] }, { "item": "qingxin_dan", "weight": 10, "stock": [1, 3] },
+   { "item": "hulang_yao", "weight": 10, "stock": [1, 3] }, { "item": "lingshou_dan", "weight": 10, "stock": [1, 3] },
+   { "item": "jingang_fu", "weight": 10, "stock": [2, 3] }, { "item": "chuanxun_fu", "weight": 10, "stock": [2, 3] },
+   { "item": "tie_jian", "weight": 6, "stock": [1, 1] }, { "item": "qingyun_daopao", "weight": 6, "stock": [1, 1] }, { "item": "chuwu_jie", "weight": 6, "stock": [1, 1] },
+   { "item": "book_qingfeng", "weight": 4, "stock": [1, 1] }, { "item": "book_baicao", "weight": 4, "stock": [1, 1] }, { "item": "book_zhenfa", "weight": 4, "stock": [1, 1] },
+   { "item": "book_tiebu", "weight": 4, "stock": [1, 1] }, { "item": "book_fulu", "weight": 4, "stock": [1, 1] },
+   { "item": "recipe_juqi", "weight": 3, "stock": [1, 1] }, { "item": "recipe_huichun", "weight": 3, "stock": [1, 1] },
+   { "item": "recipe_jiedu", "weight": 3, "stock": [1, 1] }, { "item": "recipe_lingshou", "weight": 3, "stock": [1, 1] }
+  ],
+  "rare": [
+   { "item": "ningyuan_dan", "weight": 10, "stock": [1, 2] }, { "item": "pojing_dan", "weight": 10, "stock": [1, 2] },
+   { "item": "wulei_fu", "weight": 10, "stock": [1, 2] }, { "item": "yinshen_fu", "weight": 10, "stock": [1, 2] },
+   { "item": "chiyan_dao", "weight": 5, "stock": [1, 1] }, { "item": "bidu_yi", "weight": 5, "stock": [1, 1] }, { "item": "juling_yupei", "weight": 5, "stock": [1, 1] },
+   { "item": "book_liuyun", "weight": 3, "stock": [1, 1] }, { "item": "book_huichun", "weight": 3, "stock": [1, 1] },
+   { "item": "book_longxiang", "weight": 3, "stock": [1, 1] }, { "item": "book_dundi", "weight": 3, "stock": [1, 1] }
+  ],
+  "foundationPill": { "item": "zhuji_dan", "fromLayer": 7, "stock": 1 }
+ },
+ "names": {
+  "surnames": ["李","王","张","刘","陈","杨","黄","吴","周","徐","孙","马","朱","胡","郭","何","高","罗","郑","梁","谢","宋","唐","许","韩","冯","邓","曹","彭","曾","萧","叶","慕容","上官","欧阳","司马","东方","南宫","诸葛","令狐"],
+  "given": ["尘","玄","清","云","风","霜","羽","默","岚","川","渊","墨","遥","宁","远","澈","珏","昭","离","溪","衡","晏","舟","樾","珩","棠","霁","砚","苒","汐","筠","蘅","湛","峤","翎","朔","璃","芷","沅","灼"]
+ },
+ "specials": [
+  { "id": "T01", "name": "天降异象", "weight": 20, "once": true, "world": { "id": "omen", "actions": 8 },
+    "text": "天空裂开一道金色的缝隙，七日不散。接下来一段时间，修炼事半功倍，机缘也格外多。" },
+  { "id": "T05", "name": "灵气潮汐", "weight": 20, "world": { "id": "tide_high", "actions": 5 },
+    "text": "天地灵气像潮水一般涨了起来。趁着涨潮，修炼格外顺畅；等潮水退去，又会艰难一阵。" }
+ ]
+}
