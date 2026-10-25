@@ -27,12 +27,15 @@ export function step(c: Content, st: RunState, o: BotOptions): RunState {
 
 // ───────────── 选项 ─────────────
 
+/** 攒筑基丹的钱：炼气期还没有筑基丹时，所有花灵石的事都要掂量（稳健的玩家会先攒突破材料） */
+const saving = (st: RunState) => st.realm === 0 && count(st, 'zhuji_dan') === 0;
+
 function value(c: Content, st: RunState, effects: Effect[] | undefined): number {
   let v = 0;
   const sc = stoneCoef(c, st);
   for(const e of effects ?? []){
     if('cult' in e) v += e.cult * 100;
-    else if('stones' in e) v += e.stones * 0.3;
+    else if('stones' in e) v += e.stones * (e.stones < 0 && saving(st) ? 1.2 : 0.3);
     else if('stonesPct' in e) v += e.stonesPct * st.stones / sc * 0.3;
     else if('item' in e) v += (e.n ?? 1) * 8;
     else if('randomItem' in e) v += (e.n ?? 1) * (e.randomItem.startsWith('book') ? 25 : 8);
@@ -125,14 +128,15 @@ function housekeeping(c: Content, st: RunState, o: BotOptions): RunState {
   for(const e of library(c, st)){
     if(!e.enabled) continue;
     const it = c.items[e.item];
-    const want = e.item === 'zhuji_dan' ? st.realm === 0 && count(st, 'zhuji_dan') === 0
+    const want = e.item === 'zhuji_dan' ? saving(st)
+      : saving(st) ? false   // 攒贡献换筑基丹
       : it.kind === 'technique' ? !st.techniques.includes(it.technique!) && count(st, e.item) === 0
       : e.item === 'pojing_dan' ? count(st, e.item) === 0
       : count(st, e.item) < 2 && (st.sect!.avail - e.cost >= (st.realm === 0 && count(st, 'zhuji_dan') === 0 ? 150 : 0));
     if(want){ try{ st = exchange(c, st, e.item); }catch{} }
   }
   // 洞府：灵田、静室、聚灵阵、护山阵，留够买丹药的钱
-  if(st.location === 'abode'){
+  if(st.location === 'abode' && !saving(st)){
     for(const id of ['lingtian', 'juling', 'jingshi', 'hushan', 'lingtian', 'juling']){
       const x = buildings(c, st).find(y => y.id === id);
       if(x?.enabled && st.stones - x.cost >= 60 * stoneCoef(c, st)) st = build(c, st, id);
@@ -175,35 +179,40 @@ function pickAction(c: Content, st: RunState, o: BotOptions): string {
   if(o.kind === 'steady' && has('break:forced') && lifeLeft(c, st) < 15) return 'break:forced';
   const study = list.find(a => a.id.startsWith('study:')); if(study) return study.id;
 
-  // 拜访：每 4 次行动最多一次，挑好感最低（但未满 60）的人；徒弟小石头能指点就去指点
-  if(st.flags.shitouDisciple && has('visit:xiao_shitou') && st.actions - Number(st.flags.guideAt ?? -99) >= 5){ st.flags.botVisitAt = st.actions; return 'visit:xiao_shitou'; }
-  if(st.actions - Number(st.flags.botVisitAt ?? -99) >= 4){
-    const v = list.filter(a => a.id.startsWith('visit:')).map(a => a.id).sort((x, y) => (st.npcs[x.slice(6)]?.aff ?? 0) - (st.npcs[y.slice(6)]?.aff ?? 0))[0];
-    if(v && ((st.npcs[v.slice(6)]?.aff ?? 0) < 60 || st.ready.some(r => Object.values(c.npcs[v.slice(6)].stages).includes(r.event)))){ st.flags.botVisitAt = st.actions; return v; }
-  }
+  // 出门的原则：就地修炼和探索，只在有事时才去别处，办完马上回山野（走动不耗寿元，但每次都是一次决策）
+  const since = (k: string) => st.actions - Number(st.flags[k] ?? -99);
+  const leave = () => { st.flags.botLeftAt = st.actions; return has('move:wilds') ? 'move:wilds' : list[0].id; };
+  // 拜访：有就绪的关系线事件就去；好感不到 30 的，每 8 次行动去一次；徒弟小石头按宿命需要去指点
+  const visits = list.filter(a => a.id.startsWith('visit:')).map(a => a.id.slice(6));
+  const ready = visits.find(id => st.ready.some(r => Object.values(c.npcs[id].stages).includes(r.event)));
+  if(ready){ st.flags.botVisitAt = st.actions; return 'visit:' + ready; }
+  const f07 = st.destiny?.id === 'F07' && st.destiny.state === 'active';
+  if(st.flags.shitouDisciple && visits.includes('xiao_shitou') && since('guideAt') >= (f07 ? 5 : 10)){ st.flags.botVisitAt = st.actions; return 'visit:xiao_shitou'; }
+  const low = visits.filter(id => (st.npcs[id]?.aff ?? 0) < 30).sort((x, y) => (st.npcs[x]?.aff ?? 0) - (st.npcs[y]?.aff ?? 0))[0];
+  if(low && since('botVisitAt') >= 8){ st.flags.botVisitAt = st.actions; return 'visit:' + low; }
   // 宿命：要回村的时候回村
   const ds = st.destiny;
   const goHome = ds?.state === 'active' && ((ds.id === 'F16' && ds.step === 1) || (ds.id === 'F11' && ds.step === 2 && lifeLeft(c, st) < 20));
   if(goHome && st.location !== 'village' && has('move:village')) return 'move:village';
-  if(st.location === 'village' && !goHome && has('move:wilds') && !list.some(x => x.id.startsWith('visit:') && st.actions - Number(st.flags.botVisitAt ?? -99) >= 4)) return 'move:wilds';
-  // 有徒弟、有供奉时，每 10 次行动回一趟村
-  if((st.flags.shitouDisciple || st.flags.villageOffering) && st.actions - Number(st.flags.botVillageAt ?? -99) >= 10 && has('move:village') && st.status.heavy === 0){ st.flags.botVillageAt = st.actions; return 'move:village'; }
-  // 宗门：稳健型去丹鼎门，激进型去问剑宗；入门后每 8 次行动回一趟
+  if((st.flags.shitouDisciple || st.flags.villageOffering) && since('botVillageAt') >= (f07 ? 5 : 15) && has('move:village') && st.status.heavy === 0){ st.flags.botVillageAt = st.actions; return 'move:village'; }
+  if(st.location === 'village' && !goHome) return leave();
+  // 宗门：稳健型去丹鼎门，激进型去问剑宗；入门后每 14 次行动回一趟
   const home = st.sect ? c.sects.sects[st.sect.id].location : o.kind === 'aggressive' ? 'sect_wenjian' : 'sect_danding';
-  if(c.locations[st.location]?.sect){ st.flags.botSectAt = st.actions; return has('move:wilds') ? 'move:wilds' : list[0].id; }
-  const sinceSect = st.actions - Number(st.flags.botSectAt ?? -99);
+  if(c.locations[st.location]?.sect){ st.flags.botSectAt = st.actions; return leave(); }
   const retake = st.age < Number(st.flags['retake_' + c.locations[home]?.sect] ?? 0);
-  if(has('move:' + home) && st.status.heavy === 0 && !retake && ((!st.sect && st.actions >= 3 && sinceSect > 10) || (st.sect && sinceSect >= 8))) return 'move:' + home;
-  // 洞府：有洞府就回洞府闭关（加成更高），探索时再出门
+  if(has('move:' + home) && st.status.heavy === 0 && !retake && ((!st.sect && st.actions >= 3 && since('botSectAt') > 12) || (st.sect && since('botSectAt') >= 14))) return 'move:' + home;
+  // 洞府：灵田熟了或者每 15 次行动回去一趟（建房、收菜），在洞府闭关一次再走
   if(st.location === 'abode'){
-    if(st.status.heavy > 0 || (st.flags.botLast !== 'cultivate' && !atPeak(c, st))){ st.flags.botLast = 'cultivate'; return has('cultivate') ? 'cultivate' : 'move:wilds'; }
-    st.flags.botLast = 'move'; return 'move:wilds';
+    if((st.status.heavy > 0 || st.flags.botLast !== 'cultivate') && has('cultivate')){ st.flags.botLast = 'cultivate'; return 'cultivate'; }
+    st.flags.botAbodeAt = st.actions; return leave();
   }
+  const fieldReady = st.abode?.fieldReady !== null && st.abode?.fieldReady !== undefined && st.actions >= st.abode.fieldReady;
+  if(st.abode && has('move:abode') && st.status.heavy === 0 && (fieldReady || since('botAbodeAt') >= 15)){ st.flags.botLast = 'move'; return 'move:abode'; }
+  // 集市：要买筑基丹，或者每 16 次行动、手里有余钱时去一趟
   const needPill = st.realm === 0 && st.layer >= 7 && count(st, 'zhuji_dan') === 0;
-  const sinceMarket = st.actions - Number(st.flags.botMarketAt ?? -99);
-  if(st.location === 'market'){ st.flags.botMarketAt = st.actions; return has('move:wilds') ? 'move:wilds' : list[0].id; }
-  if(has('move:market') && ((needPill && st.stones >= 200) || (sinceMarket > 12 && st.stones > 40 * stoneCoef(c, st)))) return 'move:market';
-  if(st.location === 'sect_secret') return has('explore') ? 'explore' : 'move:wilds';
+  if(st.location === 'market'){ st.flags.botMarketAt = st.actions; return leave(); }
+  if(has('move:market') && ((needPill && st.stones >= 200) || (since('botMarketAt') > 16 && st.stones > 60 * stoneCoef(c, st)))) return 'move:market';
+  if(st.location === 'sect_secret') return has('explore') ? 'explore' : leave();
   if(has('move:qingming') && st.status.heavy === 0 && st.location !== 'qingming') return 'move:qingming';
   if(st.location === 'qingming' && st.status.heavy === 0) return has('explore') ? 'explore' : 'cultivate';
   if(st.location !== 'wilds' && st.location !== 'valley' && has('move:wilds')) return 'move:wilds';
@@ -214,7 +223,6 @@ function pickAction(c: Content, st: RunState, o: BotOptions): string {
   if(st.status.heavy > 0 && has('cultivate')) return 'cultivate';
   if(st.foundation < 40 && has('temper') && o.kind === 'steady') return 'temper';
   const lastWasExplore = st.flags.botLast === 'explore';
-  if(lastWasExplore && st.abode && has('move:abode') && st.location === 'wilds'){ st.flags.botLast = 'move'; return 'move:abode'; }
   const id = lastWasExplore && has(cultivateId) ? cultivateId : has('explore') ? 'explore' : cultivateId;
   st.flags.botLast = id;
   return id;

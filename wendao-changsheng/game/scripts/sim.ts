@@ -14,17 +14,24 @@ const showLog = process.argv.includes('--log');
 const origins = c.origins.filter(o => o.unlocked).map(o => o.id);
 const RANK: Record<string, number> = { common: 0, rare: 1, epic: 2, legend: 3 };
 
+/** 决策次数（systems 1.1「读一段文字，点一个选项」）：行动之后直接弹出事件的，行动和事件里的选择合起来算一次 */
+const decisions = new WeakMap<RunState, number>();
+const dec = (s: RunState) => decisions.get(s) ?? s.steps;
+
 function play(seed: number, origin: string, kind: BotKind, watchAds: boolean): RunState {
   const offers = offerTalents(c, seed);
   const talent = kind === 'random' ? offers[seed % offers.length] : offers.sort((a, b) => RANK[c.talents.find(t => t.id === b)!.rarity] - RANK[c.talents.find(t => t.id === a)!.rarity])[0];
   const dests = offerDestinies(c, seed, origin);
   let st = newRun(c, { seed, origin, talent, destiny: dests[kind === 'random' ? seed % dests.length : 0] });
+  let merged = 0;
   for(let i = 0; i < 1000 && !st.ended; i++){
-    const before = st.steps;
+    const before = st.steps, opened = !st.pending;
     st = step(c, st, { kind, watchAds });
+    if(opened && st.pending) merged++;
     if(st.steps === before) throw new Error('机器人没有前进（死锁）');
-    if(st.steps > 400){ st.ended = { ending: 'timeout' }; break; }   // balance-targets 第八节：时长上限
+    if(st.steps - merged > 400){ st.ended = { ending: 'timeout' }; break; }   // balance-targets 第八节：时长上限
   }
+  decisions.set(st, st.steps - merged);
   return st;
 }
 
@@ -49,7 +56,7 @@ for(const kind of bots){
   const duels = runs.reduce((a, s) => a + s.stats.duels, 0), wins = runs.reduce((a, s) => a + s.stats.duelWins, 0);
   const explores = runs.reduce((a, s) => a + s.stats.explores, 0), calm = runs.reduce((a, s) => a + s.stats.calm, 0);
   console.log(`\n══ ${kind}：${runs.length} 局（${origins.length} 种出身 × ${N}），用时 ${((Date.now() - t0) / 1000).toFixed(1)} 秒`);
-  console.log(`决策次数　中位数 ${median(runs.map(s => s.steps))}，90% 分位 ${[...runs.map(s => s.steps)].sort((a, b) => a - b)[Math.floor(runs.length * 0.9)]}`);
+  console.log(`决策次数　中位数 ${median(runs.map(dec))}，90% 分位 ${[...runs.map(dec)].sort((a, b) => a - b)[Math.floor(runs.length * 0.9)]}（点击次数中位数 ${median(runs.map(s => s.steps))}）`);
   console.log(`最高境界　${realmDist.join('　')}`);
   console.log(`结局　　　身死道消 ${pct(deaths.length, runs.length)}　寿终 / 坐化 ${pct(runs.filter(s => s.ended?.ending === 'natural').length, runs.length)}　超时 ${runs.filter(s => s.ended?.ending === 'timeout').length}`);
   console.log(`死因　　　${Object.entries(causes).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${pct(v, deaths.length)}`).join('　') || '-'}`);

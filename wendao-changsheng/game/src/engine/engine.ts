@@ -69,7 +69,9 @@ export function actions(c: Content, st0: RunState): ActionInfo[] {
   const loc = c.locations[st.location];
   if(st.location === 'wilds' || st.location === 'valley' || st.location === 'abode'){
     const peak = atRealmPeak(c, st);
-    out.push({ id: 'cultivate', label: st.status.heavy > 0 ? '闭关疗伤' : '普通修炼', enabled: !peak, reason: peak ? '修为已满，需要突破' : undefined });
+    // 突破失败后要先修炼一次才能再突破（systems 1.5）；看广告免罚时修为仍是满的，这时修炼改为调息，否则会两头卡住
+    const settle = peak && st.breakCooldown;
+    out.push({ id: 'cultivate', label: st.status.heavy > 0 ? '闭关疗伤' : settle ? '调息' : '普通修炼', enabled: !peak || settle, reason: peak && !settle ? '修为已满，需要突破' : undefined, hint: settle ? '平复气息，之后可以再次突破' : undefined });
     out.push({ id: 'push', label: '全力冲关', enabled: !peak && st.status.heavy === 0, hint: '修为更多，可能遭遇心魔或灵气暴走' });
     out.push({ id: 'temper', label: '打磨根基', enabled: true, hint: '修为少，根基 +5' });
   }
@@ -134,7 +136,8 @@ export function act(c: Content, st0: RunState, actionId: string): { state: RunSt
     const vein = st.location === 'wilds' && Number(st.flags.veinLeft ?? 0) > 0;
     if(vein) st.flags.veinLeft = Number(st.flags.veinLeft) - 1;
     const g = cultGain(c, st, perLayerGain(c, st) * mult, (vein ? 0.5 : 0) + abodeCultAdd(c, st));
-    st.cult += g; out.push(`${kind === 'push' ? '全力冲关' : kind === 'temper' ? '打磨根基' : st.status.heavy > 0 ? '闭关疗伤' : '闭关修炼'}，修为 +${Math.round(g * 100)}%。`);
+    if(atRealmPeak(c, st)) out.push(st.status.heavy > 0 ? '闭关疗伤，修为已满，没有再涨。' : '你闭目调息，体内翻涌的灵力渐渐平复下来。');
+    else { st.cult += g; out.push(`${kind === 'push' ? '全力冲关' : kind === 'temper' ? '打磨根基' : st.status.heavy > 0 ? '闭关疗伤' : '闭关修炼'}，修为 +${Math.round(g * 100)}%。`); }
     if(kind === 'temper'){ st.foundation += 5; out.push('根基 +5。'); }
     if(st.mood < 50){ st.mood = Math.min(50, st.mood + 3); }
     const quiet = quietRoom(st); if(quiet){ st.mood += 5 * quiet; }   // 静室（systems 6.2）                        // 心境回到 50（misc-rules 第二节）
@@ -416,10 +419,7 @@ function tick(c: Content, st: RunState, out: string[], skipDeath = false): void 
     const shut = Object.values(c.locations).find(l => l.id === st.location && l.unlock?.some(u => 'world' in u && u.world === w.id));
     if(shut){ st.location = 'wilds'; out.push(`${shut.name}的入口渐渐合拢，你被送回了山野。`); }
   }
-  // 第 13 步：钳制
-  st.foundation = clamp(st.foundation, 0, 100); st.luck = clamp(st.luck, 0, 50);
-  st.mood = clamp(st.mood, st.talents.includes('C11') ? 30 : 0, st.status.heartDemon ? 80 : 100);
-  st.dao = clamp(st.dao, -100, 100); st.tox = clamp(st.tox, 0, 10);
+  clampStats(st);   // 第 13 步：钳制
   // 特殊事件（event-draw 第七节）
   advanceDestiny(c, st, out);
   const sp = rollSpecial(c, st, !!st.flags.firstRun);
@@ -433,8 +433,16 @@ function tick(c: Content, st: RunState, out: string[], skipDeath = false): void 
   }
 }
 
+/** 属性钳制（misc-rules 第 13 步）；一局结束时也要做，死亡会提前结束 tick */
+function clampStats(st: RunState): void {
+  st.foundation = clamp(st.foundation, 0, 100); st.luck = clamp(st.luck, 0, 50);
+  st.mood = clamp(st.mood, st.talents.includes('C11') ? 30 : 0, st.status.heartDemon ? 80 : 100);
+  st.dao = clamp(st.dao, -100, 100); st.tox = clamp(st.tox, 0, 10);
+}
+
 function endRun(c: Content, st: RunState, how: 'death' | 'lifespan' | 'retire', cause?: string): void {
   st.pending = null;
+  clampStats(st);
   closeDestiny(c, st);
   const ending = how === 'death' ? 'death' : 'natural';   // TODO(下一步)：一方强者、传承留世、飞升问道的判定（systems 第 10 节）
   st.ended = { ending, cause };

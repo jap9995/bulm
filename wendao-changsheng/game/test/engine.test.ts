@@ -73,3 +73,14 @@ test('看广告复活：每局一次，转为重伤', () => {
   }
   assert.fail('没有找到会触发复活提示的局');
 });
+
+test('突破失败后修为仍满（看广告免罚）时可以调息，调息后能再次突破', () => {
+  const st = newRun(c, { seed: 5, origin: 'orphan', talent: offerTalents(c, 5)[0] });
+  st.layer = 9; st.cult = 1; st.breakCooldown = true; st.bag.zhuji_dan = 1;
+  const before = actions(c, st);
+  assert.ok(before.find(a => a.id === 'cultivate')?.enabled, '冷却中修为满时，修炼（调息）可用');
+  assert.ok(!before.find(a => a.id === 'break:normal')?.enabled, '冷却中不能突破');
+  const after = act(c, st, 'cultivate').state;
+  assert.equal(after.breakCooldown, false);
+  assert.ok(actions(c, after).find(a => a.id === 'break:normal')?.enabled, '调息后可以突破');
+});
