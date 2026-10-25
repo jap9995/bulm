@@ -149,6 +149,8 @@ export function act(c: Content, st0: RunState, actionId: string): { state: RunSt
     const demonP = ((kind === 'push' ? 0.15 : 0) + (st.mood < 40 ? 0.25 : 0)) * (m.heartDemonMult ?? 1) * (quiet ? 0.8 : 1);
     if(chance(st, 'event', demonP) && c.events.W05) eventId = 'W05';
     else if(kind === 'push' && !st.world.some(w => w.id === 'tide_high') && chance(st, 'event', 0.2) && c.events.W06) eventId = 'W06';
+    // 闭关被打扰（misc-rules 第三节）：野外 10%，洞府 5%，建了护山阵不会遇袭；重伤时遇袭最危险
+    else { const p = st.location === 'abode' ? ((st.abode?.buildings.hushan ?? 0) > 0 ? 0 : 0.05) : 0.1; if(chance(st, 'event', p)) eventId = st.status.heavy > 0 ? 'A_ambush_hurt' : 'A_ambush'; }
     if(eventId) source = 'forced';
   }
   if(kind === 'move'){

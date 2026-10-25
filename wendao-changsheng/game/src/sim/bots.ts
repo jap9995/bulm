@@ -187,14 +187,14 @@ function pickAction(c: Content, st: RunState, o: BotOptions): string {
   const ready = visits.find(id => st.ready.some(r => Object.values(c.npcs[id].stages).includes(r.event)));
   if(ready){ st.flags.botVisitAt = st.actions; return 'visit:' + ready; }
   const f07 = st.destiny?.id === 'F07' && st.destiny.state === 'active';
-  if(st.flags.shitouDisciple && visits.includes('xiao_shitou') && since('guideAt') >= (f07 ? 5 : 10)){ st.flags.botVisitAt = st.actions; return 'visit:xiao_shitou'; }
+  if(st.flags.shitouDisciple && visits.includes('xiao_shitou') && since('guideAt') >= (f07 ? 8 : 12)){ st.flags.botVisitAt = st.actions; return 'visit:xiao_shitou'; }
   const low = visits.filter(id => (st.npcs[id]?.aff ?? 0) < 30).sort((x, y) => (st.npcs[x]?.aff ?? 0) - (st.npcs[y]?.aff ?? 0))[0];
   if(low && since('botVisitAt') >= 8){ st.flags.botVisitAt = st.actions; return 'visit:' + low; }
   // 宿命：要回村的时候回村
   const ds = st.destiny;
   const goHome = ds?.state === 'active' && ((ds.id === 'F16' && ds.step === 1) || (ds.id === 'F11' && ds.step === 2 && lifeLeft(c, st) < 20));
   if(goHome && st.location !== 'village' && has('move:village')) return 'move:village';
-  if((st.flags.shitouDisciple || st.flags.villageOffering) && since('botVillageAt') >= (f07 ? 5 : 15) && has('move:village') && st.status.heavy === 0){ st.flags.botVillageAt = st.actions; return 'move:village'; }
+  if((st.flags.shitouDisciple || st.flags.villageOffering) && since('botVillageAt') >= (f07 ? 8 : 15) && has('move:village') && st.status.heavy === 0){ st.flags.botVillageAt = st.actions; return 'move:village'; }
   if(st.location === 'village' && !goHome) return leave();
   // 宗门：稳健型去丹鼎门，激进型去问剑宗；入门后每 14 次行动回一趟
   const home = st.sect ? c.sects.sects[st.sect.id].location : o.kind === 'aggressive' ? 'sect_wenjian' : 'sect_danding';

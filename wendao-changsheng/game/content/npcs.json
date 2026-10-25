@@ -81,7 +81,7 @@
   "name": "小石头", "stance": "neutral",
   "visit": ["village"], "visitUnlock": [{ "npcAffGte": ["xiao_shitou", -49] }], "stageAt": ["village"],
   "gifts": { "favorite": ["tag:book_yellow"], "like": ["huichun_dan", "juqi_dan"], "dislike": [] },
-  "special": { "type": "guide", "unlock": [{ "flag": "shitouDisciple" }], "gap": 5 },
+  "special": { "type": "guide", "unlock": [{ "flag": "shitouDisciple" }], "gap": 8 },
   "stages": { "60": "N_shitou60" },
   "gossip": [
    { "type": "heart", "text": "他把这些天练的拳一招一招打给你看，打完了满头大汗，眼睛亮亮地等你开口。" },

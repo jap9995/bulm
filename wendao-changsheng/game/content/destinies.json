@@ -30,15 +30,15 @@
  { "id": "F08", "name": "长生", "unlocked": true,
    "steps": [
     { "desc": "活过两百岁", "cond": [{ "ageGte": 200 }] },
-    { "desc": "活过五百岁", "cond": [{ "ageGte": 500 }] },
-    { "desc": "活过一千岁", "cond": [{ "ageGte": 1000 }] }
+    { "desc": "活过四百岁", "cond": [{ "ageGte": 400 }] },
+    { "desc": "活过六百岁", "cond": [{ "ageGte": 600 }] }
    ],
    "done": "与天同寿", "fail": "求长生而不得" },
  { "id": "F10", "name": "斩妖除魔", "unlocked": true,
    "steps": [
     { "desc": "斗法击败 10 个妖兽或魔修", "cond": [{ "killsGte": 10 }] },
     { "desc": "击败 30 个", "cond": [{ "killsGte": 30 }] },
-    { "desc": "讨伐血煞老人并获胜", "cond": [{ "flag": "slewXuesha" }] }
+    { "desc": "斗法击败 60 个妖兽或魔修", "cond": [{ "killsGte": 60 }] }
    ],
    "done": "除魔卫道", "fail": "妖魔未尽，斯人已逝" },
  { "id": "F11", "name": "护一方百姓", "unlocked": true,

@@ -31,14 +31,24 @@ export function advanceDestiny(c: Content, st: RunState, out: string[]): void {
     if(s.before !== undefined && st.age >= s.before){ fail(c, st, out); return; }
     if(!checkAll(c, st, s.cond)) break;
     ds.step++;
-    if(ds.id === 'F16' && ds.step === 2) st.flags.homeAge = st.age;
+    if(ds.id === 'F16' && ds.step === 2){
+      st.flags.homeAge = st.age;
+      // 归乡：40 岁前回去才算完成；40–60 岁回去只来得及陪母亲走完最后几年，奖励减半，记为未竟（systems 4.2）
+      if(st.age >= 40){
+        ds.state = 'failed';
+        apply(c, st, [{ stat: 'mood', add: 15 }], out);
+        out.push(`你回来得晚了些。母亲已经很老了，你陪她走完了最后几年。宿命「${d.name}」未竟。`);
+        st.log.push({ age: Math.floor(st.age), type: 'destiny', weight: 7, text: `宿命「${d.name}」：回来晚了，只陪母亲走完了最后几年` });
+        return;
+      }
+    }
     if(ds.step < d.steps.length) out.push(`宿命 · ${d.name}（${ds.step}/${d.steps.length}）：${d.steps[ds.step].desc}`);
   }
   if(ds.step >= d.steps.length){
     ds.state = 'done';
     out.push(`宿命「${d.name}」已了——${d.done}。`);
     apply(c, st, d.doneEffects, out);
-    if(ds.id === 'F16') apply(c, st, [{ stat: 'mood', add: Number(st.flags.homeAge) < 40 ? 30 : 10 }], out);   // 四十岁前回去，还能为母亲尽孝送终
+    if(ds.id === 'F16') apply(c, st, [{ stat: 'mood', add: 30 }], out);   // 四十岁前回去，为母亲尽孝送终
     st.log.push({ age: Math.floor(st.age), type: 'destiny', weight: 9, text: `宿命「${d.name}」：${d.done}` });
     return;
   }
