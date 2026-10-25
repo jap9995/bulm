@@ -103,7 +103,7 @@ export function addItem(c: Content, st: RunState, id: string, n: number, out: st
 }
 
 export function randomItemOf(c: Content, st: RunState, tag: string): string {
-  if(tag === 'herb' && st.realm >= 2 && c.locations[st.location]?.secret && rand(st, 'loot') < 0.2) return 'yingyuan_guo';   // 婴元果：秘境
+  if(tag === 'herb' && st.realm >= 2 && c.locations[st.location]?.secret && rand(st, 'loot') < 0.35) return 'yingyuan_guo';   // 婴元果：秘境
   if(tag === 'herb' && st.realm >= 1 && rand(st, 'loot') < (c.locations[st.location]?.secret ? 0.4 : 0.2)) return 'ningjin_cao';
   const pool = Object.values(c.items).filter(i => i.tags?.includes(tag));
   if(!pool.length) throw new Error('没有带标签的物品：' + tag);
