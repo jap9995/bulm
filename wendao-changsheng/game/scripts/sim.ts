@@ -45,17 +45,20 @@ if(showLog){
   process.exit(0);
 }
 
-for(const kind of bots){
+// 稳健型另跑一组「从不看广告」的对照组：死亡率按这一组验收（balance-targets 第一节）
+const groups: [BotKind, boolean, string][] = bots.flatMap((k): [BotKind, boolean, string][] =>
+  k === 'steady' ? [[k, true, 'steady（看广告）'], [k, false, 'steady（不看广告，死亡率按这组验收）']] : [[k, k !== 'random', k]]);
+for(const [kind, ads, label] of groups){
   const runs: RunState[] = [];
   const t0 = Date.now();
-  for(const origin of origins) for(let i = 0; i < N; i++) runs.push(play(i + 1, origin, kind, kind !== 'random'));
+  for(const origin of origins) for(let i = 0; i < N; i++) runs.push(play(i + 1, origin, kind, ads));
   const realmDist = c.realms.map((r, i) => `${r.name} ${pct(runs.filter(s => s.realm === i).length, runs.length)}`).filter(s => !s.endsWith(' 0.0%'));
   const deaths = runs.filter(s => s.ended?.ending === 'death');
   const causes: Record<string, number> = {};
   for(const s of deaths) causes[s.ended!.cause ?? '?'] = (causes[s.ended!.cause ?? '?'] ?? 0) + 1;
   const duels = runs.reduce((a, s) => a + s.stats.duels, 0), wins = runs.reduce((a, s) => a + s.stats.duelWins, 0);
   const explores = runs.reduce((a, s) => a + s.stats.explores, 0), calm = runs.reduce((a, s) => a + s.stats.calm, 0);
-  console.log(`\n══ ${kind}：${runs.length} 局（${origins.length} 种出身 × ${N}），用时 ${((Date.now() - t0) / 1000).toFixed(1)} 秒`);
+  console.log(`\n══ ${label}：${runs.length} 局（${origins.length} 种出身 × ${N}），用时 ${((Date.now() - t0) / 1000).toFixed(1)} 秒`);
   console.log(`决策次数　中位数 ${median(runs.map(dec))}，90% 分位 ${[...runs.map(dec)].sort((a, b) => a - b)[Math.floor(runs.length * 0.9)]}（点击次数中位数 ${median(runs.map(s => s.steps))}）`);
   console.log(`最高境界　${realmDist.join('　')}`);
   console.log(`结局　　　身死道消 ${pct(deaths.length, runs.length)}　寿终 / 坐化 ${pct(runs.filter(s => s.ended?.ending === 'natural').length, runs.length)}　超时 ${runs.filter(s => s.ended?.ending === 'timeout').length}`);

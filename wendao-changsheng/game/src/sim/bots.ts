@@ -173,10 +173,13 @@ function pickAction(c: Content, st: RunState, o: BotOptions): string {
   const has = (id: string) => list.some(a => a.id === id);
   if(o.kind === 'random') return list[Math.floor(botRand(st) * list.length)].id;
 
-  if(has('break:stable')) return 'break:stable';
-  if(has('break:normal')) return 'break:normal';
+  // 稳健型：身负重伤时，失败就会送命的突破先不冲，养好伤再说（引擎在按钮上有提示）
+  const deadly = (id: string) => /身死道消/.test(list.find(a => a.id === id)?.hint ?? '');
+  if(has('break:stable') && !(o.kind === 'steady' && deadly('break:stable'))) return 'break:stable';
+  if(has('break:normal') && !(o.kind === 'steady' && deadly('break:normal'))) return 'break:normal';
   if(o.kind === 'aggressive' && has('break:forced')) return 'break:forced';
-  if(o.kind === 'steady' && has('break:forced') && lifeLeft(c, st) < 15) return 'break:forced';
+  // 稳健型临终搏命：寿元不到 15 年时强行突破；带着重伤就先养伤
+  if(o.kind === 'steady' && has('break:forced') && lifeLeft(c, st) < 15 && st.flags.botGambled !== st.realm && !deadly('break:forced')){ st.flags.botGambled = st.realm; return 'break:forced'; }   // 每个境界只搏一次，失败就安享余年
   const study = list.find(a => a.id.startsWith('study:')); if(study) return study.id;
 
   // 出门的原则：就地修炼和探索，只在有事时才去别处，办完马上回山野（走动不耗寿元，但每次都是一次决策）

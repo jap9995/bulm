@@ -88,9 +88,11 @@ export function actions(c: Content, st0: RunState): ActionInfo[] {
     const next = c.realms[st.realm + 1];
     const has = !next.material || materialCount(c, st, next.material) >= next.materialCount;
     const reason = st.breakCooldown ? '上次突破失败，需要先修炼一次' : undefined;
-    out.push({ id: 'break:normal', label: `突破${next.name}（${pct(breakRate(c, st, 'normal'))}）`, enabled: has && !reason, reason: !has ? `缺少${c.items[next.material!]?.name}` : reason });
-    if(has && count(st, 'pojing_dan') > 0) out.push({ id: 'break:stable', label: `稳妥突破（${pct(breakRate(c, st, 'stable'))}）`, enabled: !reason, reason });
-    if(!has) out.push({ id: 'break:forced', label: `强行突破（${pct(breakRate(c, st, 'forced'))}）`, enabled: !reason, reason, hint: '没有材料，失败后果更重' });
+    // 重伤时突破：失败后果里有重伤的，失败就是再次重伤，即身死道消（misc-rules 6.4）。不拦，但要说清楚
+    const deadly = (m: 'normal' | 'forced') => st.status.heavy > 0 && (next.failure?.[m].heavy ?? 0) > 0 ? '你身负重伤，这次失败就会身死道消' : undefined;
+    out.push({ id: 'break:normal', label: `突破${next.name}（${pct(breakRate(c, st, 'normal'))}）`, enabled: has && !reason, reason: !has ? `缺少${c.items[next.material!]?.name}` : reason, hint: deadly('normal') });
+    if(has && count(st, 'pojing_dan') > 0) out.push({ id: 'break:stable', label: `稳妥突破（${pct(breakRate(c, st, 'stable'))}）`, enabled: !reason, reason, hint: deadly('normal') });
+    if(!has) out.push({ id: 'break:forced', label: `强行突破（${pct(breakRate(c, st, 'forced'))}）`, enabled: !reason, reason, hint: deadly('forced') ?? '没有材料，失败后果更重' });
   }
   for(const id of Object.keys(c.locations)){
     if(id === st.location) continue;
@@ -372,8 +374,9 @@ function resolveRelief(c: Content, st: RunState, watched: boolean, out: string[]
 function resolveRevive(c: Content, st: RunState, watched: boolean, out: string[]) {
   if(watched){
     st.ads.revive = true; st.stats.adsWatched++;
-    delete st.flags.dying; st.status.heavy = 2; st.status.everHeavy = true;
-    out.push('鬼门关前，你硬生生地被拉了回来。重伤未愈，但还活着。');
+    // 恢复原样：这一次致命的结果作废，伤势保持出事前的样子；之后一切照常（misc-rules 6.4，README 第 11 条）
+    delete st.flags.dying;
+    out.push('鬼门关前，你硬生生地被拉了回来。');
     tick(c, st, out, true);
   } else endRun(c, st, 'death', String(st.flags.dying ?? 'unknown'));
   return { state: st, view: view(st, out) };
