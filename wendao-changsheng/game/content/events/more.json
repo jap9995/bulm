@@ -796,6 +796,52 @@
     }
    },
    {
+    "text": "竞拍婴元果",
+    "hint": "150× 灵石：拍下一枚婴元果",
+    "requires": [
+     {
+      "realmGte": 2
+     }
+    ],
+    "cost": [
+     {
+      "stones": -150
+     }
+    ],
+    "result": {
+     "type": "fixed",
+     "effects": [
+      {
+       "item": "yingyuan_guo"
+      }
+     ],
+     "text": "你咬着牙又加了一次价，满场没人再跟。"
+    }
+   },
+   {
+    "text": "竞拍化神露",
+    "hint": "200× 灵石：拍下一瓶化神露",
+    "requires": [
+     {
+      "realmGte": 3
+     }
+    ],
+    "cost": [
+     {
+      "stones": -200
+     }
+    ],
+    "result": {
+     "type": "fixed",
+     "effects": [
+      {
+       "item": "huashen_lu"
+      }
+     ],
+     "text": "拍卖师落锤的那一刻，好几道目光同时落在了你身上。"
+    }
+   },
+   {
     "text": "冒充贵宾混进去",
     "hint": "全凭口才：成功白看一场，还能顺手捡点便宜；失败散修们会看不起你",
     "result": {
@@ -1500,7 +1546,7 @@
   "options": [
    {
     "text": "全力争夺",
-    "hint": "斗法（高你一个大境界）：大胜得到全部传承（玄阶功法、玄阶法器、修为 +50%）；险胜得到其中的功法",
+    "hint": "斗法（高你一个大境界）：大胜得到全部传承（玄阶功法、玄阶法器、化神露、修为 +50%）；险胜得到其中的功法",
     "result": {
      "type": "duel",
      "enemy": {
@@ -1516,6 +1562,9 @@
         },
         {
          "randomItem": "equip_mystic"
+        },
+        {
+         "item": "huashen_lu"
         },
         {
          "cult": 0.5

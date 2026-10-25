@@ -218,6 +218,11 @@ function pickAction(c: Content, st: RunState, o: BotOptions): string {
   if(st.location === 'sect_secret') return has('explore') ? 'explore' : leave();
   if(has('move:qingming') && st.status.heavy === 0 && st.location !== 'qingming') return 'move:qingming';
   if(st.location === 'qingming' && st.status.heavy === 0) return has('explore') ? 'explore' : 'cultivate';
+  // 到了圆满却缺突破材料（凝金草、婴元果都出在秘境）：去落霞谷找
+  const next = c.realms[st.realm + 1];
+  const hunting = !!next?.material && st.realm >= 1 && count(st, next.material) < next.materialCount && atPeak(c, st) && st.status.heavy === 0;
+  if(hunting && st.location !== 'valley' && has('move:valley')) return 'move:valley';
+  if(st.location === 'valley' && !hunting && has('move:wilds')) return 'move:wilds';
   if(st.location !== 'wilds' && st.location !== 'valley' && has('move:wilds')) return 'move:wilds';
 
   const peak = !has('cultivate') && !has('push');

@@ -28,7 +28,8 @@
   "xuanji": [
    { "item": "book_zhenfa", "rank": 0, "cost": 30 },
    { "item": "book_fulu", "rank": 0, "cost": 30 },
-   { "item": "tishen_fu", "rank": 3, "cost": 300 }
+   { "item": "tishen_fu", "rank": 3, "cost": 300 },
+   { "item": "huashen_lu", "rank": 2, "cost": 300 }
   ],
   "common": [
    { "item": "huichun_dan", "rank": 0, "cost": 10 },
