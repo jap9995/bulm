@@ -1718,5 +1718,72 @@
     }
    }
   ]
+ },
+ {
+  "id": "M_lingwu",
+  "name": "灵物出世",
+  "category": "fortune",
+  "locations": [
+   "any"
+  ],
+  "tier": "common",
+  "chainOnly": true,
+  "repeatable": true,
+  "text": "远处异香扑鼻，霞光冲天——正是你突破所需的灵物即将出世。几道遁光也正朝那边赶去。",
+  "options": [
+   {
+    "text": "抢在他们前面",
+    "hint": "斗法（两人，与你同阶）：胜则得到下一境界的突破材料",
+    "result": {
+     "type": "duel",
+     "enemy": {
+      "strength": "same",
+      "kind": "cultivator",
+      "count": 2
+     },
+     "approach": "fight",
+     "tiers": {
+      "win": {
+       "effects": [
+        {
+         "nextMaterial": 1
+        },
+        {
+         "log": "抢下了一株出世的灵物",
+         "weight": 3
+        }
+       ],
+       "text": "你先一步落地，把灵物收进了袖中。"
+      }
+     }
+    }
+   },
+   {
+    "text": "出价收购",
+    "hint": "120× 灵石：先到的人愿意转手",
+    "cost": [
+     {
+      "stones": -120
+     }
+    ],
+    "result": {
+     "type": "fixed",
+     "effects": [
+      {
+       "nextMaterial": 1
+      }
+     ],
+     "text": "先到的修士掂了掂灵石，把灵物抛给了你。"
+    }
+   },
+   {
+    "text": "让给他们",
+    "hint": "无事；以后还会有机会",
+    "result": {
+     "type": "fixed",
+     "text": "你看着那几道遁光争作一团，转身走了。"
+    }
+   }
+  ]
  }
 ]

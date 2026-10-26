@@ -14,6 +14,10 @@ import { refreshMarket, priceOf, sellPriceOf } from './market.ts';
 
 export interface NewRunOptions { seed: number; origin: string; talent: string; gender?: 'm' | 'f'; name?: string; firstRun?: boolean; destiny?: string }
 
+/** 外出探索的历练修为（当前小层级的比例）：加上事件里写明的修为，平均约 15%（systems 1.4） */
+const EXPLORE_CULT = 0.13;
+/** 突破材料保底：圆满后缺材料时，每探索这么多次必定出一次「灵物出世」 */
+const MATERIAL_PITY = 12;
 const ACTION_TIME = { cultivate: 1, push: 1.5, temper: 1, explore: 0.5, move: 0.25, ask: 0.25, village: 0.25, visit: 0.25 };   // systems 1.3
 
 // ───────────── 开局 ─────────────
@@ -190,6 +194,14 @@ export function act(c: Content, st0: RunState, actionId: string): { state: RunSt
   }
   if(kind === 'explore'){
     st.stats.explores++;
+    // 突破材料保底（misc-rules 第三节，待确认）：圆满后缺材料，每探索 8 次必定出一次「灵物出世」
+    const nx = c.realms[st.realm + 1];
+    if(nx?.material && st.realm >= 1 && atRealmPeak(c, st) && materialCount(c, st, nx.material) < nx.materialCount){
+      st.flags.matWait = Number(st.flags.matWait ?? 0) + 1;
+      if(Number(st.flags.matWait) >= MATERIAL_PITY && !st.queue.some(q => q.event === 'M_lingwu')){ st.flags.matWait = 0; st.queue.push({ event: 'M_lingwu', due: st.actions + 1, prio: 3 }); }
+    }
+    // 历练：外出探索本身就有修为（systems 1.4「事件本身也会给修为，平均每次 +15%」；事件里写明的修为另算）
+    if(!atRealmPeak(c, st)){ const g = cultGain(c, st, EXPLORE_CULT); st.cult += g; out.push(`一路历练，修为 +${Math.round(g * 100)}%。`); }
     st.exploreStreak = st.exploreStreak.loc === st.location ? { loc: st.location, n: st.exploreStreak.n + 1 } : { loc: st.location, n: 1 };
     if(st.location === 'wilds' && st.stats.explores >= 5 && !st.flags.valley){ st.flags.valley = true; out.push('你在山野深处发现了一条通往「落霞谷」的小径。'); }
   }
