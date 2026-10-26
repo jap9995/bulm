@@ -3,16 +3,25 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "《问道长生》游戏引擎、内容配置与模拟脚本",
-  "engines": { "node": ">=23.6" },
+  "description": "《问道长生》游戏引擎、内容配置、模拟脚本与网页界面",
+  "engines": {
+    "node": ">=23.6"
+  },
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
     "test": "node --test test/engine.test.ts",
     "sim": "node scripts/sim.ts",
     "import-combat": "node scripts/import-combat.ts",
     "check": "tsc --noEmit"
   },
   "devDependencies": {
+    "@preact/preset-vite": "2.9.3",
     "@types/node": "22.10.2",
-    "typescript": "5.7.2"
+    "typescript": "5.7.2",
+    "vite": "5.4.11"
+  },
+  "dependencies": {
+    "preact": "10.25.4"
   }
 }

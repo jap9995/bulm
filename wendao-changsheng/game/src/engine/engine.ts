@@ -405,7 +405,7 @@ function tick(c: Content, st: RunState, out: string[], skipDeath = false): void 
     else if(count(st, 'tishen_fu') > 0){ addItem(c, st, 'tishen_fu', -1, out); delete st.flags.dying; out.push('替身符化作飞灰，替你挡了这一劫。'); }
     else if(!st.ads.revive){
       st.pending = { event: '__ad_revive', text: '你感觉生机正一点点从身体里流走……', source: 'forced', options: [
-        { index: 0, text: '看一段广告，留住这条命', hint: '每局一次：转为重伤，不扣根基', enabled: true },
+        { index: 0, text: '看一段广告，留住这条命', hint: '每局一次：这一下不算数，伤势照旧，接着走下去', enabled: true },
         { index: 1, text: '坦然受之', hint: '这一生到此为止', enabled: true },
       ] };
       delete st.flags.lastDuelDeath;
