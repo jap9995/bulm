@@ -45,9 +45,9 @@ if(showLog){
   process.exit(0);
 }
 
-// 稳健型另跑一组「从不看广告」的对照组：死亡率按这一组验收（balance-targets 第一节）
+// 稳健型和激进型各跑「看广告」「不看广告」两组：死亡率按不看广告的那组验收（balance-targets 第一节）
 const groups: [BotKind, boolean, string][] = bots.flatMap((k): [BotKind, boolean, string][] =>
-  k === 'steady' ? [[k, true, 'steady（看广告）'], [k, false, 'steady（不看广告，死亡率按这组验收）']] : [[k, k !== 'random', k]]);
+  k === 'random' ? [[k, false, k]] : [[k, true, `${k}（看广告）`], [k, false, `${k}（不看广告，死亡率按这组验收）`]]);
 for(const [kind, ads, label] of groups){
   const runs: RunState[] = [];
   const t0 = Date.now();

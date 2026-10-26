@@ -20,7 +20,8 @@ function botRand(st: RunState): number { const s = { rng: { event: st.seed ^ (st
 /** 跑一步：有待选事件就选，否则做一个行动（顺带处理不耗时的服药、买卖、换装） */
 export function step(c: Content, st: RunState, o: BotOptions): RunState {
   if(st.pending) return choose(c, st, pickOption(c, st, o), { adWatched: o.watchAds || (o.kind === 'random' && botRand(st) < 0.5) }).state;
-  if(o.kind !== 'random') st = housekeeping(c, st, o);
+  // 随机型（乱点的玩家）有一半的时候也会顺手买药、吃药、换装备
+  if(o.kind !== 'random' || botRand({ ...st, steps: st.steps + 104729 } as RunState) < 0.5) st = housekeeping(c, st, o);
   const id = pickAction(c, st, o);
   return act(c, st, id).state;
 }
@@ -177,7 +178,7 @@ function pickAction(c: Content, st: RunState, o: BotOptions): string {
   const deadly = (id: string) => /身死道消/.test(list.find(a => a.id === id)?.hint ?? '');
   if(has('break:stable') && !(o.kind === 'steady' && deadly('break:stable'))) return 'break:stable';
   if(has('break:normal') && !(o.kind === 'steady' && deadly('break:normal'))) return 'break:normal';
-  if(o.kind === 'aggressive' && has('break:forced')) return 'break:forced';
+  if(o.kind === 'aggressive' && has('break:forced') && !deadly('break:forced')) return 'break:forced';   // 激进但不送死：重伤时不冲会致命的突破
   // 稳健型临终搏命：寿元不到 15 年时强行突破；带着重伤就先养伤
   if(o.kind === 'steady' && has('break:forced') && lifeLeft(c, st) < 15 && st.flags.botGambled !== st.realm && !deadly('break:forced')){ st.flags.botGambled = st.realm; return 'break:forced'; }   // 每个境界只搏一次，失败就安享余年
   const study = list.find(a => a.id.startsWith('study:')); if(study) return study.id;
