@@ -5,7 +5,7 @@
  "cultAdd": 0.1,
  "upgradeMult": 2,
  "maxLevel": 3,
- "growActions": 6,
+ "growActions": 4,
  "harvest": 5,
  "buildings": {
   "lingtian": { "name": "灵田", "cost": 50, "desc": "种植灵草，到时间后回洞府收获；每级多收两株" },

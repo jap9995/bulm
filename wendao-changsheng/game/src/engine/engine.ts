@@ -17,7 +17,7 @@ export interface NewRunOptions { seed: number; origin: string; talent: string; g
 /** 外出探索的历练修为（当前小层级的比例）：加上事件里写明的修为，平均约 15%（systems 1.4） */
 const EXPLORE_CULT = 0.13;
 /** 突破材料保底：圆满后缺材料时，每探索这么多次必定出一次「灵物出世」 */
-const MATERIAL_PITY = 12;
+const MATERIAL_PITY = 8;
 const ACTION_TIME = { cultivate: 1, push: 1.5, temper: 1, explore: 0.5, move: 0.25, ask: 0.25, village: 0.25, visit: 0.25 };   // systems 1.3
 
 // ───────────── 开局 ─────────────
