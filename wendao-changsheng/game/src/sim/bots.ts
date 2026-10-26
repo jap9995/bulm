@@ -1,7 +1,7 @@
 // 模拟用的三种机器人（balance-targets 1.1）：随机型、稳健型、激进型
 // 机器人只调用引擎的公开接口，和真实玩家走同一条路径
 import type { Content, Effect, OptionDef, RunState } from '../engine/types.ts';
-import { act, actions, buy, choose, equip, sell, usePill } from '../engine/engine.ts';
+import { act, actions, breakRate, buy, choose, equip, sell, usePill } from '../engine/engine.ts';
 import { estimate } from '../engine/combat.ts';
 import { count } from '../engine/effects.ts';
 import { priceOf, sellPriceOf } from '../engine/market.ts';
@@ -178,7 +178,12 @@ function pickAction(c: Content, st: RunState, o: BotOptions): string {
   const deadly = (id: string) => /身死道消/.test(list.find(a => a.id === id)?.hint ?? '');
   if(has('break:stable') && !(o.kind === 'steady' && deadly('break:stable'))) return 'break:stable';
   if(has('break:normal') && !(o.kind === 'steady' && deadly('break:normal'))) return 'break:normal';
-  if(o.kind === 'aggressive' && has('break:forced') && !deadly('break:forced')) return 'break:forced';   // 激进但不送死：重伤时不冲会致命的突破
+  // 激进型：缺材料时先找一阵，在圆满处等了 6 次行动还没有、或者寿元不多了，才强行突破；成功率太低不冲，重伤时不冲必死的
+  if(o.kind === 'aggressive' && has('break:forced') && !deadly('break:forced')){
+    if(st.flags.botPeakAt === undefined || Number(st.flags.botPeakRealm) !== st.realm){ st.flags.botPeakAt = st.actions; st.flags.botPeakRealm = st.realm; }
+    const waited = st.actions - Number(st.flags.botPeakAt);
+    if(breakRate(c, st, 'forced') >= 0.25 && (waited >= 6 || lifeLeft(c, st) < 30)) return 'break:forced';
+  }
   // 稳健型临终搏命：寿元不到 15 年时强行突破；带着重伤就先养伤
   if(o.kind === 'steady' && has('break:forced') && lifeLeft(c, st) < 15 && st.flags.botGambled !== st.realm && !deadly('break:forced')){ st.flags.botGambled = st.realm; return 'break:forced'; }   // 每个境界只搏一次，失败就安享余年
   const study = list.find(a => a.id.startsWith('study:')); if(study) return study.id;
